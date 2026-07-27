@@ -63,9 +63,7 @@ root_key_name = "Software\\Python\\PythonCore\\" + sys.winver
 
 def get_root_hkey():
     try:
-        winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE, root_key_name, 0, winreg.KEY_CREATE_SUB_KEY
-        )
+        winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, root_key_name, 0, winreg.KEY_CREATE_SUB_KEY)
         return winreg.HKEY_LOCAL_MACHINE
     except OSError:
         # Either not exist, or no permissions to create subkey means
@@ -304,9 +302,7 @@ def RegisterPythonwin(register=True, lib_dir=None):
         # tell windows about the change
         from win32com.shell import shell, shellcon
 
-        shell.SHChangeNotify(
-            shellcon.SHCNE_ASSOCCHANGED, shellcon.SHCNF_IDLIST, None, None
-        )
+        shell.SHChangeNotify(shellcon.SHCNE_ASSOCCHANGED, shellcon.SHCNF_IDLIST, None, None)
 
 
 def get_shortcuts_folder():
@@ -363,9 +359,7 @@ def fixup_dbi():
         if os.path.isfile(this_pyd) and os.path.isfile(py_name):
             try:
                 if os.path.isfile(this_dest):
-                    print(
-                        f"Old dbi '{this_dest}' already exists - deleting '{this_pyd}'"
-                    )
+                    print(f"Old dbi '{this_dest}' already exists - deleting '{this_pyd}'")
                     os.remove(this_pyd)
                 else:
                     os.rename(this_pyd, this_dest)
@@ -452,9 +446,7 @@ def install(lib_dir):
                 continue
             raise
     else:
-        raise RuntimeError(
-            "You don't have enough permissions to install the system files"
-        )
+        raise RuntimeError("You don't have enough permissions to install the system files")
 
     # Register our demo COM objects.
     try:
@@ -641,9 +633,7 @@ def uninstall(lib_dir):
 def verify_destination(location: str) -> str:
     location = os.path.abspath(location)
     if not os.path.isdir(location):
-        raise argparse.ArgumentTypeError(
-            f'Path "{location}" is not an existing directory!'
-        )
+        raise argparse.ArgumentTypeError(f'Path "{location}" is not an existing directory!')
     return location
 
 

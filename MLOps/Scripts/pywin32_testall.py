@@ -35,9 +35,7 @@ def find_and_run(possible_locations, extras):
             run_test(maybe, extras)
             break
     else:
-        raise RuntimeError(
-            "Failed to locate a test script in one of %s" % possible_locations
-        )
+        raise RuntimeError("Failed to locate a test script in one of %s" % possible_locations)
 
 
 def main():
