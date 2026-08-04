@@ -1,0 +1,15 @@
+data:
+  raw_path: data/raw/tickets.csv
+  processed_dir: data/processed
+  n_samples: 3000
+  test_size: 0.2
+  random_state: 42
+model:
+  max_features: 5000
+  ngram_max: 1          
+  C: 1.0
+  max_iter: 1000
+  # 1 = unigrams only, 2 = unigrams + bigrams
+  model_path: models/model.joblib
+evaluate:
+  metrics_path: metrics/metrics.json
