@@ -1,0 +1,601 @@
+text,label
+the api is returning a null_ref error when i make a request.,technical
+i want to delete my account and all of my data.,account
+do you offer a discount for students or non profits?,general
+there is an unexpected fee of $49 on my latest bill.,general
+i would like to share some feedback about your service.,general
+can you tell me more about the enterprise plan features?,general
+there is an unexpected fee of $19.99 on my latest bill.,billing
+why is my invoice higher than the pro plan price?,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+there is a bug in the settings that needs to be fixed.,technical
+sync keeps failing between my phone and the web settings.,account
+i am experiencing issues with the reports functionality.,technical
+i am experiencing issues with the calendar functionality.,technical
+what are your customer support working hours?,general
+the software is not compatible with my operating system.,technical
+sync keeps failing between my phone and the web calendar.,account
+"i cannot reset my password, the email never arrives.",account
+the dashboard is not loading after the latest update.,account
+is there a mobile app available for billing?,general
+what are your customer support working hours?,general
+the software is not compatible with my operating system.,technical
+there is an unexpected fee of $49 on my latest bill.,billing
+i was charged $5 twice on my visa card this month.,billing
+please help me change the email address on my account.,account
+the application is running slow and freezing frequently.,technical
+is there a mobile app available for settings?,general
+i need a refund for the duplicate payment of $49.,billing
+my account is locked after too many login attempts.,account
+do you offer a discount for students or non profits?,general
+there is an unexpected fee of $5 on my latest bill.,billing
+why is my invoice higher than the basic plan price?,billing
+i would like to share some feedback about your service.,general
+the api is returning a timeout error when i make a request.,general
+is there a mobile app available for settings?,general
+the api is returning a timeout error when i make a request.,technical
+the app crashes every time i open the reports page.,account
+my subscription renewed but i wanted to cancel the billing.,billing
+i was charged $120 twice on my visa card this month.,billing
+can you tell me more about the pro plan features?,general
+i get an error code null_ref when i try to log in.,account
+there is a bug in the reports that needs to be fixed.,technical
+the software is not compatible with my operating system.,technical
+do you offer a discount for students or non profits?,general
+i would like to share some feedback about your service.,general
+i get an error code timeout when i try to log in.,general
+"i cannot reset my password, the email never arrives.",account
+why is my invoice higher than the basic plan price?,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+there is an unexpected fee of $9.99 on my latest bill.,billing
+do you offer a discount for students or non profits?,general
+the app crashes every time i open the billing page.,general
+the app crashes every time i open the calendar page.,account
+why is my invoice higher than the basic plan price?,billing
+i am experiencing issues with the reports functionality.,technical
+please help me change the email address on my account.,account
+is there a mobile app available for billing?,general
+i need a refund for the duplicate payment of $9.99.,billing
+what are your customer support working hours?,account
+do you offer a discount for students or non profits?,general
+i am experiencing issues with the settings functionality.,technical
+what are your customer support working hours?,general
+i get an error code timeout when i try to log in.,account
+can you tell me more about the enterprise plan features?,general
+do you offer a discount for students or non profits?,general
+i would like to share some feedback about your service.,account
+the export button does nothing and throws error 500.,account
+the api is returning a 500 error when i make a request.,technical
+the software is not compatible with my operating system.,technical
+the api is returning a timeout error when i make a request.,technical
+why is my invoice higher than the basic plan price?,billing
+i need a refund for the duplicate payment of $19.99.,billing
+there is an unexpected fee of $19.99 on my latest bill.,billing
+the software is not compatible with my operating system.,account
+i was charged $49 twice on my visa card this month.,billing
+i would like to share some feedback about your service.,general
+why is my invoice higher than the pro plan price?,billing
+i was charged $9.99 twice on my amex card this month.,billing
+the software is not compatible with my operating system.,technical
+i was charged $120 twice on my mastercard card this month.,billing
+can you tell me more about the basic plan features?,general
+my account is locked after too many login attempts.,account
+sync keeps failing between my phone and the web settings.,account
+i am experiencing issues with the settings functionality.,technical
+there is an unexpected fee of $49 on my latest bill.,billing
+can you tell me more about the enterprise plan features?,general
+do you offer a discount for students or non profits?,general
+i was charged $9.99 twice on my visa card this month.,billing
+i would like to share some feedback about your service.,account
+what are your customer support working hours?,general
+can you tell me more about the pro plan features?,general
+why is my invoice higher than the pro plan price?,billing
+the software is not compatible with my operating system.,account
+can you tell me more about the basic plan features?,general
+there is an unexpected fee of $9.99 on my latest bill.,billing
+the application is running slow and freezing frequently.,technical
+do you offer a discount for students or non profits?,general
+the dashboard is not loading after the latest update.,account
+the application is running slow and freezing frequently.,technical
+the software is not compatible with my operating system.,technical
+i am experiencing issues with the settings functionality.,technical
+the application is running slow and freezing frequently.,technical
+what are your customer support working hours?,general
+the export button does nothing and throws error 403.,account
+the application is running slow and freezing frequently.,technical
+the app crashes every time i open the calendar page.,account
+how do i enable two factor authentication on my profile?,account
+do you offer a discount for students or non profits?,general
+there is an unexpected fee of $19.99 on my latest bill.,billing
+do you offer a discount for students or non profits?,general
+my subscription renewed but i wanted to cancel the billing.,billing
+my account is locked after too many login attempts.,general
+the api is returning a null_ref error when i make a request.,technical
+why is my invoice higher than the pro plan price?,billing
+i get an error code null_ref when i try to log in.,account
+the app crashes every time i open the calendar page.,technical
+i am experiencing issues with the calendar functionality.,billing
+there is an unexpected fee of $49 on my latest bill.,billing
+there is a bug in the billing that needs to be fixed.,technical
+what are your customer support working hours?,general
+the application is running slow and freezing frequently.,technical
+the export button does nothing and throws error timeout.,account
+i was charged $49 twice on my amex card this month.,billing
+i would like to share some feedback about your service.,general
+the api is returning a null_ref error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+there is an unexpected fee of $49 on my latest bill.,billing
+my account is locked after too many login attempts.,account
+i am experiencing issues with the calendar functionality.,technical
+how do i enable two factor authentication on my profile?,account
+there is an unexpected fee of $49 on my latest bill.,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+i want to delete my account and all of my data.,account
+my subscription renewed but i wanted to cancel the billing.,billing
+the app crashes every time i open the reports page.,technical
+i need a refund for the duplicate payment of $5.,billing
+the application is running slow and freezing frequently.,technical
+please help me change the email address on my account.,account
+the dashboard is not loading after the latest update.,account
+is there a mobile app available for calendar?,general
+what are your customer support working hours?,general
+do you offer a discount for students or non profits?,general
+sync keeps failing between my phone and the web billing.,account
+the software is not compatible with my operating system.,technical
+the software is not compatible with my operating system.,technical
+there is a bug in the reports that needs to be fixed.,technical
+i am experiencing issues with the calendar functionality.,technical
+why is my invoice higher than the pro plan price?,billing
+sync keeps failing between my phone and the web billing.,account
+the export button does nothing and throws error 403.,account
+the software is not compatible with my operating system.,technical
+there is an unexpected fee of $49 on my latest bill.,billing
+i am experiencing issues with the settings functionality.,technical
+i want to delete my account and all of my data.,account
+the application is running slow and freezing frequently.,technical
+the export button does nothing and throws error 500.,account
+i want to delete my account and all of my data.,account
+i need a refund for the duplicate payment of $49.,billing
+i am experiencing issues with the settings functionality.,technical
+i was charged $9.99 twice on my mastercard card this month.,billing
+can you tell me more about the pro plan features?,general
+the api is returning a null_ref error when i make a request.,technical
+why is my invoice higher than the pro plan price?,technical
+please help me change the email address on my account.,account
+the export button does nothing and throws error 500.,account
+is there a mobile app available for reports?,account
+why is my invoice higher than the basic plan price?,billing
+i get an error code null_ref when i try to log in.,account
+there is a bug in the calendar that needs to be fixed.,technical
+the software is not compatible with my operating system.,technical
+"i cannot reset my password, the email never arrives.",account
+i was charged $120 twice on my amex card this month.,billing
+i am experiencing issues with the calendar functionality.,technical
+is there a mobile app available for calendar?,general
+i would like to share some feedback about your service.,general
+can you tell me more about the enterprise plan features?,general
+can you tell me more about the pro plan features?,general
+i would like to share some feedback about your service.,general
+i would like to share some feedback about your service.,general
+please help me change the email address on my account.,account
+there is a bug in the billing that needs to be fixed.,technical
+the software is not compatible with my operating system.,technical
+how do i enable two factor authentication on my profile?,account
+the api is returning a 500 error when i make a request.,technical
+there is a bug in the calendar that needs to be fixed.,technical
+how do i enable two factor authentication on my profile?,account
+i want to delete my account and all of my data.,account
+i am experiencing issues with the calendar functionality.,technical
+i am experiencing issues with the calendar functionality.,technical
+i am experiencing issues with the calendar functionality.,technical
+do you offer a discount for students or non profits?,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+the export button does nothing and throws error null_ref.,account
+i was charged $5 twice on my visa card this month.,billing
+the software is not compatible with my operating system.,technical
+"i cannot reset my password, the email never arrives.",account
+sync keeps failing between my phone and the web reports.,account
+i would like to share some feedback about your service.,general
+the app crashes every time i open the reports page.,account
+do you offer a discount for students or non profits?,account
+the api is returning a 403 error when i make a request.,technical
+the dashboard is not loading after the latest update.,account
+why is my invoice higher than the basic plan price?,billing
+there is a bug in the calendar that needs to be fixed.,technical
+the application is running slow and freezing frequently.,technical
+is there a mobile app available for calendar?,general
+how do i enable two factor authentication on my profile?,account
+my subscription renewed but i wanted to cancel the billing.,billing
+sync keeps failing between my phone and the web calendar.,account
+the api is returning a 500 error when i make a request.,technical
+there is an unexpected fee of $19.99 on my latest bill.,billing
+the app crashes every time i open the settings page.,account
+my subscription renewed but i wanted to cancel the billing.,billing
+is there a mobile app available for calendar?,general
+i am experiencing issues with the billing functionality.,technical
+what are your customer support working hours?,general
+please help me change the email address on my account.,account
+the application is running slow and freezing frequently.,technical
+i need a refund for the duplicate payment of $120.,billing
+why is my invoice higher than the enterprise plan price?,billing
+i was charged $49 twice on my amex card this month.,billing
+how do i enable two factor authentication on my profile?,account
+do you offer a discount for students or non profits?,general
+why is my invoice higher than the basic plan price?,billing
+why is my invoice higher than the enterprise plan price?,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+is there a mobile app available for billing?,general
+there is an unexpected fee of $5 on my latest bill.,billing
+the application is running slow and freezing frequently.,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+why is my invoice higher than the pro plan price?,billing
+the api is returning a 500 error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+the api is returning a 403 error when i make a request.,technical
+why is my invoice higher than the basic plan price?,billing
+the software is not compatible with my operating system.,technical
+the export button does nothing and throws error null_ref.,account
+my subscription renewed but i wanted to cancel the billing.,account
+there is a bug in the calendar that needs to be fixed.,technical
+i would like to share some feedback about your service.,general
+is there a mobile app available for settings?,general
+why is my invoice higher than the pro plan price?,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+is there a mobile app available for billing?,general
+i am experiencing issues with the calendar functionality.,technical
+the api is returning a null_ref error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+i need a refund for the duplicate payment of $9.99.,billing
+the app crashes every time i open the billing page.,account
+i need a refund for the duplicate payment of $120.,billing
+please help me change the email address on my account.,account
+i am experiencing issues with the reports functionality.,technical
+i need a refund for the duplicate payment of $5.,billing
+the application is running slow and freezing frequently.,billing
+the api is returning a 403 error when i make a request.,technical
+what are your customer support working hours?,general
+i would like to share some feedback about your service.,general
+"i cannot reset my password, the email never arrives.",account
+can you tell me more about the basic plan features?,general
+i need a refund for the duplicate payment of $9.99.,billing
+there is a bug in the calendar that needs to be fixed.,technical
+can you tell me more about the basic plan features?,general
+can you tell me more about the enterprise plan features?,general
+i was charged $19.99 twice on my visa card this month.,billing
+why is my invoice higher than the basic plan price?,billing
+the api is returning a null_ref error when i make a request.,technical
+i need a refund for the duplicate payment of $120.,billing
+"i cannot reset my password, the email never arrives.",account
+i was charged $9.99 twice on my visa card this month.,billing
+the export button does nothing and throws error timeout.,account
+please help me change the email address on my account.,account
+"i cannot reset my password, the email never arrives.",account
+can you tell me more about the pro plan features?,general
+do you offer a discount for students or non profits?,general
+the export button does nothing and throws error timeout.,account
+how do i enable two factor authentication on my profile?,account
+i need a refund for the duplicate payment of $5.,billing
+can you tell me more about the enterprise plan features?,general
+"i cannot reset my password, the email never arrives.",account
+i am experiencing issues with the settings functionality.,technical
+i am experiencing issues with the billing functionality.,technical
+there is an unexpected fee of $120 on my latest bill.,billing
+do you offer a discount for students or non profits?,general
+i am experiencing issues with the reports functionality.,technical
+the api is returning a null_ref error when i make a request.,technical
+the application is running slow and freezing frequently.,technical
+why is my invoice higher than the pro plan price?,general
+there is a bug in the reports that needs to be fixed.,technical
+i need a refund for the duplicate payment of $49.,billing
+the api is returning a timeout error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+why is my invoice higher than the pro plan price?,billing
+the application is running slow and freezing frequently.,technical
+is there a mobile app available for calendar?,general
+i would like to share some feedback about your service.,general
+what are your customer support working hours?,general
+sync keeps failing between my phone and the web calendar.,account
+i need a refund for the duplicate payment of $120.,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+there is an unexpected fee of $5 on my latest bill.,billing
+the software is not compatible with my operating system.,technical
+there is an unexpected fee of $49 on my latest bill.,billing
+i would like to share some feedback about your service.,general
+sync keeps failing between my phone and the web calendar.,account
+the application is running slow and freezing frequently.,technical
+i was charged $5 twice on my mastercard card this month.,billing
+i am experiencing issues with the reports functionality.,technical
+sync keeps failing between my phone and the web reports.,account
+can you tell me more about the pro plan features?,general
+the api is returning a timeout error when i make a request.,technical
+the software is not compatible with my operating system.,technical
+what are your customer support working hours?,general
+how do i enable two factor authentication on my profile?,account
+i need a refund for the duplicate payment of $49.,billing
+i want to delete my account and all of my data.,account
+can you tell me more about the basic plan features?,general
+is there a mobile app available for settings?,general
+i was charged $19.99 twice on my amex card this month.,billing
+my account is locked after too many login attempts.,account
+the software is not compatible with my operating system.,technical
+the application is running slow and freezing frequently.,technical
+i want to delete my account and all of my data.,account
+do you offer a discount for students or non profits?,general
+i would like to share some feedback about your service.,general
+the export button does nothing and throws error 500.,account
+i want to delete my account and all of my data.,account
+there is an unexpected fee of $5 on my latest bill.,billing
+i would like to share some feedback about your service.,general
+the software is not compatible with my operating system.,billing
+why is my invoice higher than the basic plan price?,billing
+i want to delete my account and all of my data.,account
+there is an unexpected fee of $9.99 on my latest bill.,billing
+the software is not compatible with my operating system.,technical
+"i cannot reset my password, the email never arrives.",account
+i need a refund for the duplicate payment of $5.,billing
+what are your customer support working hours?,general
+do you offer a discount for students or non profits?,billing
+i am experiencing issues with the calendar functionality.,account
+the software is not compatible with my operating system.,technical
+can you tell me more about the pro plan features?,general
+the api is returning a 500 error when i make a request.,technical
+why is my invoice higher than the basic plan price?,billing
+do you offer a discount for students or non profits?,general
+i get an error code 500 when i try to log in.,account
+why is my invoice higher than the pro plan price?,billing
+i would like to share some feedback about your service.,general
+i was charged $9.99 twice on my visa card this month.,billing
+the export button does nothing and throws error null_ref.,account
+i get an error code null_ref when i try to log in.,billing
+can you tell me more about the basic plan features?,general
+the application is running slow and freezing frequently.,technical
+my account is locked after too many login attempts.,account
+can you tell me more about the basic plan features?,general
+i was charged $49 twice on my mastercard card this month.,billing
+there is a bug in the calendar that needs to be fixed.,technical
+the api is returning a 403 error when i make a request.,technical
+the app crashes every time i open the calendar page.,account
+why is my invoice higher than the enterprise plan price?,general
+i get an error code 500 when i try to log in.,account
+can you tell me more about the enterprise plan features?,general
+there is an unexpected fee of $5 on my latest bill.,billing
+why is my invoice higher than the basic plan price?,account
+can you tell me more about the basic plan features?,general
+the export button does nothing and throws error 500.,account
+please help me change the email address on my account.,technical
+the software is not compatible with my operating system.,technical
+the export button does nothing and throws error 403.,account
+"i cannot reset my password, the email never arrives.",account
+the application is running slow and freezing frequently.,technical
+i am experiencing issues with the calendar functionality.,technical
+i am experiencing issues with the settings functionality.,technical
+the software is not compatible with my operating system.,technical
+the dashboard is not loading after the latest update.,account
+the dashboard is not loading after the latest update.,account
+is there a mobile app available for billing?,account
+there is an unexpected fee of $19.99 on my latest bill.,billing
+i was charged $49 twice on my visa card this month.,billing
+there is an unexpected fee of $19.99 on my latest bill.,billing
+there is a bug in the calendar that needs to be fixed.,technical
+i am experiencing issues with the billing functionality.,account
+i need a refund for the duplicate payment of $49.,billing
+can you tell me more about the enterprise plan features?,general
+there is a bug in the settings that needs to be fixed.,technical
+please help me change the email address on my account.,account
+i would like to share some feedback about your service.,general
+the software is not compatible with my operating system.,technical
+i get an error code null_ref when i try to log in.,account
+my subscription renewed but i wanted to cancel the billing.,billing
+why is my invoice higher than the pro plan price?,billing
+i would like to share some feedback about your service.,general
+do you offer a discount for students or non profits?,account
+i need a refund for the duplicate payment of $19.99.,technical
+is there a mobile app available for settings?,general
+why is my invoice higher than the basic plan price?,billing
+my subscription renewed but i wanted to cancel the billing.,billing
+i get an error code timeout when i try to log in.,account
+the application is running slow and freezing frequently.,technical
+i need a refund for the duplicate payment of $9.99.,billing
+i am experiencing issues with the calendar functionality.,billing
+is there a mobile app available for billing?,general
+"i cannot reset my password, the email never arrives.",account
+is there a mobile app available for calendar?,general
+can you tell me more about the enterprise plan features?,general
+i am experiencing issues with the billing functionality.,technical
+what are your customer support working hours?,general
+i would like to share some feedback about your service.,general
+there is a bug in the reports that needs to be fixed.,technical
+the dashboard is not loading after the latest update.,billing
+the application is running slow and freezing frequently.,technical
+please help me change the email address on my account.,account
+the application is running slow and freezing frequently.,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+why is my invoice higher than the pro plan price?,billing
+i want to delete my account and all of my data.,account
+the application is running slow and freezing frequently.,technical
+i would like to share some feedback about your service.,general
+there is a bug in the settings that needs to be fixed.,technical
+can you tell me more about the basic plan features?,general
+there is a bug in the reports that needs to be fixed.,technical
+do you offer a discount for students or non profits?,general
+is there a mobile app available for settings?,billing
+what are your customer support working hours?,general
+there is a bug in the billing that needs to be fixed.,technical
+what are your customer support working hours?,general
+the software is not compatible with my operating system.,technical
+i am experiencing issues with the billing functionality.,technical
+the application is running slow and freezing frequently.,technical
+i need a refund for the duplicate payment of $120.,billing
+the software is not compatible with my operating system.,technical
+do you offer a discount for students or non profits?,general
+the software is not compatible with my operating system.,technical
+my account is locked after too many login attempts.,account
+i want to delete my account and all of my data.,account
+there is an unexpected fee of $5 on my latest bill.,billing
+i was charged $19.99 twice on my amex card this month.,billing
+what are your customer support working hours?,general
+what are your customer support working hours?,general
+why is my invoice higher than the pro plan price?,billing
+the software is not compatible with my operating system.,technical
+there is a bug in the billing that needs to be fixed.,technical
+please help me change the email address on my account.,account
+can you tell me more about the basic plan features?,general
+do you offer a discount for students or non profits?,general
+why is my invoice higher than the pro plan price?,billing
+i need a refund for the duplicate payment of $9.99.,billing
+the api is returning a timeout error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+can you tell me more about the enterprise plan features?,general
+the api is returning a null_ref error when i make a request.,technical
+can you tell me more about the basic plan features?,general
+i would like to share some feedback about your service.,general
+my account is locked after too many login attempts.,account
+the application is running slow and freezing frequently.,technical
+i am experiencing issues with the settings functionality.,technical
+can you tell me more about the basic plan features?,general
+how do i enable two factor authentication on my profile?,account
+there is a bug in the reports that needs to be fixed.,account
+i want to delete my account and all of my data.,account
+there is a bug in the settings that needs to be fixed.,technical
+i need a refund for the duplicate payment of $49.,billing
+i am experiencing issues with the settings functionality.,general
+is there a mobile app available for calendar?,general
+my account is locked after too many login attempts.,account
+my account is locked after too many login attempts.,account
+what are your customer support working hours?,general
+my subscription renewed but i wanted to cancel the billing.,billing
+i would like to share some feedback about your service.,general
+why is my invoice higher than the basic plan price?,billing
+please help me change the email address on my account.,account
+sync keeps failing between my phone and the web settings.,account
+can you tell me more about the pro plan features?,general
+the api is returning a null_ref error when i make a request.,technical
+do you offer a discount for students or non profits?,general
+please help me change the email address on my account.,technical
+there is an unexpected fee of $19.99 on my latest bill.,billing
+the api is returning a 403 error when i make a request.,technical
+what are your customer support working hours?,general
+i would like to share some feedback about your service.,general
+there is an unexpected fee of $9.99 on my latest bill.,billing
+can you tell me more about the basic plan features?,general
+there is a bug in the billing that needs to be fixed.,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+i would like to share some feedback about your service.,general
+i need a refund for the duplicate payment of $5.,billing
+i am experiencing issues with the reports functionality.,technical
+i was charged $5 twice on my amex card this month.,billing
+my account is locked after too many login attempts.,account
+please help me change the email address on my account.,account
+the app crashes every time i open the settings page.,account
+the app crashes every time i open the reports page.,account
+please help me change the email address on my account.,account
+the api is returning a 403 error when i make a request.,technical
+the app crashes every time i open the calendar page.,account
+there is an unexpected fee of $120 on my latest bill.,billing
+is there a mobile app available for calendar?,general
+i am experiencing issues with the reports functionality.,technical
+is there a mobile app available for settings?,general
+what are your customer support working hours?,general
+the api is returning a 403 error when i make a request.,billing
+there is a bug in the reports that needs to be fixed.,technical
+the api is returning a null_ref error when i make a request.,account
+how do i enable two factor authentication on my profile?,account
+can you tell me more about the basic plan features?,general
+what are your customer support working hours?,general
+the software is not compatible with my operating system.,account
+i would like to share some feedback about your service.,general
+the export button does nothing and throws error 403.,account
+what are your customer support working hours?,general
+why is my invoice higher than the basic plan price?,billing
+"i cannot reset my password, the email never arrives.",account
+i was charged $120 twice on my mastercard card this month.,billing
+can you tell me more about the pro plan features?,general
+do you offer a discount for students or non profits?,general
+the api is returning a 500 error when i make a request.,technical
+the application is running slow and freezing frequently.,technical
+is there a mobile app available for calendar?,general
+i need a refund for the duplicate payment of $49.,billing
+do you offer a discount for students or non profits?,general
+the dashboard is not loading after the latest update.,account
+there is a bug in the reports that needs to be fixed.,technical
+the dashboard is not loading after the latest update.,account
+there is a bug in the billing that needs to be fixed.,technical
+i need a refund for the duplicate payment of $9.99.,billing
+i was charged $9.99 twice on my visa card this month.,billing
+why is my invoice higher than the basic plan price?,billing
+there is a bug in the reports that needs to be fixed.,technical
+i need a refund for the duplicate payment of $19.99.,billing
+what are your customer support working hours?,general
+how do i enable two factor authentication on my profile?,account
+my subscription renewed but i wanted to cancel the billing.,billing
+i want to delete my account and all of my data.,account
+sync keeps failing between my phone and the web calendar.,account
+the software is not compatible with my operating system.,technical
+i would like to share some feedback about your service.,general
+there is a bug in the billing that needs to be fixed.,technical
+i was charged $19.99 twice on my amex card this month.,billing
+i need a refund for the duplicate payment of $9.99.,billing
+there is an unexpected fee of $19.99 on my latest bill.,billing
+do you offer a discount for students or non profits?,general
+do you offer a discount for students or non profits?,account
+why is my invoice higher than the pro plan price?,billing
+"i cannot reset my password, the email never arrives.",account
+can you tell me more about the pro plan features?,general
+the application is running slow and freezing frequently.,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+the app crashes every time i open the calendar page.,account
+the software is not compatible with my operating system.,technical
+can you tell me more about the pro plan features?,general
+the software is not compatible with my operating system.,technical
+my subscription renewed but i wanted to cancel the billing.,billing
+i want to delete my account and all of my data.,account
+i get an error code timeout when i try to log in.,account
+the dashboard is not loading after the latest update.,account
+the dashboard is not loading after the latest update.,account
+why is my invoice higher than the enterprise plan price?,billing
+how do i enable two factor authentication on my profile?,account
+i need a refund for the duplicate payment of $9.99.,billing
+my account is locked after too many login attempts.,technical
+what are your customer support working hours?,general
+the app crashes every time i open the billing page.,account
+what are your customer support working hours?,general
+can you tell me more about the basic plan features?,general
+i was charged $49 twice on my mastercard card this month.,billing
+is there a mobile app available for calendar?,general
+the application is running slow and freezing frequently.,technical
+do you offer a discount for students or non profits?,general
+i was charged $49 twice on my visa card this month.,billing
+i need a refund for the duplicate payment of $19.99.,billing
+the application is running slow and freezing frequently.,technical
+there is a bug in the calendar that needs to be fixed.,technical
+i need a refund for the duplicate payment of $120.,billing
+do you offer a discount for students or non profits?,general
+my account is locked after too many login attempts.,account
+i get an error code 500 when i try to log in.,account
+i need a refund for the duplicate payment of $49.,billing
+i would like to share some feedback about your service.,general
+the application is running slow and freezing frequently.,technical
+i need a refund for the duplicate payment of $5.,billing
+is there a mobile app available for calendar?,general
+there is a bug in the settings that needs to be fixed.,technical
+the api is returning a 500 error when i make a request.,technical
+the export button does nothing and throws error null_ref.,account
+the app crashes every time i open the reports page.,account
+there is a bug in the billing that needs to be fixed.,account
+is there a mobile app available for calendar?,general
+can you tell me more about the enterprise plan features?,general
+the api is returning a 500 error when i make a request.,technical
+what are your customer support working hours?,general
+the export button does nothing and throws error timeout.,general
+can you tell me more about the enterprise plan features?,technical
+there is a bug in the settings that needs to be fixed.,technical
+there is a bug in the reports that needs to be fixed.,technical
+why is my invoice higher than the basic plan price?,account
+there is a bug in the calendar that needs to be fixed.,technical
+there is an unexpected fee of $19.99 on my latest bill.,general
+there is an unexpected fee of $49 on my latest bill.,billing
+i was charged $49 twice on my visa card this month.,billing
+i need a refund for the duplicate payment of $120.,billing
+my account is locked after too many login attempts.,account
+there is an unexpected fee of $19.99 on my latest bill.,billing
