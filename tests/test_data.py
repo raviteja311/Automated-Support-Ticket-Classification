@@ -1,5 +1,6 @@
-from ticket_triage.data.generate import generate
-from ticket_triage.data.preprocess import clean_text
+from automated_support_ticket_classification.data.generate import generate
+from automated_support_ticket_classification.data.preprocess import clean_text
+
 
 def test_generate_shape_and_columns():
     df = generate(n_samples=100, seed=0)

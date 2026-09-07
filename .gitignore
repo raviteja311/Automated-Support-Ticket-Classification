@@ -156,6 +156,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+MLOps/
+
+# Generated model artifacts
+models/*.joblib
+metrics/*.json
 
 # Spyder project settings
 .spyderproject
