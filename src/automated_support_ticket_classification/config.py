@@ -3,7 +3,15 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, ConfigDict
 
-PARAMS_PATH = Path("params.yaml")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PARAMS_PATH = PROJECT_ROOT / "params.yaml"
+
+
+def _resolve_project_path(value: str | Path) -> str:
+    path = Path(value)
+    if path.is_absolute():
+        return str(path)
+    return str((PROJECT_ROOT / path).resolve())
 
 
 class DataConfig(BaseModel):
@@ -38,7 +46,17 @@ class Config(BaseModel):
     evaluate: EvaluateConfig
 
 
-def load_config(path: Path = PARAMS_PATH) -> Config:
-    with open(path, encoding="utf-8") as f:
+def load_config(path: str | Path = PARAMS_PATH) -> Config:
+    config_path = Path(path)
+    if not config_path.is_absolute():
+        config_path = PROJECT_ROOT / config_path
+
+    with open(config_path, encoding="utf-8") as f:
         raw = yaml.safe_load(f)
-    return Config(**raw)
+
+    cfg = Config(**raw)
+    cfg.data.raw_path = _resolve_project_path(cfg.data.raw_path)
+    cfg.data.processed_dir = _resolve_project_path(cfg.data.processed_dir)
+    cfg.model.model_path = _resolve_project_path(cfg.model.model_path)
+    cfg.evaluate.metrics_path = _resolve_project_path(cfg.evaluate.metrics_path)
+    return cfg
