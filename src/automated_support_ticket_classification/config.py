@@ -1,12 +1,13 @@
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 PARAMS_PATH = Path("params.yaml")
 
 
 class DataConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     raw_path: str
     processed_dir: str
     n_samples: int
@@ -15,6 +16,8 @@ class DataConfig(BaseModel):
 
 
 class ModelConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     max_features: int
     ngram_max: int
     C: float
@@ -23,10 +26,13 @@ class ModelConfig(BaseModel):
 
 
 class EvaluateConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     metrics_path: str
 
 
 class Config(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     data: DataConfig
     model: ModelConfig
     evaluate: EvaluateConfig
