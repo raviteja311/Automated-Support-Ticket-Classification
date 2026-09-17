@@ -158,9 +158,20 @@ env.bak/
 venv.bak/
 MLOps/
 
-# Generated model artifacts
-models/*.joblib
-metrics/*.json
+# Data and model artifacts: DVC-tracked, deliberately not in Git.
+# Ignore the contents rather than the directories, so the .gitkeep
+# placeholders stay visible (Git will not descend into an ignored dir,
+# so a negation inside one would never be reached).
+/data/raw/*
+/data/processed/*
+!/data/raw/.gitkeep
+!/data/processed/.gitkeep
+/models/*
+!/models/.gitkeep
+
+# metrics/metrics.json is deliberately NOT ignored: Day 12 wants it in
+# PR diffs, and the Day 16 DVC stage declares it with cache: false,
+# which means Git owns the file rather than DVC.
 
 # Spyder project settings
 .spyderproject

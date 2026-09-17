@@ -1,15 +1,9 @@
 import json
-import sys
 from pathlib import Path
 
 import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, f1_score
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-SRC_DIR = PROJECT_ROOT / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
 
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.logger import get_logger
