@@ -17,23 +17,25 @@ TEMPLATES = {
         "There is an unexpected fee of {amount} on my latest bill.",
     ],
     "technical": [
-        "The application is running slow and freezing frequently.",
-        "I am experiencing issues with the {feature} functionality.",
-        "The API is returning a {code} error when I make a request.",
-        "There is a bug in the {feature} that needs to be fixed.",
-        "The software is not compatible with my operating system.",
-    ],
-    "account": [
         "The app crashes every time I open the {feature} page.",
         "I get an error code {code} when I try to log in.",
         "The dashboard is not loading after the latest update.",
         "Sync keeps failing between my phone and the web {feature}.",
         "The export button does nothing and throws error {code}.",
+    ],
+    "account": [
         "I cannot reset my password, the email never arrives.",
         "Please help me change the email address on my account.",
         "My account is locked after too many login attempts.",
         "I want to delete my account and all of my data.",
         "How do I enable two factor authentication on my profile?",
+    ],
+    "shipping": [
+        "My order {order} has not arrived after two weeks.",
+        "The tracking number for order {order} shows no updates.",
+        "I received the wrong item in shipment {order}.",
+        "Can I change the delivery address for order {order}?",
+        "The package for order {order} arrived damaged.",
     ],
     "general": [
         "Do you offer a discount for students or non profits?",

@@ -16,3 +16,10 @@ def test_generate_is_reproducible():
 
 def test_clean_text_lowercases_and_collapses_spaces():
     assert clean_text("  Hello   WORLD  ") == "hello world"
+
+
+def test_generate_covers_all_five_categories():
+    # Guards against the page-break transcription bug that dropped the
+    # shipping templates and merged technical into account (see E2).
+    df = generate(n_samples=500, seed=0)
+    assert set(df["label"]) == {"billing", "technical", "account", "shipping", "general"}
