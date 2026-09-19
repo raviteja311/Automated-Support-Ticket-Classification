@@ -1,0 +1,54 @@
+stages:
+  generate:
+    cmd: python -m automated_support_ticket_classification.data.generate
+    deps:
+      - src/automated_support_ticket_classification/data/generate.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+    params:
+      - data.n_samples
+      - data.random_state
+    outs:
+      - data/raw/tickets.csv
+
+  preprocess:
+    cmd: python -m automated_support_ticket_classification.data.preprocess
+    deps:
+      - src/automated_support_ticket_classification/data/preprocess.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - data/raw/tickets.csv
+    params:
+      - data.test_size
+      - data.random_state
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  train:
+    cmd: python -m automated_support_ticket_classification.models.train
+    deps:
+      - src/automated_support_ticket_classification/models/train.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+    params:
+      - model.max_features
+      - model.ngram_max
+      - model.C
+      - model.max_iter
+    outs:
+      - models/model.joblib
+
+  evaluate:
+    cmd: python -m automated_support_ticket_classification.models.evaluate
+    deps:
+      - src/automated_support_ticket_classification/models/evaluate.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - models/model.joblib
+      - data/processed/test.csv
+    metrics:
+      - metrics/metrics.json:
+          cache: false
