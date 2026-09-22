@@ -1,0 +1,28 @@
+.git
+.gitignore
+.github
+
+# This project's virtual environment is named MLOps, not .venv.
+# Without this line the whole environment is sent as build context.
+MLOps
+.venv
+venv
+
+__pycache__
+*.pyc
+
+# Regenerated inside the image by the model-bake step
+data/
+models/
+metrics/
+
+mlruns/
+mlartifacts/
+tests/
+docs/
+notebooks/
+.dvc/cache
+.dvc/tmp
+.pytest_cache
+.ruff_cache
+README.md

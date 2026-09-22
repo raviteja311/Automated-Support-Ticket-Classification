@@ -16,3 +16,9 @@ prometheus-fastapi-instrumentator==7.0.0
 # pathspec.patterns.gitignore.spec. Without this pin pip resolves
 # pathspec 1.x and every dvc command fails on import.
 pathspec==0.12.1
+
+# scipy 1.18 dropped the lbfgs "iprint" option that every scikit-learn
+# release still sends, producing an OptimizeWarning on every model fit.
+# Verified: iprint is accepted through scipy 1.17.0 and gone in 1.18.1.
+scipy<1.18
+numpy<3

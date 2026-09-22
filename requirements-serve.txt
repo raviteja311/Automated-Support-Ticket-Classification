@@ -1,0 +1,16 @@
+# Runtime-only dependencies for the Docker image.
+#
+# Deliberately excludes mlflow and dvc. Neither is used at serving time:
+# train.py imports mlflow inside a try/except and DISABLE_MLFLOW=1 is set
+# in the image, and DVC is a developer tool. Installing them anyway would
+# add a large dependency tree to an image we describe as lean.
+scikit-learn==1.5.2
+scipy<1.18
+numpy<3
+pandas==2.2.3
+joblib==1.4.2
+PyYAML==6.0.2
+pydantic==2.9.2
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+prometheus-fastapi-instrumentator==7.0.0
