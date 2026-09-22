@@ -21,6 +21,15 @@ def get_model():
     return joblib.load(cfg.model.model_path)
 
 
+@app.get("/")
+def root() -> dict:
+    return {
+        "service": "automated-support-ticket-classification",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
