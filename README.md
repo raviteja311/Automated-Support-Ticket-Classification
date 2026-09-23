@@ -1,5 +1,9 @@
 # Automated Support Ticket Classification
 
+[![CI](https://github.com/raviteja311/Automated-Support-Ticket-Classification/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/Automated-Support-Ticket-Classification/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 An end-to-end MLOps service that classifies customer support tickets into
 billing, technical, account, shipping, and general categories.
 

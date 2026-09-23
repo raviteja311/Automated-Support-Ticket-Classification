@@ -10,9 +10,9 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           # Matches the Dockerfile and the local venv. Three environments,
           # one interpreter version.
@@ -37,3 +37,24 @@ jobs:
       # a small one on demand, which is what makes the suite self-sufficient.
       - name: Tests
         run: pytest
+
+  docker-build:
+    runs-on: ubuntu-latest
+    # Only build once the cheap checks pass. Lint takes seconds; this build
+    # trains a model, so there is no point running it on failing code.
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build -t automated-support-ticket-classification:ci .
+
+      - name: Smoke test the image
+        run: |
+          docker run -d --name ci-api -p 8000:8000 automated-support-ticket-classification:ci
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/health && break
+            sleep 2
+          done
+          curl -sf http://127.0.0.1:8000/health | grep -q '"status":"ok"'
+          docker rm -f ci-api
