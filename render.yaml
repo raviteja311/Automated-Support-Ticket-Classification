@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: automated-support-ticket-classification
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    # Render polls this before routing traffic to a new instance, so a
+    # broken deploy never receives requests.
+    healthCheckPath: /health
+    # Every merge to main ships. This is what makes Day 29's smoke test
+    # worth having.
+    autoDeploy: true
+    envVars:
+      # MLflow is not installed in the runtime image (requirements-serve.txt),
+      # but set the flag explicitly so the intent is visible in config
+      # rather than implied by an absent dependency.
+      - key: DISABLE_MLFLOW
+        value: "1"
