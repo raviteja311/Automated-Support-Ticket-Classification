@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Matches the Dockerfile and the local venv. Three environments,
+          # one interpreter version.
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e .
+
+      # Format before lint: it is the cheaper check and the one that fails
+      # most often, so it reports first.
+      - name: Format check
+        run: ruff format --check .
+
+      - name: Lint
+        run: ruff check .
+
+      # No model artifact exists on a fresh runner. tests/conftest.py builds
+      # a small one on demand, which is what makes the suite self-sufficient.
+      - name: Tests
+        run: pytest
