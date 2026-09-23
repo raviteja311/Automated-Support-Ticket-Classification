@@ -1,11 +1,13 @@
 [project]
 name = "automated_support_ticket_classification"
 version = "0.1.0"
-requires-python = ">=3.11"
-[build-system]
 description = "Production-grade MLOps service that classifies customer support tickets."
+requires-python = ">=3.11"
+
+[build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -13,6 +15,9 @@ where = ["src"]
 line-length = 100
 target-version = "py311"
 
+# MLOps is this project's virtual environment. Ruff only auto-excludes
+# conventional names such as .venv, so it must be listed explicitly or
+# ruff lints the whole of site-packages.
 exclude = [
     ".git",
     ".venv",
@@ -31,3 +36,10 @@ select = ["E", "F", "I", "UP", "B"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
+# MLflow 2.18 still uses pydantic v1 style validators, so pydantic 2.9
+# warns about each one. Not our code, and nothing we write silences it at
+# the source. Filtering it keeps real warnings from our own code visible.
+filterwarnings = [
+    "ignore::DeprecationWarning:mlflow.*",
+    "ignore:Pydantic V1 style.*:UserWarning",
+]
