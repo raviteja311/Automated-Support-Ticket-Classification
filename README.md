@@ -59,7 +59,7 @@ pip install -r requirements-dev.txt
 pip install -e .
 
 dvc repro          # generate -> preprocess -> train -> evaluate
-.un.ps1          # starts the API and opens the test page
+.\run.ps1          # starts the API and opens the test page
 ```
 
 `run.ps1` finds the virtual environment whether or not it is activated, refuses
@@ -67,8 +67,8 @@ to start if the port is busy, waits until the server actually answers, then
 opens http://127.0.0.1:8000/ui in your browser. Press Ctrl+C to stop it.
 
 ```powershell
-.un.ps1 -Port 8010      # serve somewhere else
-.un.ps1 -NoBrowser      # start without opening a browser
+.\run.ps1 -Port 8010      # serve somewhere else
+.\run.ps1 -NoBrowser      # start without opening a browser
 ```
 
 Double-clicking `run.cmd` does the same thing, for when you would rather not
@@ -130,9 +130,9 @@ stages fail with `ModuleNotFoundError`.
 pytest
 ```
 
-13 tests covering data generation, preprocessing, the model pipeline, and the
-API. `tests/conftest.py` builds a model on demand when none exists, so the suite
-is self-sufficient on a clean CI runner.
+15 tests covering data generation, preprocessing, the model pipeline, the API
+and the test page. `tests/conftest.py` builds a model on demand when none
+exists, so the suite is self-sufficient on a clean CI runner.
 
 ## Docker
 
@@ -171,8 +171,9 @@ src/automated_support_ticket_classification/
   logger.py        shared logging utility
   data/            generate.py, preprocess.py
   models/          train.py, evaluate.py
-  api/             schemas.py, app.py
+  api/             schemas.py, app.py, ui.py (the test page)
 tests/             unit and API tests plus the model fixture
+run.ps1 / run.cmd  start the API and open the test page
 params.yaml        every hyperparameter and path
 dvc.yaml/.lock     pipeline definition and reproducibility hashes
 Dockerfile         multi-stage build, model baked in
