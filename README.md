@@ -58,11 +58,27 @@ python -m venv .venv
 pip install -r requirements-dev.txt
 pip install -e .
 
-dvc repro                       # generate -> preprocess -> train -> evaluate
-uvicorn automated_support_ticket_classification.api.app:app --reload
+dvc repro          # generate -> preprocess -> train -> evaluate
+.un.ps1          # starts the API and opens the test page
 ```
 
-Open http://127.0.0.1:8000/docs
+`run.ps1` finds the virtual environment whether or not it is activated, refuses
+to start if the port is busy, waits until the server actually answers, then
+opens http://127.0.0.1:8000/ui in your browser. Press Ctrl+C to stop it.
+
+```powershell
+.un.ps1 -Port 8010      # serve somewhere else
+.un.ps1 -NoBrowser      # start without opening a browser
+```
+
+Double-clicking `run.cmd` does the same thing, for when you would rather not
+open a terminal first.
+
+To start it by hand instead:
+
+```powershell
+uvicorn automated_support_ticket_classification.api.app:app
+```
 
 ## Call the API
 
