@@ -2,4 +2,8 @@
 pytest==8.3.3
 httpx==0.27.2
 ruff==0.7.4
-pre-commit==4.0.1evidently==0.7.23
+pre-commit==4.0.1
+
+# Drift monitoring. Dev-only: the runtime image never computes drift.
+evidently==0.7.23
+
