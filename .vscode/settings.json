@@ -1,0 +1,28 @@
+{
+  // This project's virtual environment is named MLOps, not .venv, so VS Code
+  // will not find it on its own.
+  "python.defaultInterpreterPath": "${workspaceFolder}/MLOps/Scripts/python.exe",
+
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+
+  // ruff is the formatter and the linter; it replaces black, isort and flake8.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": { "source.organizeImports.ruff": "explicit" }
+  },
+
+  // Keep the explorer readable: these are generated or vendored.
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "MLOps": true,
+    "mlruns": true,
+    "docs/build": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}

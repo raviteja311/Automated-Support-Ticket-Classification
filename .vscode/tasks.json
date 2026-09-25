@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run the app (opens /ui)",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File ./run.ps1",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Tests",
+      "type": "shell",
+      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m pytest",
+      "problemMatcher": [],
+      "group": { "kind": "test", "isDefault": true }
+    },
+    {
+      "label": "Lint and format",
+      "type": "shell",
+      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m ruff format . ; ${workspaceFolder}/MLOps/Scripts/python.exe -m ruff check . --fix",
+      "problemMatcher": []
+    },
+    {
+      "label": "Reproduce the pipeline (dvc repro)",
+      "type": "shell",
+      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m dvc repro",
+      "problemMatcher": []
+    },
+    {
+      "label": "MLflow UI",
+      "type": "shell",
+      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m mlflow ui",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    }
+  ]
+}

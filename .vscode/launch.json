@@ -1,0 +1,61 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API (debug, reload off)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "automated_support_ticket_classification.api.app:app",
+        "--host", "127.0.0.1",
+        "--port", "8000"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      // --reload spawns a child process that breakpoints do not reach, so it
+      // is deliberately off here. Use run.ps1 when you want auto-reload.
+      "justMyCode": false
+    },
+    {
+      "name": "Pipeline: generate",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "automated_support_ticket_classification.data.generate",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Pipeline: train",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "automated_support_ticket_classification.models.train",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Pipeline: evaluate",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "automated_support_ticket_classification.models.evaluate",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Promote model (gated)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "automated_support_ticket_classification.models.promote",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Drift report",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "automated_support_ticket_classification.monitoring.drift",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}
