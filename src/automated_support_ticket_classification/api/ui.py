@@ -100,11 +100,14 @@ INDEX_HTML = """<!DOCTYPE html>
 
 <script>
 const EXAMPLES = [
-  ["billing",   "I was charged $49 twice on my Visa card this month"],
-  ["technical", "The app crashes every time I open the reports page"],
-  ["account",   "I cannot reset my password, the email never arrives"],
-  ["shipping",  "My order #10231 has not arrived after two weeks"],
-  ["general",   "Do you offer a discount for students or non profits"],
+  // Drawn from the banking77 domain the model is actually trained on.
+  // Earlier retail-flavoured examples (orders, app crashes, student discounts)
+  // misclassified once the corpus changed, which made the demo look broken.
+  ["billing",   "Why was I charged a fee on a cash withdrawal?"],
+  ["technical", "I think my transfer was declined, but why?"],
+  ["account",   "What is the need to verify my identity?"],
+  ["shipping",  "Can I track when my card will be delivered?"],
+  ["general",   "Are both Visa and Mastercard accepted?"],
 ];
 
 const $ = (id) => document.getElementById(id);
