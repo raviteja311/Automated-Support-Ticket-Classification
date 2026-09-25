@@ -143,6 +143,25 @@ It moves the `production` alias only if the candidate beats the incumbent on
 macro F1, and only compares models trained on the same corpus. Exits 2 when
 nothing ships, so CI can branch on it.
 
+## Drift monitoring
+
+Prometheus answers whether the service is healthy. It cannot tell you the
+service is cheerfully returning 200s while the traffic has changed underneath
+it. That is what this measures:
+
+```powershell
+python -m automated_support_ticket_classification.monitoring.drift
+```
+
+Writes `metrics/drift.json` for machines and `metrics/drift_report.html` for
+humans. It compares the training split against the live prediction log the API
+writes to `data/predictions.jsonl`, falling back to the test split, loudly, when
+no traffic has been served yet.
+
+Two signals are tracked separately, because they fail differently: **label
+drift** means the model changed its mind about the mix, **text drift** means the
+input changed first, which is the earlier warning.
+
 ## Reproduce the pipeline
 
 ```powershell
@@ -160,8 +179,8 @@ stages fail with `ModuleNotFoundError`.
 pytest
 ```
 
-23 tests covering data generation, the corpus mapping, preprocessing, the model
-pipeline, the promotion gate, the API and the test page. `tests/conftest.py` builds a model on demand when none
+27 tests covering data generation, the corpus mapping, preprocessing, the model
+pipeline, the promotion gate, drift summarising, the API and the test page. `tests/conftest.py` builds a model on demand when none
 exists, so the suite is self-sufficient on a clean CI runner.
 
 ## Docker

@@ -1,0 +1,22 @@
+{
+  "columns": {
+    "label": {
+      "score": 0.176446,
+      "threshold": 0.1,
+      "method": "Jensen-Shannon distance",
+      "drifted": true
+    },
+    "text": {
+      "score": 0.498567,
+      "threshold": 0.55,
+      "method": "Absolute text content drift",
+      "drifted": false
+    }
+  },
+  "columns_drifted": 1,
+  "drift_share": 0.5,
+  "dataset_drifted": false,
+  "columns_checked": 2,
+  "reference_rows": 10466,
+  "current_rows": 5
+}

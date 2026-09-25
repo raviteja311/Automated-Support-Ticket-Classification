@@ -1,4 +1,6 @@
+import json
 from functools import lru_cache
+from pathlib import Path
 
 import joblib
 from fastapi import FastAPI, HTTPException
@@ -48,6 +50,22 @@ def ui() -> str:
     return INDEX_HTML
 
 
+def _log_prediction(text: str, label: str) -> None:
+    """Append one prediction to the log the drift monitor reads.
+
+    Best effort on purpose: a monitoring side-effect must never be able to
+    fail a request. If the disk is full the user still gets their answer.
+    """
+    try:
+        cfg = load_config()
+        path = Path(cfg.data.processed_dir).parent / "predictions.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"text": text, "label": label}) + "\n")
+    except Exception:  # noqa: BLE001
+        logger.warning("Could not write to the prediction log", exc_info=False)
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
@@ -68,4 +86,9 @@ def predict(request: TicketRequest) -> TicketResponse:
     # If they ever are not, fail loudly rather than silently truncating.
     scores = {cls: float(p) for cls, p in zip(model.classes_, proba, strict=True)}
     best = max(scores, key=scores.get)
+
+    # Feeds monitoring/drift.py. Without a record of what the model actually
+    # saw in production, drift cannot be measured at all.
+    _log_prediction(text, best)
+
     return TicketResponse(label=best, confidence=scores[best], all_scores=scores)

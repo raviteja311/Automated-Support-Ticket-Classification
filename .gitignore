@@ -241,3 +241,7 @@ docs/build/
 
 # banking77 corpus cache: downloaded on demand, not part of the repo
 /data/external/
+
+# Prediction log feeding the drift monitor
+/data/predictions.jsonl
+/metrics/drift_report.html
