@@ -1,0 +1,56 @@
+name: Smoke Test
+
+on:
+  workflow_dispatch: # run on demand from the Actions tab
+  schedule:
+    - cron: "0 8 * * *" # daily at 08:00 UTC
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      # Fail with a readable message rather than curling an empty URL,
+      # which produces a confusing exit code instead of a cause.
+      - name: Check the service URL is configured
+        env:
+          SERVICE_URL: ${{ secrets.SERVICE_URL }}
+        run: |
+          if [ -z "$SERVICE_URL" ]; then
+            echo "::error::SERVICE_URL secret is not set."
+            echo "Add it under Settings > Secrets and variables > Actions,"
+            echo "set to the Render URL with no trailing slash."
+            exit 1
+          fi
+          echo "Target: $SERVICE_URL"
+
+      # A free Render instance sleeps when idle and a cold start can take
+      # well over a minute. A single request would fail most mornings and
+      # train you to ignore this workflow, so retry before declaring an
+      # outage.
+      - name: Check live /health
+        env:
+          SERVICE_URL: ${{ secrets.SERVICE_URL }}
+        run: |
+          for attempt in $(seq 1 10); do
+            code=$(curl -s -m 30 -o /dev/null -w "%{http_code}" "$SERVICE_URL/health" || echo "000")
+            echo "attempt $attempt: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "Service is healthy."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::/health did not return 200 after 10 attempts."
+          exit 1
+
+      # Health only proves the process is up. This proves the model loaded
+      # and the pipeline can actually classify.
+      - name: Check /predict returns a known label
+        env:
+          SERVICE_URL: ${{ secrets.SERVICE_URL }}
+        run: |
+          body=$(curl -s -m 30 -X POST "$SERVICE_URL/predict" \
+            -H "Content-Type: application/json" \
+            -d '{"text":"I need a refund for the duplicate payment"}')
+          echo "Response: $body"
+          echo "$body" | grep -qE '"label":"(billing|technical|account|shipping|general)"'
