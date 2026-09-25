@@ -81,7 +81,7 @@ def main() -> None:
 
         # Register every run. Promotion is a separate, gated decision:
         # see models/promote.py.
-        register_version(run_id, metrics)
+        register_version(run_id, metrics, data_source=cfg.data.source)
 
 
 if __name__ == "__main__":

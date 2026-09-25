@@ -21,6 +21,11 @@ class DataConfig(BaseModel):
     n_samples: int
     test_size: float
     random_state: int
+    # "synthetic" uses the seeded template generator; "banking77" uses a real
+    # support corpus. Defaulted so existing params.yaml files still load, and
+    # declared as a DVC param so switching corpus reruns the pipeline.
+    source: str = "synthetic"
+    cache_dir: str = "data/external"
 
 
 class ModelConfig(BaseModel):
@@ -57,6 +62,7 @@ def load_config(path: str | Path = PARAMS_PATH) -> Config:
     cfg = Config(**raw)
     cfg.data.raw_path = _resolve_project_path(cfg.data.raw_path)
     cfg.data.processed_dir = _resolve_project_path(cfg.data.processed_dir)
+    cfg.data.cache_dir = _resolve_project_path(cfg.data.cache_dir)
     cfg.model.model_path = _resolve_project_path(cfg.model.model_path)
     cfg.evaluate.metrics_path = _resolve_project_path(cfg.evaluate.metrics_path)
     return cfg

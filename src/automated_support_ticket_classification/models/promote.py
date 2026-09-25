@@ -47,7 +47,7 @@ def main() -> None:
         logger.error("Nothing registered as '%s'. Run training with MLflow enabled.", MODEL_NAME)
         sys.exit(1)
 
-    promoted = promote_if_better(version, candidate)
+    promoted = promote_if_better(version, candidate, data_source=cfg.data.source)
 
     # Exit non-zero when nothing shipped, so a CI step can branch on it without
     # parsing logs. Not a failure: "the incumbent is still better" is a result.

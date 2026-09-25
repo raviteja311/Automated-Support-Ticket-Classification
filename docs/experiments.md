@@ -106,3 +106,104 @@ def test_generate_covers_all_five_categories():
     df = generate(n_samples=500, seed=0)
     assert set(df["label"]) == {"billing", "technical", "account", "shipping", "general"}
 ```
+
+---
+
+## E3 - Real support text, and bigrams finally earning their keep
+
+**Motivation.** E1 compared unigrams against bigrams on synthetic template data
+and found no difference at all. That is a suspicious result: it says the feature
+space does not matter, which is really a statement about the data rather than
+the model. Template text has no phrase-level ambiguity for bigrams to resolve.
+The honest way to test the question is on text a human wrote.
+
+**Choosing a corpus.** The obvious candidate, the CFPB consumer-complaints
+database, turned out to be unusable. Its 347 MB bulk export contains no
+complaint narrative, and neither does its search API, which rejects
+`complaint_what_happened` as an invalid field. Both were checked directly. The
+dataset has categories but no text, so there is nothing to classify.
+
+Replaced with **banking77**: 13,083 real customer-support messages labelled with
+77 fine-grained intents, 1 MB. Its intents fold onto this project's five
+categories, including genuine card-delivery intents, which is what makes a
+`shipping` class possible at all. The mapping lives in `data/banking77.py` with
+borderline calls marked; it is a judgement and a reviewer may disagree with any
+of them.
+
+**Resulting class balance.** Deliberately not resampled:
+
+| class | share |
+|---|---|
+| billing | 37.8% |
+| account | 22.6% |
+| technical | 16.6% |
+| general | 15.4% |
+| shipping | 7.6% |
+
+Real support traffic is skewed. Flattening it would hide exactly the effect
+macro F1 exists to measure.
+
+**Method.** `data.source` is now a DVC-tracked param, so switching corpus reruns
+the pipeline. Three forced runs on identical data, one variable changed:
+
+| ngram_max | accuracy | f1_macro | decision |
+|-----------|----------|----------|----------|
+| 1         | 0.9201   | 0.9100   | baseline |
+| 2         | **0.9282** | **0.9171** | **winner, adopted** |
+| 3         | 0.9251   | 0.9139   | worse than 2 |
+
+**Result.** Bigrams win: +0.81pp accuracy, +0.71pp macro F1. Trigrams give the
+gain back, which is the usual shape of an n-gram sweep: more context helps until
+the features get too sparse to estimate.
+
+**Decision.** `ngram_max: 2`. This reverses E1, and the reversal is the point.
+The same experiment on different data gives a different answer, so E1's
+conclusion was never about bigrams, it was about the dataset. An experiment on
+data that cannot distinguish two options will always report that the two options
+are the same.
+
+**Per-class, on real text:**
+
+| class | precision | recall | f1 | support |
+|-----------|-----------|--------|-------|---------|
+| billing   | 0.941 | 0.970 | 0.955 | 989 |
+| technical | 0.919 | 0.915 | 0.917 | 435 |
+| account   | 0.932 | 0.927 | 0.930 | 592 |
+| shipping  | 0.930 | 0.874 | 0.901 | 198 |
+| general   | 0.897 | 0.868 | 0.883 | 403 |
+
+`general` is now the weakest class, which makes sense: it is the residual
+category, holding whatever did not fit elsewhere, so it has the least coherent
+vocabulary. On synthetic data it scored 0.922 because the templates gave it a
+tidy word list no real catch-all category has.
+
+Note the scores are *lower* than the synthetic 0.9300 / 0.9297. That is expected
+and is the whole point. The synthetic number measured how well a model can learn
+five template sets, which is not a hard question.
+
+---
+
+## E4 - The promotion gate was comparing incomparable numbers
+
+**Not a planned experiment.** Found by running the E3 model through the
+promotion gate added alongside the model registry.
+
+**Symptom.** The real-data model scored macro F1 0.9171. The gate refused to
+promote it, because production held a synthetic-data model scoring 0.9297.
+
+**Why that is wrong.** Those two numbers come from different test sets. One
+measures performance on 2,617 real support messages, the other on 600 generated
+from templates. Comparing them is meaningless, and the gate was confidently
+making a shipping decision on a meaningless comparison. It happened to refuse,
+which looks like caution but was luck: had the synthetic number been lower, it
+would have shipped the worse model just as confidently.
+
+**Fix.** Every registered version is now tagged with the corpus that produced
+its score, and the gate only compares like with like. When the corpus changes,
+the incumbent is not evidence of anything, so the candidate takes over on the
+new corpus and future comparisons proceed normally from there.
+
+**Lesson.** A metric gate is only as meaningful as the comparability of the two
+numbers it compares. "Is the new model better?" is not answerable unless both
+models were measured the same way, and nothing in a plain float carries that
+context. Tag the score with what produced it, or the gate is theatre.

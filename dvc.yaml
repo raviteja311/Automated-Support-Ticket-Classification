@@ -3,11 +3,13 @@ stages:
     cmd: python -m automated_support_ticket_classification.data.generate
     deps:
       - src/automated_support_ticket_classification/data/generate.py
+      - src/automated_support_ticket_classification/data/banking77.py
       - src/automated_support_ticket_classification/config.py
       - src/automated_support_ticket_classification/logger.py
     params:
       - data.n_samples
       - data.random_state
+      - data.source
     outs:
       - data/raw/tickets.csv
 

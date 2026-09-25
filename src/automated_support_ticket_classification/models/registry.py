@@ -30,7 +30,9 @@ def _client():
     return MlflowClient()
 
 
-def register_version(run_id: str, metrics: dict[str, float]) -> str | None:
+def register_version(
+    run_id: str, metrics: dict[str, float], data_source: str = "unknown"
+) -> str | None:
     """Register the model logged under `run_id` and tag it with its metrics.
 
     Returns the new version number, or None if MLflow is unavailable.
@@ -47,22 +49,30 @@ def register_version(run_id: str, metrics: dict[str, float]) -> str | None:
     client = _client()
     for key, value in metrics.items():
         client.set_model_version_tag(MODEL_NAME, result.version, key, f"{value:.6f}")
+    # Which corpus produced this score. Without it the gate would compare
+    # numbers from different test sets, which is meaningless.
+    client.set_model_version_tag(MODEL_NAME, result.version, "data_source", data_source)
 
     logger.info("Registered %s version %s", MODEL_NAME, result.version)
     return result.version
 
 
-def production_metric(metric: str = GATE_METRIC) -> float | None:
-    """Return the gate metric of the current production version, if any."""
+def production_metric(metric: str = GATE_METRIC) -> tuple[float | None, str | None]:
+    """Return (gate metric, data source) of the current production version.
+
+    Both are None when nothing is in production. The data source comes back
+    with the metric because a score is only meaningful alongside the test set
+    that produced it.
+    """
     try:
         version = _client().get_model_version_by_alias(MODEL_NAME, PRODUCTION_ALIAS)
     except Exception:
         # No registered model, or no production alias yet. Both mean the same
         # thing to a caller: there is nothing to beat.
-        return None
+        return None, None
 
     raw = version.tags.get(metric)
-    return float(raw) if raw is not None else None
+    return (float(raw) if raw is not None else None), version.tags.get("data_source")
 
 
 def promote(version: str) -> None:
@@ -71,14 +81,33 @@ def promote(version: str) -> None:
     logger.info("Promoted %s version %s to '%s'", MODEL_NAME, version, PRODUCTION_ALIAS)
 
 
-def promote_if_better(version: str, candidate_metric: float, metric: str = GATE_METRIC) -> bool:
-    """Promote `version` only if it beats the incumbent. Returns whether it did.
+def promote_if_better(
+    version: str,
+    candidate_metric: float,
+    metric: str = GATE_METRIC,
+    data_source: str = "unknown",
+) -> bool:
+    """Promote `version` only if it beats a comparable incumbent.
 
-    A tie does not promote. Shipping a model that is merely equal costs a
-    deploy and gains nothing, and the incumbent has the advantage of already
-    being known to work.
+    A tie does not promote: shipping an equal model costs a deploy and gains
+    nothing, and the incumbent is already known to work.
+
+    Comparable means trained on the same corpus. Scores from different test
+    sets are not on the same scale, so when the corpus changes the incumbent
+    is not evidence of anything and the candidate takes over.
     """
-    incumbent = production_metric(metric)
+    incumbent, incumbent_source = production_metric(metric)
+
+    if incumbent is not None and incumbent_source != data_source:
+        logger.info(
+            "Production was trained on %r and the candidate on %r; the scores are "
+            "not comparable, so promoting version %s on the new corpus",
+            incumbent_source,
+            data_source,
+            version,
+        )
+        promote(version)
+        return True
 
     if incumbent is None:
         logger.info("No production model yet; promoting version %s by default", version)

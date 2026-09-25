@@ -23,3 +23,19 @@ def test_generate_covers_all_five_categories():
     # shipping templates and merged technical into account (see E2).
     df = generate(n_samples=500, seed=0)
     assert set(df["label"]) == {"billing", "technical", "account", "shipping", "general"}
+
+
+def test_banking77_mapping_is_complete_and_uses_the_five_categories():
+    """Every banking77 intent maps, and only onto the five known categories.
+
+    Guards the same failure mode as D1 from the other direction: an upstream
+    intent appearing with no mapping would silently drop rows.
+    """
+    from automated_support_ticket_classification.data.banking77 import (
+        CATEGORIES,
+        INTENT_MAP,
+    )
+
+    assert len(INTENT_MAP) == 77
+    assert set(INTENT_MAP.values()) == set(CATEGORIES)
+    assert set(CATEGORIES) == {"billing", "technical", "account", "shipping", "general"}

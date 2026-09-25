@@ -81,7 +81,24 @@ def generate(n_samples: int, seed: int) -> pd.DataFrame:
 
 def main() -> None:
     cfg = load_config()
-    df = generate(cfg.data.n_samples, cfg.data.random_state)
+
+    if cfg.data.source == "banking77":
+        # Real support text. Requires network on first run, then cached.
+        from automated_support_ticket_classification.data import banking77
+
+        df = banking77.load(
+            Path(cfg.data.cache_dir),
+            n_samples=None,
+            seed=cfg.data.random_state,
+        )
+        logger.info("Loaded %d rows from the banking77 corpus", len(df))
+    elif cfg.data.source == "synthetic":
+        df = generate(cfg.data.n_samples, cfg.data.random_state)
+    else:
+        raise ValueError(
+            f"Unknown data.source {cfg.data.source!r}; expected 'synthetic' or 'banking77'"
+        )
+
     out = Path(cfg.data.raw_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False)

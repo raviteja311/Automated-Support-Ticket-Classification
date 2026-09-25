@@ -43,9 +43,10 @@ Docker, GitHub Actions, pytest, ruff, Prometheus, Render.
 
 | Metric | Value |
 |---|---|
-| accuracy | 0.9300 |
-| macro F1 | 0.9297 |
+| accuracy | 0.9282 |
+| macro F1 | 0.9171 |
 | classes | 5 |
+| corpus | banking77, 13,083 real support messages |
 
 Per-class scores live in [metrics/metrics.json](metrics/metrics.json), which is
 Git-tracked so metric changes appear in pull request diffs.
@@ -113,6 +114,35 @@ One ticket per class, against the locally running service:
 | My order #10231 has not arrived after two weeks | shipping | 0.893 |
 | What are your customer support working hours | general | 0.866 |
 
+## Choosing a data source
+
+`params.yaml` selects the corpus, and it is a DVC-tracked param, so switching
+reruns the pipeline:
+
+```yaml
+data:
+  source: banking77   # or: synthetic
+```
+
+`banking77` is 13,083 real customer-support messages, downloaded on first use
+and cached under `data/external/`. `synthetic` is the seeded template generator,
+which needs no network and is what CI and the Docker build use.
+
+The mapping from banking77's 77 intents onto the five categories lives in
+`data/banking77.py`, with the borderline calls marked.
+
+## Promoting a model
+
+Training registers every run with MLflow. Promotion is separate and gated:
+
+```powershell
+python -m automated_support_ticket_classification.models.promote
+```
+
+It moves the `production` alias only if the candidate beats the incumbent on
+macro F1, and only compares models trained on the same corpus. Exits 2 when
+nothing ships, so CI can branch on it.
+
 ## Reproduce the pipeline
 
 ```powershell
@@ -130,8 +160,8 @@ stages fail with `ModuleNotFoundError`.
 pytest
 ```
 
-15 tests covering data generation, preprocessing, the model pipeline, the API
-and the test page. `tests/conftest.py` builds a model on demand when none
+23 tests covering data generation, the corpus mapping, preprocessing, the model
+pipeline, the promotion gate, the API and the test page. `tests/conftest.py` builds a model on demand when none
 exists, so the suite is self-sufficient on a clean CI runner.
 
 ## Docker

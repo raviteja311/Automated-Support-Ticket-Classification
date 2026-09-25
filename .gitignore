@@ -238,3 +238,6 @@ mlruns/
 # Guide PDF build sources. Kept locally so the PDF can be regenerated
 # cheaply; only the rendered PDF is tracked.
 docs/build/
+
+# banking77 corpus cache: downloaded on demand, not part of the repo
+/data/external/
