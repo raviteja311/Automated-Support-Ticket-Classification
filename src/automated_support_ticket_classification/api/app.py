@@ -2,9 +2,11 @@ from functools import lru_cache
 
 import joblib
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from automated_support_ticket_classification.api.schemas import TicketRequest, TicketResponse
+from automated_support_ticket_classification.api.ui import INDEX_HTML
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.data.preprocess import clean_text
 from automated_support_ticket_classification.logger import get_logger
@@ -30,9 +32,20 @@ def get_model():
 def root() -> dict:
     return {
         "service": "automated-support-ticket-classification",
+        "ui": "/ui",
         "docs": "/docs",
         "health": "/health",
     }
+
+
+@app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
+def ui() -> str:
+    """A small hand-written page for trying the classifier.
+
+    Excluded from the OpenAPI schema: it is a convenience for humans, not part
+    of the API contract that /docs describes.
+    """
+    return INDEX_HTML
 
 
 @app.get("/health")

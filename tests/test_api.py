@@ -43,3 +43,18 @@ def test_predict_rejects_whitespace_only_text():
     # case that actually exercises the guard in predict().
     response = client.post("/predict", json={"text": "   "})
     assert response.status_code == 422
+
+
+def test_ui_page_renders():
+    response = client.get("/ui")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    # The five example buttons are what make the page useful; if the label set
+    # ever drifts again (see D1) this catches it in the UI too.
+    for label in ("billing", "technical", "account", "shipping", "general"):
+        assert label in response.text
+
+
+def test_ui_is_not_in_the_openapi_schema():
+    # /ui is a convenience for humans, not part of the documented API contract.
+    assert "/ui" not in client.get("/openapi.json").json()["paths"]

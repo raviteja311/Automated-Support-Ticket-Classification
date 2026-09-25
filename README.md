@@ -77,8 +77,15 @@ label       confidence  all_scores
 billing     0.938       @{billing=0.938; technical=0.018; ...}
 ```
 
-Endpoints: `/` service info, `/health` liveness, `/predict` classification,
-`/docs` interactive docs, `/metrics` Prometheus.
+Endpoints: `/` service info, `/ui` test page, `/health` liveness,
+`/predict` classification, `/docs` interactive docs, `/metrics` Prometheus.
+
+### Try it in a browser
+
+Open **http://127.0.0.1:8000/ui** for a small test page: click an example
+ticket for each category, or paste your own, and see the predicted label with
+the full probability distribution as bars. No build step, no dependencies,
+the page is served straight from the app.
 
 One ticket per class, against the locally running service:
 
