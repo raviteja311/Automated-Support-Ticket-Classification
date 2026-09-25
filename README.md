@@ -10,7 +10,12 @@ label, a confidence score, and the full probability distribution.
 
 The machine learning is deliberately simple, a linear model that trains in
 seconds, so the engineering takes centre stage: reproducible pipelines, versioned
-data, experiment tracking, tests, containers, CI/CD and monitoring.
+data, experiment tracking, tests, containers, CI and monitoring.
+
+> **Runs locally.** This is a portfolio project, not a hosted service. Everything
+> below runs on your machine in a couple of commands. A `render.yaml` blueprint is
+> included so it *can* be deployed, but no public instance exists and none is
+> needed to see it work.
 
 ## Architecture
 
@@ -75,6 +80,16 @@ billing     0.938       @{billing=0.938; technical=0.018; ...}
 Endpoints: `/` service info, `/health` liveness, `/predict` classification,
 `/docs` interactive docs, `/metrics` Prometheus.
 
+One ticket per class, against the locally running service:
+
+| Ticket | Predicted | Confidence |
+|---|---|---|
+| I need a refund for the duplicate payment of $49 | billing | 0.938 |
+| The app crashes every time I open the reports page | technical | 0.902 |
+| I cannot reset my password, the email never arrives | account | 0.839 |
+| My order #10231 has not arrived after two weeks | shipping | 0.893 |
+| What are your customer support working hours | general | 0.866 |
+
 ## Reproduce the pipeline
 
 ```powershell
@@ -111,6 +126,19 @@ requests first.
 
 The runtime image installs `requirements-serve.txt`, which excludes MLflow and
 DVC. Neither is used at serving time, and omitting them keeps the image lean.
+
+Docker is optional. `uvicorn` in the Quickstart is enough to run and exercise the
+whole service; the image exists to prove the build is portable and to let CI
+verify it on a clean machine.
+
+## Deployment (optional, not used)
+
+`render.yaml` is a working blueprint for deploying the container to Render, and
+`.github/workflows/smoke.yml` is a post-deploy health check that reads a
+`SERVICE_URL` secret. Neither is active: this project runs locally by design, so
+there is no public instance and the smoke workflow is manual-only.
+
+If you do deploy, uncomment the schedule in `smoke.yml` and set the secret.
 
 ## Project layout
 

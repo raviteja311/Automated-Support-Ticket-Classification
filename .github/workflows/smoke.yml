@@ -1,9 +1,13 @@
 name: Smoke Test
 
 on:
-  workflow_dispatch: # run on demand from the Actions tab
-  schedule:
-    - cron: "0 8 * * *" # daily at 08:00 UTC
+  # Manual only. The daily schedule is commented out because this project
+  # runs locally and is not deployed, so a scheduled run would fail every
+  # morning on a missing SERVICE_URL and turn the Actions tab permanently
+  # red. Uncomment it if you ever deploy.
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 8 * * *"   # daily at 08:00 UTC
 
 jobs:
   smoke:
