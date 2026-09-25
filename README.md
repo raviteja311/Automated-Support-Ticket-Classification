@@ -5,38 +5,144 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 An end-to-end MLOps service that classifies customer support tickets into
-billing, technical, account, shipping, and general categories.
+**billing**, **technical**, **account**, **shipping** and **general**, returning a
+label, a confidence score, and the full probability distribution.
 
-## Run locally
+The machine learning is deliberately simple, a linear model that trains in
+seconds, so the engineering takes centre stage: reproducible pipelines, versioned
+data, experiment tracking, tests, containers, CI/CD and monitoring.
 
-    .\MLOps\Scripts\Activate.ps1
-    uvicorn automated_support_ticket_classification.api.app:app --reload
+## Architecture
 
-Then open http://127.0.0.1:8000/docs
+```
+generate -> preprocess -> train (MLflow) -> evaluate      [DVC pipeline]
+                                    |
+                              model.joblib
+                                    |
+                     FastAPI -> Docker -> GitHub Actions -> Render
+                                    |
+                              Prometheus (/metrics)
+```
 
-## Call the API from PowerShell
+DVC versions the data and model and makes the pipeline reproducible. MLflow
+records each run's params and metrics. The trained sklearn `Pipeline` ships as a
+single artifact, baked into the image at build time, so the container needs no
+external storage.
 
-    Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/predict `
-      -ContentType "application/json" -Body '{"text":"my invoice is wrong"}'
+## Tech stack
 
-Response:
+Python 3.12, scikit-learn, pandas, pydantic, DVC, MLflow, FastAPI, uvicorn,
+Docker, GitHub Actions, pytest, ruff, Prometheus, Render.
 
-    label       confidence  all_scores
-    -----       ----------  ----------
-    billing     0.938       @{billing=0.938; technical=0.018; ...}
+## Current model
+
+| Metric | Value |
+|---|---|
+| accuracy | 0.9300 |
+| macro F1 | 0.9297 |
+| classes | 5 |
+
+Per-class scores live in [metrics/metrics.json](metrics/metrics.json), which is
+Git-tracked so metric changes appear in pull request diffs.
+
+## Quickstart
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+pip install -e .
+
+dvc repro                       # generate -> preprocess -> train -> evaluate
+uvicorn automated_support_ticket_classification.api.app:app --reload
+```
+
+Open http://127.0.0.1:8000/docs
+
+## Call the API
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/predict `
+  -ContentType "application/json" -Body '{"text":"my invoice is wrong"}'
+```
+
+```
+label       confidence  all_scores
+-----       ----------  ----------
+billing     0.938       @{billing=0.938; technical=0.018; ...}
+```
+
+Endpoints: `/` service info, `/health` liveness, `/predict` classification,
+`/docs` interactive docs, `/metrics` Prometheus.
 
 ## Reproduce the pipeline
 
-    dvc repro          # generate -> preprocess -> train -> evaluate
-    dvc metrics show   # accuracy / f1
+```powershell
+dvc repro          # only stages whose inputs changed are rerun
+dvc metrics show   # accuracy, macro F1 and per-class scores
+dvc push           # send data and model to the configured remote
+```
 
 `dvc.yaml` invokes `python`, so run it from the activated environment or the
 stages fail with `ModuleNotFoundError`.
 
 ## Tests
 
-    pytest
+```powershell
+pytest
+```
+
+13 tests covering data generation, preprocessing, the model pipeline, and the
+API. `tests/conftest.py` builds a model on demand when none exists, so the suite
+is self-sufficient on a clean CI runner.
+
+## Docker
+
+```powershell
+docker build -t automated-support-ticket-classification .
+docker run -p 8000:8000 automated-support-ticket-classification
+
+# or the full stack, API plus Prometheus:
+docker compose up --build
+```
+
+Prometheus UI at http://127.0.0.1:9090. Counters start at zero, so send a few
+requests first.
+
+The runtime image installs `requirements-serve.txt`, which excludes MLflow and
+DVC. Neither is used at serving time, and omitting them keeps the image lean.
+
+## Project layout
+
+```
+src/automated_support_ticket_classification/
+  config.py        typed loader for params.yaml
+  logger.py        shared logging utility
+  data/            generate.py, preprocess.py
+  models/          train.py, evaluate.py
+  api/             schemas.py, app.py
+tests/             unit and API tests plus the model fixture
+params.yaml        every hyperparameter and path
+dvc.yaml/.lock     pipeline definition and reproducibility hashes
+Dockerfile         multi-stage build, model baked in
+docker-compose.yml api plus Prometheus
+render.yaml        deploy blueprint
+```
 
 ## Experiments
 
-See [docs/experiments.md](docs/experiments.md).
+[docs/experiments.md](docs/experiments.md) records each experiment, the decision
+taken, and the reasoning. It includes a data defect found by reading per-class
+metrics, where a missing class and a contaminated one were costing real accuracy.
+
+## Future improvements
+
+Swap in a transformer for messier real-world text, replace the synthetic
+generator with a real corpus, add an MLflow model registry with staged
+promotion, add drift and data-quality monitoring with Evidently and a Grafana
+dashboard, move serving to Kubernetes, and provision infrastructure with
+Terraform.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
