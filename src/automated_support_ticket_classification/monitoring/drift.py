@@ -35,6 +35,20 @@ logger = get_logger(__name__)
 # buried in a library is a threshold nobody reviews.
 DRIFT_SHARE_THRESHOLD = 0.5
 
+# Below this many rows of live traffic, no drift verdict is issued at all.
+#
+# Drift tests compare distributions, and a distribution estimated from a
+# handful of requests is mostly noise. Five predictions spread evenly across
+# five classes look wildly "drifted" against a training set that is 38% billing
+# and 8% shipping, purely because five is too few to estimate a share from.
+# Observed directly: a five-row sample reported label drift of 0.1764 against a
+# 0.10 threshold, which was an artifact and nothing else.
+#
+# 200 gives roughly 40 rows per class at the natural balance, which is enough
+# for the per-class shares to mean something. An alert that fires on the first
+# few requests after a deploy is an alert people learn to ignore.
+MIN_SAMPLE_ROWS = 200
+
 
 def load_predictions(path: Path) -> pd.DataFrame | None:
     """Read the API's prediction log, or None when nothing has been served."""
@@ -69,13 +83,14 @@ def build_report(reference: pd.DataFrame, current: pd.DataFrame):
     return report.run(reference_data=ref, current_data=cur)
 
 
-def summarise(result) -> dict:
+def summarise(result, current_rows: int, min_rows: int = MIN_SAMPLE_ROWS) -> dict:
     """Reduce the report to the few numbers worth alerting on.
 
     The HTML report is for a human investigating. This is for a machine
     deciding whether a human needs to look at the HTML.
     """
     payload = result.dict()
+    sufficient = current_rows >= min_rows
     summary: dict = {"columns": {}}
 
     for metric in payload.get("metrics", []):
@@ -102,11 +117,29 @@ def summarise(result) -> dict:
                     # boolean hides which signal moved, and they fail differently:
                     # label drift means the model changed its mind, text drift
                     # means the input changed first.
-                    "drifted": bool(limit is not None and score > limit),
+                    # No verdict at all on a thin sample. "We do not know"
+                    # and "no drift" must not look the same.
+                    "drifted": bool(limit is not None and score > limit) if sufficient else None,
                 }
 
-    summary["dataset_drifted"] = bool(summary.get("drift_share", 0.0) > DRIFT_SHARE_THRESHOLD)
     summary["columns_checked"] = len(summary["columns"])
+    summary["current_rows"] = current_rows
+    summary["min_sample_rows"] = min_rows
+    summary["sufficient_sample"] = sufficient
+
+    # `status` is what a monitor should key on. Alert only when the sample was
+    # large enough to have an opinion AND that opinion is "drifted". Keying on
+    # dataset_drifted alone would read an unknown as a clean bill of health.
+    if not sufficient:
+        summary["status"] = "insufficient_data"
+        summary["dataset_drifted"] = None
+        summary["note"] = (
+            f"{current_rows} rows is below the {min_rows}-row minimum; "
+            "scores are reported but no drift verdict is issued."
+        )
+    else:
+        summary["status"] = "ok"
+        summary["dataset_drifted"] = bool(summary.get("drift_share", 0.0) > DRIFT_SHARE_THRESHOLD)
     return summary
 
 
@@ -137,9 +170,11 @@ def main() -> None:
     html_path = out_dir / "drift_report.html"
     result.save_html(str(html_path))
 
-    summary = summarise(result)
+    summary = summarise(result, current_rows=len(current))
     summary["reference_rows"] = len(reference)
-    summary["current_rows"] = len(current)
+
+    if summary["status"] == "insufficient_data":
+        logger.warning("%s", summary["note"])
 
     json_path = out_dir / "drift.json"
     with open(json_path, "w", encoding="utf-8") as f:

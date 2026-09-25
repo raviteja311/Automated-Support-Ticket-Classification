@@ -1,22 +1,25 @@
 {
   "columns": {
     "label": {
-      "score": 0.176446,
+      "score": 0.038287,
       "threshold": 0.1,
       "method": "Jensen-Shannon distance",
-      "drifted": true
+      "drifted": false
     },
     "text": {
-      "score": 0.498567,
+      "score": 0.491247,
       "threshold": 0.55,
       "method": "Absolute text content drift",
       "drifted": false
     }
   },
-  "columns_drifted": 1,
-  "drift_share": 0.5,
-  "dataset_drifted": false,
+  "columns_drifted": 0,
+  "drift_share": 0.0,
   "columns_checked": 2,
-  "reference_rows": 10466,
-  "current_rows": 5
+  "current_rows": 300,
+  "min_sample_rows": 200,
+  "sufficient_sample": true,
+  "status": "ok",
+  "dataset_drifted": false,
+  "reference_rows": 10466
 }

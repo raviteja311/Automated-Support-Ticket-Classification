@@ -207,3 +207,52 @@ new corpus and future comparisons proceed normally from there.
 numbers it compares. "Is the new model better?" is not answerable unless both
 models were measured the same way, and nothing in a plain float carries that
 context. Tag the score with what produced it, or the gate is theatre.
+
+---
+
+## E5 - The drift monitor was crying wolf on tiny samples
+
+**Not a planned experiment.** Spotted while reading the first real drift report
+after the monitor went in.
+
+**Symptom.** With five predictions in the log, the monitor reported label drift
+of 0.1764 against a 0.10 threshold, and flagged it. Later, with seventeen rows,
+0.2662. Both looked like a model whose output distribution had shifted.
+
+**Why it was wrong.** Neither was a signal. Drift tests compare distributions,
+and a distribution estimated from a handful of requests is mostly noise. Five
+predictions spread one per category look dramatically "drifted" against a
+training set that is 38% billing and 8% shipping, purely because five is far too
+few to estimate a share from. The monitor was not detecting a change in the
+world; it was detecting that it had barely looked at it.
+
+Left alone this is worse than no monitor. It would fire on the first few
+requests after every deploy, and the first thing anyone does with an alert that
+is usually wrong is stop reading it.
+
+**Fix.** A minimum-sample gate, `MIN_SAMPLE_ROWS = 200`, chosen so the natural
+class balance still leaves roughly 40 rows in the smallest class. Below it, the
+scores are still computed and reported, because they are the evidence, but no
+verdict is issued at all.
+
+The distinction that matters is between *no drift* and *do not know*:
+
+| rows | status | dataset_drifted |
+|---|---|---|
+| 17 | `insufficient_data` | `null` |
+| 300 | `ok` | `false` |
+
+`dataset_drifted` is null rather than false on a thin sample, and a test pins
+that difference. A monitor keying on `dataset_drifted` alone would read an
+unknown as a clean bill of health, which is how a monitor goes silent without
+anyone noticing. The rule is: alert only when `status == "ok"` and
+`dataset_drifted` is true.
+
+**Verified both ways on real traffic.** 17 logged predictions with a label score
+of 0.2662, well past the threshold, now yields no verdict. 300 rows of realistic
+traffic yields `status: ok` with both columns correctly reading no drift.
+
+**Lesson.** Every statistical alarm needs a floor on the evidence it is allowed
+to fire from. A threshold answers "how big a difference matters"; it says
+nothing about "how much data before the question is worth asking". Both are
+needed, and only one of them tends to get written down.

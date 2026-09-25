@@ -162,6 +162,12 @@ Two signals are tracked separately, because they fail differently: **label
 drift** means the model changed its mind about the mix, **text drift** means the
 input changed first, which is the earlier warning.
 
+Below 200 rows of traffic no verdict is issued at all: `status` becomes
+`insufficient_data` and `dataset_drifted` is null rather than false. A
+distribution estimated from a handful of requests is noise, and an alert that
+fires after every deploy is one people learn to ignore. Alert only when
+`status == "ok"` and `dataset_drifted` is true.
+
 ## Reproduce the pipeline
 
 ```powershell
@@ -179,8 +185,9 @@ stages fail with `ModuleNotFoundError`.
 pytest
 ```
 
-27 tests covering data generation, the corpus mapping, preprocessing, the model
-pipeline, the promotion gate, drift summarising, the API and the test page. `tests/conftest.py` builds a model on demand when none
+30 tests covering data generation, the corpus mapping, preprocessing, the model
+pipeline, the promotion gate, drift summarising and its sample gate, the API and
+the test page. `tests/conftest.py` builds a model on demand when none
 exists, so the suite is self-sufficient on a clean CI runner.
 
 ## Docker
