@@ -24,7 +24,7 @@ generate -> preprocess -> train (MLflow) -> evaluate      [DVC pipeline]
                                     |
                               model.joblib
                                     |
-                     FastAPI -> Docker -> GitHub Actions -> Render
+                     FastAPI -> Docker -> GitHub Actions (CI)
                                     |
                               Prometheus (/metrics)
 ```
@@ -37,7 +37,8 @@ external storage.
 ## Tech stack
 
 Python 3.12, scikit-learn, pandas, pydantic, DVC, MLflow, FastAPI, uvicorn,
-Docker, GitHub Actions, pytest, ruff, Prometheus, Render.
+Docker, docker-compose, GitHub Actions, pytest, ruff, Prometheus, Evidently.
+A Render blueprint (`render.yaml`) is included but not deployed.
 
 ## Current model
 
@@ -117,3 +118,20 @@ One ticket per class, against the locally running service:
 The model is trained on banking support text, so it expects that domain.
 Retail-style tickets about parcels or app crashes are outside its training
 distribution and will be routed on surface vocabulary rather than meaning.
+
+## Beyond the model
+
+- **Model registry with a promotion gate** ([`models/registry.py`](src/automated_support_ticket_classification/models/registry.py), [`models/promote.py`](src/automated_support_ticket_classification/models/promote.py)): a new model only takes the MLflow `production` alias if it beats the current one on macro F1, trained on the same corpus.
+- **Drift monitoring** ([`monitoring/drift.py`](src/automated_support_ticket_classification/monitoring/drift.py)): Evidently checks label and text drift, with results in [metrics/drift.json](metrics/drift.json). It stays quiet on train vs test and fires on real vs synthetic data.
+- **API plus Prometheus in one command**: `docker compose up` runs the service and a Prometheus instance scraping `/metrics`.
+- **Tests and CI**: `pytest` runs 30 tests across data, model, API, registry and drift. CI runs ruff, the tests, a Docker build and a container smoke test.
+
+See [docs/experiments.md](docs/experiments.md) for the experiment log and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
+
+## Author
+
+**Jetti Raviteja** · [Portfolio](https://portfolio-website-drab-six-15.vercel.app) · [GitHub](https://github.com/raviteja311) · [LinkedIn](https://www.linkedin.com/in/jettiraviteja/)
