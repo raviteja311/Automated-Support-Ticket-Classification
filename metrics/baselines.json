@@ -1,0 +1,26 @@
+{
+  "test_rows": 2617,
+  "production": "tfidf_logreg",
+  "models": {
+    "majority_class": {
+      "accuracy": 0.3779,
+      "f1_macro": 0.1097
+    },
+    "tfidf_linearsvc": {
+      "accuracy": 0.9404,
+      "f1_macro": 0.9333
+    },
+    "tfidf_complementnb": {
+      "accuracy": 0.9117,
+      "f1_macro": 0.8968
+    },
+    "tfidf_logreg": {
+      "accuracy": 0.9282,
+      "f1_macro": 0.9171
+    }
+  },
+  "best_alternative": "tfidf_linearsvc",
+  "best_alternative_margin_f1_macro": 0.0162,
+  "clear_win_margin": 0.01,
+  "production_beaten": true
+}

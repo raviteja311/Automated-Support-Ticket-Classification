@@ -41,6 +41,21 @@ class ModelConfig(BaseModel):
 class EvaluateConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     metrics_path: str
+    # Written by the baselines stage. Defaulted so older params.yaml files load.
+    baselines_path: str = "metrics/baselines.json"
+
+
+class MonitoringConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    # The prediction log the drift monitor reads.
+    predictions_path: str = "data/predictions.jsonl"
+    # Mask emails and long digit runs (card, account numbers) before writing.
+    redact: bool = True
+    # Rotate once the live file would pass this size; 0 disables rotation.
+    max_bytes: int = 5_000_000
+    # Rotated files kept beside the live one. Older ones are deleted.
+    backup_count: int = 3
 
 
 class Config(BaseModel):
@@ -49,6 +64,7 @@ class Config(BaseModel):
     data: DataConfig
     model: ModelConfig
     evaluate: EvaluateConfig
+    monitoring: MonitoringConfig = MonitoringConfig()
 
 
 def load_config(path: str | Path = PARAMS_PATH) -> Config:
@@ -65,4 +81,6 @@ def load_config(path: str | Path = PARAMS_PATH) -> Config:
     cfg.data.cache_dir = _resolve_project_path(cfg.data.cache_dir)
     cfg.model.model_path = _resolve_project_path(cfg.model.model_path)
     cfg.evaluate.metrics_path = _resolve_project_path(cfg.evaluate.metrics_path)
+    cfg.evaluate.baselines_path = _resolve_project_path(cfg.evaluate.baselines_path)
+    cfg.monitoring.predictions_path = _resolve_project_path(cfg.monitoring.predictions_path)
     return cfg

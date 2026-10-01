@@ -20,7 +20,7 @@ data, experiment tracking, tests, containers, CI and monitoring.
 ## Architecture
 
 ```
-generate -> preprocess -> train (MLflow) -> evaluate      [DVC pipeline]
+generate -> preprocess -> train (MLflow) -> evaluate -> baselines   [DVC pipeline]
                                     |
                               model.joblib
                                     |
@@ -52,6 +52,47 @@ A Render blueprint (`render.yaml`) is included but not deployed.
 Per-class scores live in [metrics/metrics.json](metrics/metrics.json), which is
 Git-tracked so metric changes appear in pull request diffs.
 
+### Baselines
+
+The `baselines` stage scores a majority-class predictor and two alternative
+classifiers on the same 2,617-row test split and the same TF-IDF settings
+(5,000 features, unigrams + bigrams). Written to
+[metrics/baselines.json](metrics/baselines.json), Git-tracked like the metrics.
+
+| Model | accuracy | macro F1 |
+|---|---|---|
+| majority class (DummyClassifier) | 0.3779 | 0.1097 |
+| TF-IDF + ComplementNB | 0.9117 | 0.8968 |
+| **TF-IDF + LogisticRegression (production)** | **0.9282** | **0.9171** |
+| TF-IDF + LinearSVC | 0.9404 | 0.9333 |
+
+The majority-class floor shows how little of the headline number is class
+balance: always answering `billing` gets 37.8% accuracy and 0.11 macro F1.
+
+LinearSVC beats production by 1.62pp macro F1, past the stage's 1pp "clear win"
+margin, so `baselines.json` reports `production_beaten: true`. Production is
+deliberately unchanged: LinearSVC has no `predict_proba`, and the API returns a
+confidence and a full probability distribution. Adopting it means wrapping it
+in `CalibratedClassifierCV` and re-measuring, which is a separate change. See
+E6 in [docs/experiments.md](docs/experiments.md).
+
+### Latency
+
+Measured with `python scripts/benchmark_latency.py -n 500` (500 timed calls
+after 20 warm-up calls, texts drawn from the test split):
+
+| Measurement | p50 | p95 | p99 |
+|---|---|---|---|
+| `POST /predict`, in-process TestClient | 10.34 ms | 13.89 ms | 17.33 ms |
+| `predict_proba` on one message, model only | 0.36 ms | 0.51 ms | 0.57 ms |
+
+Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.10), one request at a
+time. The API figure excludes the network and uvicorn but includes validation,
+JSON encoding and the prediction log write. Treat both as an order of
+magnitude, not a service-level objective: they will differ on other machines
+and under concurrent load. Almost all of the API time is framework and I/O,
+not the model.
+
 ## Quickstart
 
 ```powershell
@@ -72,6 +113,28 @@ opens http://127.0.0.1:8000/ui in your browser. Press Ctrl+C to stop it.
 .\run.ps1 -Port 8010      # serve somewhere else
 .\run.ps1 -NoBrowser      # start without opening a browser
 ```
+
+For an exact rebuild of the environment, every transitive dependency is pinned
+in [requirements.lock.txt](requirements.lock.txt) (captured with `pip freeze` on
+Windows, Python 3.12.10):
+
+```powershell
+pip install -r requirements.lock.txt
+pip install -e . --no-deps
+```
+
+`requirements*.txt` pin direct dependencies only and stay the source of truth;
+regenerate the lock file after changing them.
+
+### Network access
+
+The default corpus is banking77, so the first `dvc repro` and **every Docker
+build** download it (about 1 MB from GitHub). The download retries with
+exponential backoff (4 attempts) and never caches a partial file, but it does
+need network. The test suite does not: CI's `pytest` job never runs the
+pipeline, because `tests/conftest.py` builds a small model on demand. To build
+fully offline, set `data.source: synthetic` in `params.yaml`, which uses the
+seeded template generator instead, at the cost of training on templates.
 
 Double-clicking `run.cmd` does the same thing, for when you would rather not
 open a terminal first.
@@ -97,6 +160,21 @@ billing     0.938       @{billing=0.938; technical=0.018; ...}
 
 Endpoints: `/` service info, `/ui` test page, `/health` liveness,
 `/predict` classification, `/docs` interactive docs, `/metrics` Prometheus.
+
+`/predict` accepts 1 to 5,000 characters; longer input is rejected with 422.
+If the model artifact is missing (not yet trained or pulled), it answers 503
+with a message saying so, rather than a 500, and recovers without a restart once
+the file appears.
+
+### Prediction log and privacy
+
+Every prediction is appended to `data/predictions.jsonl`, which the drift
+monitor reads. Before anything is written, emails and runs of 8 or more digits
+(card, account and phone numbers) are replaced with `[email]` and `[number]`.
+The file rotates at 5 MB and keeps 3 rotated copies, so raw traffic is not
+retained indefinitely; the drift monitor reads the rotated copies too. All of
+it is configurable under `monitoring:` in `params.yaml` (`redact`, `max_bytes`,
+`backup_count`, `predictions_path`).
 
 ### Try it in a browser
 
@@ -124,7 +202,7 @@ distribution and will be routed on surface vocabulary rather than meaning.
 - **Model registry with a promotion gate** ([`models/registry.py`](src/automated_support_ticket_classification/models/registry.py), [`models/promote.py`](src/automated_support_ticket_classification/models/promote.py)): a new model only takes the MLflow `production` alias if it beats the current one on macro F1, trained on the same corpus.
 - **Drift monitoring** ([`monitoring/drift.py`](src/automated_support_ticket_classification/monitoring/drift.py)): Evidently checks label and text drift, with results in [metrics/drift.json](metrics/drift.json). It stays quiet on train vs test and fires on real vs synthetic data.
 - **API plus Prometheus in one command**: `docker compose up` runs the service and a Prometheus instance scraping `/metrics`.
-- **Tests and CI**: `pytest` runs 30 tests across data, model, API, registry and drift. CI runs ruff, the tests, a Docker build and a container smoke test.
+- **Tests and CI**: `pytest` runs 43 tests across the data generators and corpus mapping, the corpus download retry, the model pipeline, the API (including input length limits and the missing-model 503), prediction-log redaction and rotation, drift and the registry promotion gate. CI runs `ruff format --check .`, `ruff check .`, the tests, a Docker build and a container smoke test.
 
 See [docs/experiments.md](docs/experiments.md) for the experiment log and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 

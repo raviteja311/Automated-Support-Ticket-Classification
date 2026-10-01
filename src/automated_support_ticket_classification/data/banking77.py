@@ -141,21 +141,57 @@ _BASE = "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/mas
 _FILES = ("train.csv", "test.csv")
 
 
+# A transient network blip should not fail a pipeline stage, or the Docker
+# build, which downloads the corpus on every build.
+_ATTEMPTS = 4
+_BACKOFF_SECONDS = 2.0
+
+
+def _fetch(url: str, target: Path, attempts: int = _ATTEMPTS) -> None:
+    """Download `url` to `target`, retrying with exponential backoff.
+
+    Writes to a temporary sibling and renames on success, so an interrupted
+    download never leaves a truncated file that the cache check would then
+    mistake for a good one.
+    """
+    import time
+    import urllib.request
+
+    partial = target.with_name(target.name + ".part")
+    for attempt in range(1, attempts + 1):
+        try:
+            urllib.request.urlretrieve(url, partial)  # noqa: S310
+            partial.replace(target)
+            return
+        except OSError as exc:  # URLError and timeouts are both OSError
+            partial.unlink(missing_ok=True)
+            if attempt == attempts:
+                raise
+            delay = _BACKOFF_SECONDS * 2 ** (attempt - 1)
+            logger.warning(
+                "Download of %s failed (%s), attempt %d/%d; retrying in %.0fs",
+                url,
+                exc,
+                attempt,
+                attempts,
+                delay,
+            )
+            time.sleep(delay)
+
+
 def _download(cache_dir: Path) -> None:
     """Fetch the corpus once into `cache_dir`.
 
     Roughly 1 MB over two files. Cached because a training stage that hits the
     network on every run is neither fast nor reproducible.
     """
-    import urllib.request
-
     cache_dir.mkdir(parents=True, exist_ok=True)
     for name in _FILES:
         target = cache_dir / name
         if target.exists():
             continue
         logger.info("Downloading %s/%s", _BASE, name)
-        urllib.request.urlretrieve(f"{_BASE}/{name}", target)  # noqa: S310
+        _fetch(f"{_BASE}/{name}", target)
 
 
 def load(cache_dir: Path, n_samples: int | None = None, seed: int = 42) -> pd.DataFrame:

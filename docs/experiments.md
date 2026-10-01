@@ -256,3 +256,44 @@ traffic yields `status: ok` with both columns correctly reading no drift.
 to fire from. A threshold answers "how big a difference matters"; it says
 nothing about "how much data before the question is worth asking". Both are
 needed, and only one of them tends to get written down.
+
+---
+
+## E6 - Baselines: how good is 0.9171, really?
+
+**Motivation.** Every number in this log so far compares the production model
+with an earlier version of itself. None says whether TF-IDF + logistic
+regression is a sensible choice, or how much of its score comes for free from
+class balance.
+
+**Method.** A new DVC stage, `baselines`, fits each candidate on the same
+10,466-row training split and scores it on the same 2,617-row test split. The
+alternatives reuse `build_pipeline` with only the classifier swapped, so the
+vectoriser is identical: 5,000 features, unigrams + bigrams. The production row
+is the shipped `model.joblib` itself, not a refit, so it matches
+`metrics.json` exactly.
+
+| model | accuracy | f1_macro |
+|---|---|---|
+| majority class (DummyClassifier) | 0.3779 | 0.1097 |
+| TF-IDF + ComplementNB | 0.9117 | 0.8968 |
+| TF-IDF + LogisticRegression (production) | 0.9282 | 0.9171 |
+| TF-IDF + LinearSVC | **0.9404** | **0.9333** |
+
+**Result.** The floor is low: always predicting `billing` scores 37.8% accuracy
+and 0.11 macro F1, so nearly all of the production score is learned. LinearSVC
+beats production by 1.22pp accuracy and 1.62pp macro F1, past the stage's 1pp
+"clear win" margin. ComplementNB trails both.
+
+**Decision.** Reported, not adopted. The API's contract includes a confidence
+and a full probability distribution, and LinearSVC has no `predict_proba`.
+Swapping it in means wrapping it in `CalibratedClassifierCV`, which changes the
+model being measured, so the 0.9333 above would not carry over unmeasured. That
+is a follow-up experiment with its own write-up, not a side effect of adding a
+comparison stage. `baselines.json` records `production_beaten: true` so the gap
+stays visible in every pull request until it is resolved.
+
+**Lesson.** A score without a baseline is unreadable. 0.9171 sounded good, and
+is, against a floor of 0.11; it is also not the best a linear model on these
+exact features can do.
+

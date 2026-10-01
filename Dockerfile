@@ -15,6 +15,9 @@ COPY params.yaml ./
 
 # Bake the model into the image: it trains in seconds and keeps the
 # container self-contained, with no external storage to configure.
+# data/ is in .dockerignore and params.yaml selects banking77, so this step
+# downloads the corpus (about 1 MB, retried with backoff) and the build needs
+# network. Set data.source: synthetic for an offline build.
 # config.py resolves paths from its own location, so params.yaml at
 # /app is found regardless of the working directory.
 RUN python -m automated_support_ticket_classification.data.generate \

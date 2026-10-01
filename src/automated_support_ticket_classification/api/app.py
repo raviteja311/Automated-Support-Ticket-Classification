@@ -1,4 +1,3 @@
-import json
 from functools import lru_cache
 from pathlib import Path
 
@@ -12,6 +11,7 @@ from automated_support_ticket_classification.api.ui import INDEX_HTML
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.data.preprocess import clean_text
 from automated_support_ticket_classification.logger import get_logger
+from automated_support_ticket_classification.monitoring import prediction_log
 
 logger = get_logger(__name__)
 
@@ -22,12 +22,25 @@ app = FastAPI(title="Automated Support Ticket Classification API", version="1.0.
 Instrumentator().instrument(app).expose(app)
 
 
+class ModelUnavailableError(RuntimeError):
+    """The model artifact is missing, so predictions cannot be served."""
+
+
 @lru_cache
 def get_model():
-    """Load the pipeline once, lazily, so a missing file cannot stop the app starting."""
+    """Load the pipeline once, lazily, so a missing file cannot stop the app starting.
+
+    A missing artifact raises ModelUnavailableError rather than joblib's
+    FileNotFoundError, so /predict can answer 503 instead of a bare 500.
+    lru_cache does not cache exceptions, so once the file appears the next
+    request loads it without a restart.
+    """
     cfg = load_config()
-    logger.info("Loading model from %s", cfg.model.model_path)
-    return joblib.load(cfg.model.model_path)
+    path = Path(cfg.model.model_path)
+    if not path.exists():
+        raise ModelUnavailableError(f"Model artifact not found at {path}")
+    logger.info("Loading model from %s", path)
+    return joblib.load(path)
 
 
 @app.get("/")
@@ -57,11 +70,15 @@ def _log_prediction(text: str, label: str) -> None:
     fail a request. If the disk is full the user still gets their answer.
     """
     try:
-        cfg = load_config()
-        path = Path(cfg.data.processed_dir).parent / "predictions.jsonl"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "a", encoding="utf-8") as f:
-            f.write(json.dumps({"text": text, "label": label}) + "\n")
+        mon = load_config().monitoring
+        # Redacted before it touches disk; see monitoring/prediction_log.py.
+        logged = prediction_log.redact(text) if mon.redact else text
+        prediction_log.append(
+            Path(mon.predictions_path),
+            {"text": logged, "label": label},
+            max_bytes=mon.max_bytes,
+            backup_count=mon.backup_count,
+        )
     except Exception:  # noqa: BLE001
         logger.warning("Could not write to the prediction log", exc_info=False)
 
@@ -80,7 +97,18 @@ def predict(request: TicketRequest) -> TicketResponse:
         # Reachable for whitespace-only input, which passes min_length=1.
         raise HTTPException(status_code=422, detail="text must not be empty")
 
-    model = get_model()
+    try:
+        model = get_model()
+    except ModelUnavailableError:
+        logger.error("Prediction refused: no model artifact", exc_info=False)
+        # 503, not 500: the service is up but cannot serve yet, which is a
+        # state, not a bug. Run `dvc repro` (or `dvc pull`) to produce the file.
+        raise HTTPException(
+            status_code=503,
+            detail="Model not available: the model artifact is missing. "
+            "Train it with `dvc repro` or fetch it with `dvc pull`.",
+        ) from None
+
     proba = model.predict_proba([text])[0]
     # strict=True: classes_ and the probability row must be the same length.
     # If they ever are not, fail loudly rather than silently truncating.

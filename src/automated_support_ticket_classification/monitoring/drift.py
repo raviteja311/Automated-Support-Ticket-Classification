@@ -27,6 +27,7 @@ import pandas as pd
 
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.logger import get_logger
+from automated_support_ticket_classification.monitoring.prediction_log import rotated_paths
 
 logger = get_logger(__name__)
 
@@ -50,17 +51,23 @@ DRIFT_SHARE_THRESHOLD = 0.5
 MIN_SAMPLE_ROWS = 200
 
 
-def load_predictions(path: Path) -> pd.DataFrame | None:
-    """Read the API's prediction log, or None when nothing has been served."""
-    if not path.exists():
-        return None
+def load_predictions(path: Path, backup_count: int = 0) -> pd.DataFrame | None:
+    """Read the API's prediction log, or None when nothing has been served.
+
+    Rotated files are read too, oldest first, so a rotation does not suddenly
+    shrink the sample below MIN_SAMPLE_ROWS and silence the verdict.
+    """
+    files = [p for p in reversed(rotated_paths(path, backup_count)) if p.exists()]
+    if path.exists():
+        files.append(path)
 
     rows = []
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                rows.append(json.loads(line))
+    for file in files:
+        with open(file, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    rows.append(json.loads(line))
 
     if not rows:
         return None
@@ -148,8 +155,8 @@ def main() -> None:
     processed = Path(cfg.data.processed_dir)
     reference = pd.read_csv(processed / "train.csv")
 
-    log_path = Path(cfg.data.processed_dir).parent / "predictions.jsonl"
-    current = load_predictions(log_path)
+    log_path = Path(cfg.monitoring.predictions_path)
+    current = load_predictions(log_path, backup_count=cfg.monitoring.backup_count)
 
     if current is None:
         # No traffic yet. Fall back to the held-out split so the mechanism is

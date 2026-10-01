@@ -47,11 +47,12 @@ pointers; the bytes live in the DVC remote.
 ```powershell
 dvc repro          # rerun only the stages whose inputs changed
 dvc push           # upload the new artifacts
-git add dvc.lock metrics/metrics.json
+git add dvc.lock metrics/metrics.json metrics/baselines.json
 ```
 
-Commit `dvc.lock` and `metrics/metrics.json` together with the code change, so
-the pull request shows the metric movement alongside its cause.
+Commit `dvc.lock`, `metrics/metrics.json` and `metrics/baselines.json` together
+with the code change, so the pull request shows the metric movement alongside
+its cause, and alongside the baselines it has to beat.
 
 Never `git add` a data file or `models/*.joblib`. DVC owns those, and Git and
 DVC cannot both own the same file.
@@ -61,6 +62,15 @@ DVC cannot both own the same file.
 Pin it exactly in `requirements.txt`, and add it to `requirements-serve.txt`
 only if serving genuinely needs it at runtime. Dev-only tools belong in
 `requirements-dev.txt`.
+
+Then regenerate the full pinned graph, keeping the header comment and the
+`pywin32` platform marker:
+
+```powershell
+pip freeze --exclude-editable
+```
+
+and paste the result into `requirements.lock.txt`.
 
 If a transitive dependency ever breaks a pinned tool, pin the transitive one too
 and leave a comment explaining why. There are existing examples in

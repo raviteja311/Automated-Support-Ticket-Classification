@@ -1,8 +1,26 @@
+import json
+
+import pytest
 from fastapi.testclient import TestClient
 
+from automated_support_ticket_classification.api import app as app_module
 from automated_support_ticket_classification.api.app import app
+from automated_support_ticket_classification.api.schemas import MAX_TEXT_LENGTH
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def scratch_prediction_log(monkeypatch, tmp_path):
+    """Keep test requests out of the real log the drift monitor reads."""
+    real = app_module.load_config
+
+    def patched():
+        cfg = real()
+        cfg.monitoring.predictions_path = str(tmp_path / "predictions.jsonl")
+        return cfg
+
+    monkeypatch.setattr(app_module, "load_config", patched)
 
 
 def test_root_points_at_the_docs():
@@ -58,3 +76,59 @@ def test_ui_page_renders():
 def test_ui_is_not_in_the_openapi_schema():
     # /ui is a convenience for humans, not part of the documented API contract.
     assert "/ui" not in client.get("/openapi.json").json()["paths"]
+
+
+def test_predict_accepts_text_at_the_length_limit():
+    response = client.post("/predict", json={"text": "a" * MAX_TEXT_LENGTH})
+    assert response.status_code == 200
+
+
+def test_predict_rejects_text_over_the_length_limit():
+    # Rejected by pydantic's max_length, before the model ever sees it.
+    response = client.post("/predict", json={"text": "a" * (MAX_TEXT_LENGTH + 1)})
+    assert response.status_code == 422
+
+
+def _config_with(monkeypatch, **overrides):
+    """Point the app at a modified config for one test."""
+    real = app_module.load_config
+
+    def patched():
+        cfg = real()
+        for dotted, value in overrides.items():
+            section, field = dotted.split("__")
+            setattr(getattr(cfg, section), field, value)
+        return cfg
+
+    monkeypatch.setattr(app_module, "load_config", patched)
+
+
+def test_missing_model_returns_503_not_500(monkeypatch, tmp_path):
+    _config_with(monkeypatch, model__model_path=str(tmp_path / "absent.joblib"))
+    app_module.get_model.cache_clear()
+    try:
+        response = client.post("/predict", json={"text": "my card has not arrived"})
+    finally:
+        # Drop the failed state so later tests load the real model again.
+        app_module.get_model.cache_clear()
+    assert response.status_code == 503
+    assert "model artifact is missing" in response.json()["detail"]
+
+
+def test_prediction_log_is_redacted(monkeypatch, tmp_path):
+    log = tmp_path / "predictions.jsonl"
+    _config_with(monkeypatch, monitoring__predictions_path=str(log))
+    text = "Refund to jane.doe@example.com for card 4111 1111 1111 1111 please"
+    assert client.post("/predict", json={"text": text}).status_code == 200
+
+    logged = json.loads(log.read_text(encoding="utf-8"))["text"]
+    assert "jane.doe@example.com" not in logged
+    assert "4111" not in logged
+    assert "[email]" in logged and "[number]" in logged
+
+
+def test_prediction_log_redaction_can_be_switched_off(monkeypatch, tmp_path):
+    log = tmp_path / "predictions.jsonl"
+    _config_with(monkeypatch, monitoring__predictions_path=str(log), monitoring__redact=False)
+    client.post("/predict", json={"text": "write to jane@example.com"})
+    assert "jane@example.com" in log.read_text(encoding="utf-8")
