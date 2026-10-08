@@ -252,7 +252,18 @@ See [docs/experiments.md](docs/experiments.md) for the experiment log and [CONTR
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+The code is MIT, see [LICENSE](LICENSE).
+
+The banking77 corpus is by PolyAI and is licensed under
+[CC BY 4.0](https://github.com/PolyAI-LDN/task-specific-datasets/blob/master/LICENSE).
+This repository downloads it rather than storing it, but
+`reports/errors.csv` and `docs/mapping/annotation_sheet.csv` contain excerpts
+of its messages. It was introduced in:
+
+> Iñigo Casanueva, Tadas Temčinas, Daniela Gerz, Matthew Henderson and Ivan
+> Vulić. 2020. [Efficient Intent Detection with Dual Sentence
+> Encoders](https://arxiv.org/abs/2003.04807). In *Proceedings of the 2nd
+> Workshop on Natural Language Processing for Conversational AI*.
 
 ## Author
 
