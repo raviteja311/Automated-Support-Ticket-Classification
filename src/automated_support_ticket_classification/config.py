@@ -50,7 +50,7 @@ class MonitoringConfig(BaseModel):
 
     # The prediction log the drift monitor reads.
     predictions_path: str = "data/predictions.jsonl"
-    # Mask emails and long digit runs (card, account numbers) before writing.
+    # Mask emails, UPI IDs, PAN, IFSC and long digit runs before writing.
     redact: bool = True
     # Rotate once the live file would pass this size; 0 disables rotation.
     max_bytes: int = 5_000_000
