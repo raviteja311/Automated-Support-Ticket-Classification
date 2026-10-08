@@ -297,3 +297,33 @@ stays visible in every pull request until it is resolved.
 is, against a floor of 0.11; it is also not the best a linear model on these
 exact features can do.
 
+
+---
+
+## E7 - Official banking77 split instead of a random re-split
+
+**Why.** Until now the two published banking77 files were merged and re-split
+80/20 at random. That works, but the results cannot be compared with published
+banking77 numbers, and it discards a test set the dataset authors chose on
+purpose. One variable changed: `data.split`, `random` then `official`.
+
+| split    | train rows | test rows | model             | accuracy | f1_macro |
+|----------|-----------:|----------:|-------------------|---------:|---------:|
+| random   | 10,466     | 2,617     | majority class    | 0.3779   | 0.1097   |
+| random   |            |           | tfidf_complementnb| 0.9117   | 0.8968   |
+| random   |            |           | tfidf_logreg (prod)| 0.9282  | 0.9171   |
+| random   |            |           | tfidf_linearsvc   | 0.9404   | 0.9333   |
+| official | 10,003     | 3,080     | majority class    | 0.3247   | 0.0980   |
+| official |            |           | tfidf_complementnb| 0.8951   | 0.8780   |
+| official |            |           | tfidf_logreg (prod)| 0.9185  | 0.9086   |
+| official |            |           | tfidf_linearsvc   | 0.9396   | 0.9334   |
+
+**Result.** Production drops about 1pp on the official test set, while LinearSVC
+does not move, so the gap over production widens from 1.62pp to 2.48pp.
+
+The official test set has exactly 40 messages per intent, so its queue mix
+differs from training: billing is 32% of test against 39% of train, and every
+other queue's share rises. The majority-class floor drops for that reason alone.
+
+**Decision.** `data.split: official` is the default from here on. `random`
+stays available for synthetic data, which has no official split.

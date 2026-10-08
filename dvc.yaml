@@ -23,6 +23,7 @@ stages:
     params:
       - data.test_size
       - data.random_state
+      - data.split
     outs:
       - data/processed/train.csv
       - data/processed/test.csv

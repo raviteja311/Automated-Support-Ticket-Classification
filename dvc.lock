@@ -5,12 +5,12 @@ stages:
     deps:
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
-      md5: 3b71eae35bffff3c5eb9f4e71af0cbfb
-      size: 2895
+      md5: 3b45255edff81899a78fb79f74df24d2
+      size: 3153
     - path: src/automated_support_ticket_classification/data/banking77.py
       hash: md5
-      md5: a0d1c309e0eef57350073949a56cc0a8
-      size: 8976
+      md5: a13895d6830b1014ae56bf0e38165139
+      size: 9378
     - path: src/automated_support_ticket_classification/data/generate.py
       hash: md5
       md5: 3110c3b2ff7148799c9e9d005d984756
@@ -27,23 +27,23 @@ stages:
     outs:
     - path: data/raw/tickets.csv
       hash: md5
-      md5: 812106848a20a9ab03612b6b49c86990
-      size: 901763
+      md5: 86af78990a7d8d75d3cd9ba54a51e1bd
+      size: 1264452
   preprocess:
     cmd: python -m automated_support_ticket_classification.data.preprocess
     deps:
     - path: data/raw/tickets.csv
       hash: md5
-      md5: 812106848a20a9ab03612b6b49c86990
-      size: 901763
+      md5: 86af78990a7d8d75d3cd9ba54a51e1bd
+      size: 1264452
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
-      md5: 3b71eae35bffff3c5eb9f4e71af0cbfb
-      size: 2895
+      md5: 3b45255edff81899a78fb79f74df24d2
+      size: 3153
     - path: src/automated_support_ticket_classification/data/preprocess.py
       hash: md5
-      md5: 6408de165c9b5bbff19678f132c4f0ed
-      size: 1158
+      md5: 79595111049655232071026a6c102c10
+      size: 2174
     - path: src/automated_support_ticket_classification/logger.py
       hash: md5
       md5: a37c008c162778b6c6ed86a6f448e526
@@ -51,31 +51,32 @@ stages:
     params:
       params.yaml:
         data.random_state: 42
+        data.split: official
         data.test_size: 0.2
     outs:
     - path: data/processed/test.csv
       hash: md5
-      md5: 2b43be4003fc147bcd17eede7480e79a
-      size: 179050
+      md5: c12c9866ebb0bc669b567f0f082ecba8
+      size: 265823
     - path: data/processed/train.csv
       hash: md5
-      md5: 70b492ecebdf0c91e0a6b2c7360ae337
-      size: 721944
+      md5: d5e4491d4885f1cb76b8120b0fdef4a9
+      size: 922443
   train:
     cmd: python -m automated_support_ticket_classification.models.train
     deps:
     - path: data/processed/test.csv
       hash: md5
-      md5: 2b43be4003fc147bcd17eede7480e79a
-      size: 179050
+      md5: c12c9866ebb0bc669b567f0f082ecba8
+      size: 265823
     - path: data/processed/train.csv
       hash: md5
-      md5: 70b492ecebdf0c91e0a6b2c7360ae337
-      size: 721944
+      md5: d5e4491d4885f1cb76b8120b0fdef4a9
+      size: 922443
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
-      md5: 3b71eae35bffff3c5eb9f4e71af0cbfb
-      size: 2895
+      md5: 3b45255edff81899a78fb79f74df24d2
+      size: 3153
     - path: src/automated_support_ticket_classification/logger.py
       hash: md5
       md5: a37c008c162778b6c6ed86a6f448e526
@@ -93,23 +94,23 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: cdc05565256a6ed1ef820a6cbf557720
-      size: 396929
+      md5: 0048b43ef5c8385e4d5717833101d049
+      size: 396961
   evaluate:
     cmd: python -m automated_support_ticket_classification.models.evaluate
     deps:
     - path: data/processed/test.csv
       hash: md5
-      md5: 2b43be4003fc147bcd17eede7480e79a
-      size: 179050
+      md5: c12c9866ebb0bc669b567f0f082ecba8
+      size: 265823
     - path: models/model.joblib
       hash: md5
-      md5: cdc05565256a6ed1ef820a6cbf557720
-      size: 396929
+      md5: 0048b43ef5c8385e4d5717833101d049
+      size: 396961
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
-      md5: 3b71eae35bffff3c5eb9f4e71af0cbfb
-      size: 2895
+      md5: 3b45255edff81899a78fb79f74df24d2
+      size: 3153
     - path: src/automated_support_ticket_classification/logger.py
       hash: md5
       md5: a37c008c162778b6c6ed86a6f448e526
@@ -121,27 +122,27 @@ stages:
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: 8a1234c565eb52ac202bc05426476f13
-      size: 1332
+      md5: 2ebb61c4902c954edbc4b964f2194682
+      size: 1289
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
     deps:
     - path: data/processed/test.csv
       hash: md5
-      md5: 2b43be4003fc147bcd17eede7480e79a
-      size: 179050
+      md5: c12c9866ebb0bc669b567f0f082ecba8
+      size: 265823
     - path: data/processed/train.csv
       hash: md5
-      md5: 70b492ecebdf0c91e0a6b2c7360ae337
-      size: 721944
+      md5: d5e4491d4885f1cb76b8120b0fdef4a9
+      size: 922443
     - path: models/model.joblib
       hash: md5
-      md5: cdc05565256a6ed1ef820a6cbf557720
-      size: 396929
+      md5: 0048b43ef5c8385e4d5717833101d049
+      size: 396961
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
-      md5: 3b71eae35bffff3c5eb9f4e71af0cbfb
-      size: 2895
+      md5: 3b45255edff81899a78fb79f74df24d2
+      size: 3153
     - path: src/automated_support_ticket_classification/logger.py
       hash: md5
       md5: a37c008c162778b6c6ed86a6f448e526
@@ -163,5 +164,5 @@ stages:
     outs:
     - path: metrics/baselines.json
       hash: md5
-      md5: 5056cb8ed289c076cc9cf511700e4f52
-      size: 573
+      md5: ea7c36406db1fd008a35c095c56b3e57
+      size: 571
