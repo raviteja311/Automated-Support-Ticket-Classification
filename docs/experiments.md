@@ -354,3 +354,37 @@ official split (E7) and to put bootstrap confidence intervals on every score.
 
 The majority-class floor is unchanged, as expected: the class counts in the
 test set are the same, only the rows differ.
+
+---
+
+## E9 - Is the 5-way task just easier than the 77-way one?
+
+**Question.** The service predicts 5 queues, but banking77 is labelled with 77
+intents. Does training on the queues throw away signal the intents carry?
+
+**Method.** The `granularity` stage, on the official split. The production
+pipeline (TF-IDF with bigrams, LogReg, same settings) is trained twice: once on
+the 5 queues (the shipped model), once on the 77 intents. The 77-way
+predictions are then folded into queues through `INTENT_MAP` and scored against
+the true queues, so they can be compared with the direct model on the same
+3,080 test rows.
+
+| model | scored against | accuracy | macro F1 | 95% CI |
+|---|---|---:|---:|---|
+| direct 5-way (production) | queues | 0.9185 | 0.9086 | 0.8971 to 0.9195 |
+| 77-way | intents | 0.8562 | 0.8556 | 0.8427 to 0.8671 |
+| 77-way, then mapped | queues | 0.9208 | 0.9132 | 0.9025 to 0.9245 |
+
+McNemar, mapped against direct on the same rows: p = 0.69.
+
+**Result.** Predicting intents and mapping them scores 0.46pp higher, well
+inside both confidence intervals, and McNemar finds no difference in the
+errors the two models make. The 77-way model is wrong on 14% of intents, but
+most of those mistakes land on a sibling intent in the same queue, so they
+vanish when mapped.
+
+**Decision.** Keep the direct 5-way model. The fine-grained labels carry no
+measurable extra signal for routing, and the direct model is smaller and
+simpler. Note the 77-way score is the same linear pipeline on intents, not a
+tuned intent classifier, so it is not a comparison with published banking77
+results.

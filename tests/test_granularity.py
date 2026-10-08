@@ -1,12 +1,9 @@
-"""Spec for models/granularity.py. Delete the xfail marker once implemented."""
+"""Tests for models/granularity.py."""
 
 import pandas as pd
-import pytest
 
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.models.granularity import granularity_scores
-
-pending = pytest.mark.xfail(raises=NotImplementedError, reason="stub: implement granularity.py")
 
 # Two intents that share a queue, plus three that do not.
 PHRASES = {
@@ -27,7 +24,6 @@ def _frame(n_per_intent: int) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-@pending
 def test_returns_both_rows_with_scores_in_range():
     scores = granularity_scores(_frame(8), _frame(2), load_config())
     assert set(scores) == {"77way", "77way_mapped"}
@@ -36,7 +32,6 @@ def test_returns_both_rows_with_scores_in_range():
         assert all(0.0 <= v <= 1.0 for v in row.values())
 
 
-@pending
 def test_mapping_never_lowers_accuracy():
     # A correct intent always maps to the correct queue, and a wrong intent can
     # still land in the right queue, so mapped accuracy can only be higher.

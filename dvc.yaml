@@ -111,6 +111,7 @@ stages:
     cmd: python -m automated_support_ticket_classification.models.granularity
     deps:
       - src/automated_support_ticket_classification/models/granularity.py
+      - src/automated_support_ticket_classification/models/stats.py
       - src/automated_support_ticket_classification/models/train.py
       - src/automated_support_ticket_classification/data/banking77.py
       - src/automated_support_ticket_classification/config.py

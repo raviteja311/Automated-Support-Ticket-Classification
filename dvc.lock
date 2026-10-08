@@ -231,3 +231,55 @@ stages:
       hash: md5
       md5: 845abe8984f2932cd1324f04537d6226
       size: 86
+  granularity:
+    cmd: python -m automated_support_ticket_classification.models.granularity
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 2c5b95a65f27b5cf866ef71f478b2d63
+      size: 267023
+    - path: data/processed/train.csv
+      hash: md5
+      md5: de9a2d3eebfc394cd1e04ef86c0c012d
+      size: 926188
+    - path: models/model.joblib
+      hash: md5
+      md5: 8e545230b0c7595874870320a3a699e7
+      size: 396977
+    - path: src/automated_support_ticket_classification/config.py
+      hash: md5
+      md5: ce920ac9e381484b60d9c4a9edb0feeb
+      size: 3837
+    - path: src/automated_support_ticket_classification/data/banking77.py
+      hash: md5
+      md5: cd4530d649eadc86e5f35d519862141c
+      size: 9443
+    - path: src/automated_support_ticket_classification/logger.py
+      hash: md5
+      md5: a37c008c162778b6c6ed86a6f448e526
+      size: 631
+    - path: src/automated_support_ticket_classification/models/granularity.py
+      hash: md5
+      md5: 6aedc7965123706174f22662ea163f76
+      size: 4668
+    - path: src/automated_support_ticket_classification/models/stats.py
+      hash: md5
+      md5: 2004a2dd9697c1bee401321c6debf8d1
+      size: 3026
+    - path: src/automated_support_ticket_classification/models/train.py
+      hash: md5
+      md5: d8d62370bc1516361ffdbbcfcc2d0b34
+      size: 4035
+    params:
+      params.yaml:
+        model.C: 1.0
+        model.calibration: sigmoid
+        model.max_features: 5000
+        model.max_iter: 1000
+        model.ngram_max: 2
+        model.type: logreg
+    outs:
+    - path: metrics/granularity.json
+      hash: md5
+      md5: 952a239541d0469de040b8472f8eea36
+      size: 506

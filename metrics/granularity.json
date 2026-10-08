@@ -1,0 +1,24 @@
+{
+  "split": "official",
+  "test_rows": 3080,
+  "direct_5way": {
+    "accuracy": 0.9185,
+    "f1_macro": 0.9086,
+    "ci_low": 0.8971,
+    "ci_high": 0.9195
+  },
+  "77way": {
+    "accuracy": 0.8562,
+    "f1_macro": 0.8556,
+    "ci_low": 0.8427,
+    "ci_high": 0.8671
+  },
+  "77way_mapped": {
+    "accuracy": 0.9208,
+    "f1_macro": 0.9132,
+    "ci_low": 0.9025,
+    "ci_high": 0.9245
+  },
+  "mapped_minus_direct_f1_macro": 0.0046,
+  "mapped_vs_direct_mcnemar_p": 0.6852478288183355
+}
