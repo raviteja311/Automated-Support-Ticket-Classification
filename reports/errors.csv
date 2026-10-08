@@ -1,0 +1,252 @@
+text,true_queue,predicted_queue,confidence,intent
+who accepts my card?,general,account,0.2752,card_acceptance
+"i cant find my card, it's gone.",account,technical,0.277,lost_or_stolen_card
+when will my card be activated?,account,billing,0.2793,activate_my_card
+i ordered a card but it has not arrived. help please!,shipping,billing,0.285,card_arrival
+can i get a spare card for someone else to use?,shipping,general,0.285,getting_spare_card
+are you able to locate my card?,account,shipping,0.2853,lost_or_stolen_card
+my card was taken from me,account,technical,0.2928,lost_or_stolen_card
+what can i do after the card missing,account,shipping,0.3027,activate_my_card
+i cannot find my credit card.,account,shipping,0.3054,lost_or_stolen_card
+can i space out how often money is transferred along my travels?,account,billing,0.3065,automatic_top_up
+where am i able to use the card?,general,technical,0.3079,card_acceptance
+"please help me get a new card, i reside in the united states.",general,technical,0.3098,country_support
+i don't want the transaction to go through now,account,billing,0.3116,cancel_transfer
+can i have it add money at certain time intervals when i travel?,account,billing,0.3132,automatic_top_up
+the stupid machine just swallowed my card!! i need a new one asap,technical,shipping,0.3149,card_swallowed
+can i change my currency from usd to eur?,technical,general,0.316,exchange_via_app
+how do vr cards work,general,technical,0.3171,get_disposable_virtual_card
+can i do a transfer with swift,billing,technical,0.3172,top_up_by_bank_transfer_charge
+my daughter needs a card. can i give her one of mine that's linked to my account?,shipping,account,0.3215,getting_spare_card
+can i get some money exchanged?,technical,general,0.3227,exchange_via_app
+how do i change currencies to euros?,general,technical,0.323,fiat_currency_support
+what currency's can i exchange for?,technical,general,0.3233,exchange_via_app
+"i've just moved address from a place in durham to a place in walton-on-the-naze. i have a new landlord at my new house and they haven't got my payment but i know i sent it on time, can you check they got it please?",general,billing,0.3283,transfer_not_received_by_recipient
+i want to do a cash top-up,general,account,0.3288,top_up_by_cash_or_cheque
+i had to pay in order to do a transfer,billing,general,0.3328,transfer_fee_charged
+am i able to choose my card?,general,account,0.3334,visa_or_mastercard
+can i send a cheque to do my top ups?,general,account,0.335,top_up_by_cash_or_cheque
+"i did not get my card yet, is it lost?",shipping,billing,0.3373,card_arrival
+can i get my paycheck through here?,general,technical,0.3376,receiving_money
+what stores can i sue my card?,general,shipping,0.339,card_acceptance
+"i'm starting to think my card is lost because it still hasn't arrived, can you help?",shipping,account,0.3409,card_arrival
+how come i can't find anywhere to load using cash,general,billing,0.3447,top_up_by_cash_or_cheque
+is there a way to transfer funds directly from my card?,general,technical,0.3459,topping_up_by_card
+"omg! i'm trying to load my card and it wont top up! i desperately need the money either on my card or in my bank, where is it?",billing,general,0.3497,pending_top_up
+"my daughter would like a card as well, how can we make this happen?",shipping,account,0.3498,getting_spare_card
+how long until my transfer goes through?,general,billing,0.3537,transfer_timing
+"my daughter needs a card, how do i add her?",shipping,account,0.354,getting_spare_card
+i am getting continuous failure for all my transfers. i have cross checked each recipient detail again and again and everything is correct.,technical,billing,0.3555,declined_transfer
+is there tracking info available?,shipping,account,0.3567,card_arrival
+where can i withdrawal my money?,technical,general,0.3572,atm_support
+where can i find your locations?,general,account,0.3575,country_support
+cannot access my top up.,general,account,0.36,topping_up_by_card
+what is the fastest that i can make a transfer?,general,technical,0.3605,transfer_timing
+is there a list of atm machines?,technical,billing,0.3613,atm_support
+says my transfer can't be completed?,technical,general,0.3625,failed_transfer
+i want to use a european bank card for a top up. must i pay?,billing,general,0.3625,top_up_by_card_charge
+trouble transferring transaction contact for help,technical,billing,0.3629,declined_transfer
+what are your policies for card transfers?,technical,general,0.3636,failed_transfer
+i want a card. what is the procedure?,shipping,account,0.3643,order_physical_card
+how do i get my paycheck through this?,general,technical,0.3718,receiving_money
+do you offer multiple cards for the same account?,shipping,general,0.3732,getting_spare_card
+how do i make sure i don't run out of money on my card while traveling?,account,billing,0.3787,automatic_top_up
+is there any place i cannot use my card?,general,account,0.379,card_acceptance
+what is the charges for new card?,technical,shipping,0.3795,contactless_not_working
+i want to make a currency exchange to eu.,general,billing,0.3812,fiat_currency_support
+can you tell me what the transfer policy is?,billing,general,0.3813,top_up_by_bank_transfer_charge
+how can i fund my top-up account using my bank account?,general,account,0.384,transfer_into_account
+what all currencies can be exchanged?,technical,general,0.3879,exchange_via_app
+how can i find out where my contactless works?,technical,account,0.3914,contactless_not_working
+nothing goes through on my card.,technical,billing,0.3947,card_not_working
+the card i've got seems to be broken.,technical,billing,0.3966,card_not_working
+how are currencies exchanged?,technical,general,0.4002,exchange_via_app
+"i am traveling to germany, will i be able to use my card there?",general,account,0.405,card_acceptance
+how long does shipping take to get to a us destination?,shipping,general,0.4099,card_delivery_estimate
+where is the nearest bank machine?,technical,billing,0.4103,atm_support
+the app won't let me top up my account,technical,account,0.4112,top_up_failed
+the app will not let me into my account.,account,technical,0.4112,unable_to_verify_identity
+how can i get multiple disposble cards.,account,general,0.4115,disposable_card_limits
+i requested a virtual card but it is not showing up. why?,general,billing,0.4122,getting_virtual_card
+i'm trying to transfer money to another country. it's just pending and not sending. my account details are correct. please help me.,billing,technical,0.4124,pending_transfer
+"the transactions showing up are strange, i think my card was used without me knowing.",account,billing,0.413,compromised_card
+how do i contact customer support about a transfer?,technical,general,0.4133,declined_transfer
+i don't think my top up is working correctly,technical,billing,0.4136,top_up_failed
+i want to know why i have been unable to withdrawn funds.,technical,billing,0.4144,declined_cash_withdrawal
+how long does it take to process cheque deposits?,billing,general,0.4158,balance_not_updated_after_cheque_or_cash_deposit
+is a copy of the police report necessary for completing the report process?,account,billing,0.4175,lost_or_stolen_card
+i am not being recognized by the app.,account,technical,0.4184,unable_to_verify_identity
+will any business take this card?,general,technical,0.4188,card_acceptance
+my card got lost.,account,technical,0.4216,lost_or_stolen_card
+how come my disposable virtual card used to pay for a gym subscription got rejected?,technical,general,0.4236,virtual_card_not_working
+how long will it take to arrive?,shipping,general,0.4255,card_delivery_estimate
+"if i feel someone has my card information, can i get a new card?",account,shipping,0.429,compromised_card
+why is my money gone right when i attempted to top up,general,billing,0.4309,topping_up_by_card
+i can not get the app to know it is me.,account,technical,0.4318,unable_to_verify_identity
+what is stopping my money from transferring?,technical,general,0.4322,failed_transfer
+how long can an eu transfer take?,billing,general,0.4326,pending_transfer
+what options do i have in regards to payment?,general,billing,0.4358,supported_cards_and_currencies
+how long does a funds transfer take from one back to another?,general,billing,0.439,transfer_timing
+i need to make an immediate cancellation related to a transfer. this was a mistake. please assist quickly so this does not actually go through.,account,technical,0.4405,cancel_transfer
+i'm looking for the cash deposit top up option but can't find it. can you help me?,general,billing,0.4423,top_up_by_cash_or_cheque
+how do i do an international transfer?,general,billing,0.4425,transfer_into_account
+what can i use my card to pay for?,general,technical,0.4428,card_acceptance
+freeze my account it's been hacked.,account,billing,0.4435,compromised_card
+help! i can't find my card.,account,shipping,0.4451,lost_or_stolen_card
+i've been waiting longer than expected for my card.,shipping,billing,0.4455,card_arrival
+where do i go to change gbp?,technical,account,0.4463,exchange_via_app
+i transferred some money but it is yet to arrive.,billing,general,0.4501,balance_not_updated_after_bank_transfer
+i don't understand the money transfer process.,general,billing,0.4509,transfer_into_account
+i think i lost my card . i dont know how long it has been missing. can you see if maybe someone else has been using it?,account,billing,0.4561,lost_or_stolen_card
+payments from my disposable virtual card don't work,technical,general,0.4561,virtual_card_not_working
+can you explain disposable cards?,general,account,0.4565,get_disposable_virtual_card
+i transferred some money but the receiver can't pick it up for some reason.,general,billing,0.4575,transfer_not_received_by_recipient
+"hey, i need some help figuring out way my transfer is not complete yet. my landlord hasn't got the money yet.she should have received it by now.",general,billing,0.4578,transfer_not_received_by_recipient
+is there a way to make my old card usable with the app?,technical,account,0.4584,card_linking
+i need to find out why my transfer didn't get there.,general,technical,0.4614,transfer_not_received_by_recipient
+can you explain the disposable cards to me?,general,account,0.4616,get_disposable_virtual_card
+why isnt my account allowing transfers,technical,billing,0.4618,beneficiary_not_allowed
+what is required documents for new card process ?,technical,shipping,0.4642,contactless_not_working
+where can user find pin?,shipping,account,0.4659,get_physical_card
+"is there a top-up feature, if there isn't a lot of money left?",account,billing,0.4665,automatic_top_up
+when will the transfer be completed?,billing,general,0.4669,pending_transfer
+"my card's frozen, what can i do?",account,technical,0.4672,pin_blocked
+can you tell me if my pop-up went through?,technical,billing,0.4676,top_up_failed
+wtf??? i tried to withdraw some money at a metro bank on high st. kensington and without any notice it disappeared in the machine. the bank was already closed so i couldn't do anything. how do i get it back?,technical,billing,0.4686,card_swallowed
+where is my money i was using my card and it disappeared,general,billing,0.4705,topping_up_by_card
+is there a trick to get the disposable virtual card to work?,technical,general,0.4717,virtual_card_not_working
+can i cancel a charge?,account,billing,0.4732,cancel_transfer
+when does the money get transferred to my account,general,billing,0.4746,transfer_timing
+someone stole my money,billing,account,0.4751,direct_debit_payment_not_recognised
+what are disposable cards?,general,account,0.4778,get_disposable_virtual_card
+still waiting on that card,shipping,billing,0.4795,card_arrival
+i do not have my pin,shipping,account,0.4805,get_physical_card
+how do i top up my card using your app? i'm new to this.,general,technical,0.4808,topping_up_by_card
+why was my atm transaction cancelled?,technical,billing,0.4821,declined_cash_withdrawal
+help! my wallet was stolen and someone is taking money out. i need this money! what can i do?,billing,account,0.4824,cash_withdrawal_not_recognised
+"this is urgent, i typed the wrong payment information for a payment i needed to make and have clicked send, i need to reverse the transaction immediately.",account,billing,0.4863,cancel_transfer
+i am still waiting for a transaction to be completed,general,billing,0.4875,transfer_not_received_by_recipient
+i can't use my card.,technical,general,0.4878,card_not_working
+do you know what the restriction of the disposable cards are?,account,general,0.4879,disposable_card_limits
+"ordered awhile back, what is the eta in the us?",shipping,general,0.4905,card_delivery_estimate
+how do i cancel a previous purchase,billing,account,0.4912,request_refund
+"i am attempting to make a purchase online, but my card is not working. i know there are funds available, is this an issue on the banks end?",billing,technical,0.4927,reverted_card_payment?
+does it cost to exchange currencies with this card?,billing,technical,0.4933,exchange_charge
+if i transfer money from my bank to top-up my account will i be charged?,billing,general,0.4937,top_up_by_bank_transfer_charge
+can i make online purchases with my card?,general,technical,0.4942,card_acceptance
+"i attempted to use my card while i was intoxicated, and i failed to input my pin, and the machine kept my card. how soon can i have it back?",account,technical,0.4954,pin_blocked
+i just got my new card but am not sure how to check its pin.,shipping,account,0.4958,get_physical_card
+why did the app refuse to make an approved payment,billing,technical,0.496,reverted_card_payment?
+are there restrictions for my disposable card since it does not seem to be working?,technical,account,0.4972,virtual_card_not_working
+is it okay to use a bank card to top up,billing,general,0.4984,top_up_by_card_charge
+my card was not in the mail again can you advise?,shipping,technical,0.5006,card_delivery_estimate
+how long does it take for a transfer?,general,billing,0.5019,transfer_timing
+i lost my wallet today with all my credit cards. will you please block the card and send a replacement?,account,general,0.502,lost_or_stolen_card
+when will my transfer be available in my account.,billing,general,0.5023,balance_not_updated_after_bank_transfer
+i don't know where to look to find my pin.,shipping,account,0.5032,get_physical_card
+my disposable virtual card will not work,technical,general,0.5051,virtual_card_not_working
+"i have been waiting longer than expected for my bank card, could you provide information on when it will arrive?",shipping,billing,0.5075,card_arrival
+i want to go back on what i did this morning,account,billing,0.5098,cancel_transfer
+what would the approximate delivery date be if i transferred something urgently to china?,general,shipping,0.5128,transfer_timing
+"i completed an in country transfer a few days ago and was sure to check the account information several times since the transaction was completed, but the funds are still not available. what is the problem?",general,billing,0.5132,transfer_not_received_by_recipient
+why does my money come from?,account,billing,0.5165,verify_source_of_funds
+how long can i expect a transfer to pend for?,billing,general,0.5172,pending_transfer
+can you explain the virtual cards limit?,account,general,0.5184,disposable_card_limits
+why can't i see the top-up amount i just added to my account?,general,billing,0.5189,topping_up_by_card
+i think someone is using my card to withdraw money. someone stole my wallet. what can i do? it is urgent.,billing,account,0.519,cash_withdrawal_not_recognised
+where can i find my pin?,shipping,account,0.5193,get_physical_card
+i don't know where this transaction came from?,billing,account,0.5225,card_payment_not_recognised
+"my child needs a card, how can i add them to the account i currently have?",shipping,account,0.5274,getting_spare_card
+are cheques accepted to my account? mine didn't seem to work.,billing,technical,0.5277,balance_not_updated_after_cheque_or_cash_deposit
+is there a reason why my transaction is taking so long?,general,billing,0.5297,transfer_not_received_by_recipient
+can i make multiple online transactions with my virtual card?,technical,general,0.5305,virtual_card_not_working
+the atm at metro bank on high st. kensington didn't return my card. what should i do now that the bank is closed?,technical,billing,0.5311,card_swallowed
+can i top up using my car?,general,account,0.5317,topping_up_by_card
+i am still awaiting the completion of the transaction.,general,billing,0.5388,transfer_not_received_by_recipient
+what are the limits for disposable virtual cards?,account,general,0.5395,disposable_card_limits
+where should my card work?,general,technical,0.5429,card_acceptance
+why was my top-up unsuccessful?,technical,billing,0.5449,top_up_failed
+it seems someone used my card! there are a few transactions from a small town in the middle of nowhere that i definitely have not made! please prevent them from using it immediately!,account,billing,0.5461,compromised_card
+how do i know if my top up was unsuccessful?,technical,billing,0.5466,top_up_failed
+"i received my new card, how is it activated?",account,shipping,0.5507,activate_my_card
+can i be topped up once i hit a certain balance?,account,billing,0.5563,automatic_top_up
+why can't i use my virtual card for subscription services?,technical,general,0.5566,virtual_card_not_working
+when should i expect to see my transfer hit my account?,general,billing,0.558,transfer_timing
+i don't know what to do. should i transfer funds. my account is out of money.,general,billing,0.5585,transfer_into_account
+where in the app can i find my pin?,shipping,account,0.5612,get_physical_card
+when will my funds transfer?,general,billing,0.5613,transfer_not_received_by_recipient
+why hasn't my transfer been made?,technical,billing,0.5613,failed_transfer
+where in the app can i find out about my new pin,shipping,account,0.5649,get_physical_card
+why did i get blocked?,account,billing,0.5655,pin_blocked
+is there currency exchange on this app?,technical,billing,0.5673,exchange_via_app
+will you reinstate my pin?,account,shipping,0.5685,pin_blocked
+my cash withdrawal was partly declined,billing,technical,0.5689,wrong_amount_of_cash_received
+i need my pin,shipping,account,0.5705,get_physical_card
+how can i unlock the pin?,account,shipping,0.5709,pin_blocked
+i have a top up that didn't go through. why?,technical,billing,0.5734,top_up_failed
+the receipient doesn't see my money transfer.,general,billing,0.5754,transfer_not_received_by_recipient
+am i free to top-up as much as i want?,account,billing,0.578,top_up_limits
+why don't i have my transfer?,billing,technical,0.5783,balance_not_updated_after_bank_transfer
+how do the disposable cards work?,general,account,0.583,get_disposable_virtual_card
+can i get a throw away card,general,shipping,0.5831,get_disposable_virtual_card
+"can anyone help me, i lost my wallet and they've started withdrawing from my account.",billing,account,0.5912,cash_withdrawal_not_recognised
+why can't i see my pin?,shipping,account,0.5926,get_physical_card
+how many times can i use the disposable virtual card i have?,account,general,0.5945,disposable_card_limits
+do i need a pin,shipping,account,0.5989,get_physical_card
+what is the process for setting up a pin,shipping,account,0.6012,get_physical_card
+where is the money i topped off with?,billing,general,0.6018,pending_top_up
+how long is it going to take for my funds to show in my account?,general,billing,0.6021,transfer_timing
+how do disposable cards work?,general,account,0.6027,get_disposable_virtual_card
+transaction failed?,general,technical,0.6039,transfer_not_received_by_recipient
+how long do money transfers take?,general,billing,0.6095,transfer_not_received_by_recipient
+am i allowed to use any card to make a payment?,general,technical,0.6163,visa_or_mastercard
+can i submit a check or cash payment?,general,billing,0.6177,top_up_by_cash_or_cheque
+my card payment did not complete.,technical,billing,0.6191,declined_card_payment
+is my pin located on my account somewhere?,shipping,account,0.6203,get_physical_card
+are there any limits on where i can use my card?,general,account,0.6215,card_acceptance
+is my card usable anywhere?,general,shipping,0.6229,card_acceptance
+what should i do to get transactions off of my account if i didn't make them? my card must have been compromised and i need to freeze it asap!,billing,account,0.6238,card_payment_not_recognised
+where is my transfer from [country]?,billing,general,0.624,balance_not_updated_after_bank_transfer
+can someone please assist me with finding my nearest atm?,technical,account,0.6257,atm_support
+how many virtual cards do i get?,account,general,0.6272,disposable_card_limits
+will declined funds i tried to withdraw be returned to me?,billing,technical,0.6354,wrong_amount_of_cash_received
+"i did a top-up, but i'm not seeing it in my wallet yet.",general,billing,0.6355,topping_up_by_card
+"i live in the us, how long will it take for delivery?",shipping,general,0.6368,card_delivery_estimate
+i topped up but the app did not accept it.,technical,billing,0.6374,top_up_failed
+how can i top up?,general,account,0.6376,topping_up_by_card
+does this card work everywhere?,general,technical,0.6379,card_acceptance
+how do i get my pin unlocked?,account,shipping,0.6426,pin_blocked
+i've transferred money before without issue but now i am encountering an error stating that it isn't possible. why is that?,technical,billing,0.6465,beneficiary_not_allowed
+the app wouldn't accept my top up.,billing,technical,0.6506,top_up_reverted
+how do i unblock my card using the app?,technical,account,0.6593,card_not_working
+can you freeze my card because someone used it while i was out of town. i did not make these purchases.,account,billing,0.6693,compromised_card
+"i see random purchases to my account, was it hacked?",account,billing,0.677,compromised_card
+what do i need to do for a pin?,shipping,account,0.6783,get_physical_card
+can i transfer money to a beneficiery?,technical,general,0.6844,beneficiary_not_allowed
+are there any hindrances to using a disposable virtual card?,account,general,0.6901,disposable_card_limits
+areas card is accpeted,general,shipping,0.6912,card_acceptance
+i'm really stuck. i don't know why but my card payment has not gone through.,technical,billing,0.6941,declined_card_payment
+why did the disposable virtual card which i used to pay a gym subscription get denied?,technical,general,0.6974,virtual_card_not_working
+how would i use my money in a different country?,technical,general,0.699,exchange_via_app
+"i know i entered the right info, but my top up isn't in my balance",general,billing,0.7174,topping_up_by_card
+how much does it cost in fees to use your card?,shipping,billing,0.7226,order_physical_card
+i made a transaction and it is taking a very long time to go through.,general,billing,0.7369,transfer_not_received_by_recipient
+can i exchange currencies?,general,technical,0.7506,fiat_currency_support
+can i purchase extra non-virtual cards?,shipping,general,0.7527,getting_spare_card
+i can't transfer money from my account.,technical,general,0.7555,declined_transfer
+why isn't my top up showing on my wallet?,general,billing,0.7634,topping_up_by_card
+my withdrawal was cancelled.,technical,billing,0.7644,declined_cash_withdrawal
+i cannot use my disposable virtual card.,technical,general,0.7681,virtual_card_not_working
+should i reinstall the payment app?,technical,billing,0.7816,contactless_not_working
+my card is being declined for a purchase. i bought items before and the card worked. do you know what the problem is?,billing,technical,0.787,reverted_card_payment?
+am i able to exchange currencies?,general,technical,0.7934,fiat_currency_support
+is there a fee for extra cards?,shipping,billing,0.7991,getting_spare_card
+i want to reverse a purchase. can i cancel it?,billing,account,0.8009,request_refund
+what can i use a virtual disposable card for?,account,general,0.8141,disposable_card_limits
+can i change the amount i made on a payment that i made to the payment is correct.,account,billing,0.8343,cancel_transfer
+how long dies it take for transfers to reflect on my balance,general,billing,0.8576,transfer_timing
+may i receive a different card pin,account,shipping,0.8701,change_pin
+how many transactions can i make with a disposable card,general,account,0.8893,get_disposable_virtual_card
+where's the money that got charged to my card? it's not showing up in my account balance,general,billing,0.9213,topping_up_by_card
+can i have a non virtual card?,shipping,general,0.9355,order_physical_card
+"there is an incoming payment into my account, but it is deactivated. will they still be processed?",general,billing,0.939,fiat_currency_support

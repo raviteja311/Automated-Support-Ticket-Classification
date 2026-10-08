@@ -7,3 +7,9 @@ pre-commit==4.0.1
 # Drift monitoring. Dev-only: the runtime image never computes drift.
 evidently==0.7.23
 
+# Evaluation reports and significance tests. Already installed through
+# evidently; pinned here because the evaluate and baselines stages import
+# them directly.
+matplotlib==3.11.1
+statsmodels==0.15.0
+

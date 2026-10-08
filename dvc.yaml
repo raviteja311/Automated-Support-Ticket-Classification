@@ -23,6 +23,7 @@ stages:
     params:
       - data.test_size
       - data.random_state
+      - data.split
     outs:
       - data/processed/train.csv
       - data/processed/test.csv
@@ -54,11 +55,20 @@ stages:
     metrics:
       - metrics/metrics.json:
           cache: false
+    # Committed to git, not the DVC cache: small, and read in review.
+    outs:
+      - reports/confusion_matrix.csv:
+          cache: false
+      - reports/confusion_matrix.png:
+          cache: false
+      - reports/errors.csv:
+          cache: false
 
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
     deps:
       - src/automated_support_ticket_classification/models/baselines.py
+      - src/automated_support_ticket_classification/models/stats.py
       - src/automated_support_ticket_classification/models/train.py
       - src/automated_support_ticket_classification/config.py
       - src/automated_support_ticket_classification/logger.py
@@ -86,4 +96,24 @@ stages:
       - data/india_eval/india_messages.csv
     metrics:
       - metrics/india.json:
+          cache: false
+
+  granularity:
+    cmd: python -m automated_support_ticket_classification.models.granularity
+    deps:
+      - src/automated_support_ticket_classification/models/granularity.py
+      - src/automated_support_ticket_classification/models/train.py
+      - src/automated_support_ticket_classification/data/banking77.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - models/model.joblib
+      - data/processed/train.csv
+      - data/processed/test.csv
+    params:
+      - model.max_features
+      - model.ngram_max
+      - model.C
+      - model.max_iter
+    metrics:
+      - metrics/granularity.json:
           cache: false

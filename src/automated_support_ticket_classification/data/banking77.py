@@ -200,11 +200,17 @@ def load(cache_dir: Path, n_samples: int | None = None, seed: int = 42) -> pd.Da
     Downloads on first use, then reads from the cache. The natural class
     balance is kept rather than resampled: real support traffic is skewed, and
     flattening it would hide exactly the effect macro F1 exists to measure.
+
+    Two extra columns survive the merge. `split` records which official file a
+    row came from ("train" or "test"), so preprocess can reuse the published
+    split and results stay comparable with the literature. `intent` keeps the
+    original 77-way label, for the granularity comparison and error analysis.
     """
     _download(cache_dir)
 
-    frames = [pd.read_csv(cache_dir / name) for name in _FILES]
+    frames = [pd.read_csv(cache_dir / name).assign(split=Path(name).stem) for name in _FILES]
     df = pd.concat(frames, ignore_index=True)
+    df["intent"] = df["category"]
 
     df["label"] = df["category"].map(INTENT_MAP)
     unmapped = int(df["label"].isna().sum())
@@ -213,7 +219,7 @@ def load(cache_dir: Path, n_samples: int | None = None, seed: int = 42) -> pd.Da
         # upstream corpus gained an intent. Loud, not silent.
         raise ValueError(f"{unmapped} rows have intents missing from INTENT_MAP")
 
-    df = df[["text", "label"]]
+    df = df[["text", "label", "intent", "split"]]
     if n_samples is not None and n_samples < len(df):
         df = df.sample(n=n_samples, random_state=seed)
 

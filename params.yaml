@@ -7,6 +7,9 @@ data:
   # synthetic = seeded templates; banking77 = real support corpus
   source: banking77
   cache_dir: data/external
+  # official = banking77's published train/test files (10,003 / 3,080 rows);
+  # random = stratified re-split by test_size. synthetic needs random.
+  split: official
 model:
   max_features: 5000
   # 1 = unigrams only, 2 = unigrams + bigrams

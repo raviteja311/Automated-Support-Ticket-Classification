@@ -26,6 +26,10 @@ class DataConfig(BaseModel):
     # declared as a DVC param so switching corpus reruns the pipeline.
     source: str = "synthetic"
     cache_dir: str = "data/external"
+    # "official" reuses banking77's published train/test files, so results are
+    # comparable with the literature; "random" is a stratified re-split by
+    # test_size. Synthetic data has no official split and needs "random".
+    split: str = "random"
 
 
 class ModelConfig(BaseModel):

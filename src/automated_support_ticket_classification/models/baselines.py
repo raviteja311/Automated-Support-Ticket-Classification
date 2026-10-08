@@ -8,6 +8,10 @@ exact split and features the production model uses:
   alternatives would a different linear model on the same TF-IDF features do
                better? LinearSVC and ComplementNB are the standard comparisons.
 
+Every score carries a bootstrap 95% confidence interval, and the production
+model is compared with the best alternative by a McNemar test on the same test
+rows, so a gap can be told apart from noise.
+
 It reports, it does not decide. The production model is only flagged as beaten
 when an alternative wins by more than CLEAR_WIN_MARGIN macro F1; swapping it is
 a separate, deliberate change to train.py, not a side effect of this stage.
@@ -25,6 +29,7 @@ from sklearn.svm import LinearSVC
 
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.logger import get_logger
+from automated_support_ticket_classification.models.stats import bootstrap_f1_ci, mcnemar_p
 from automated_support_ticket_classification.models.train import build_pipeline
 
 logger = get_logger(__name__)
@@ -51,10 +56,13 @@ def candidates(cfg) -> dict:
     return models
 
 
-def score(y_true, y_pred) -> dict:
+def score(y_true, y_pred, seed: int) -> dict:
+    ci_low, ci_high = bootstrap_f1_ci(y_true, y_pred, seed=seed)
     return {
         "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
         "f1_macro": round(float(f1_score(y_true, y_pred, average="macro")), 4),
+        "ci_low": ci_low,
+        "ci_high": ci_high,
     }
 
 
@@ -64,16 +72,19 @@ def main() -> None:
     train_df = pd.read_csv(processed / "train.csv")
     test_df = pd.read_csv(processed / "test.csv")
 
-    results = {}
+    seed = cfg.data.random_state
+    results, predictions = {}, {}
     for name, pipe in candidates(cfg).items():
         pipe.fit(train_df["text"], train_df["label"])
-        results[name] = score(test_df["label"], pipe.predict(test_df["text"]))
+        predictions[name] = pipe.predict(test_df["text"])
+        results[name] = score(test_df["label"], predictions[name], seed)
         logger.info("%s: %s", name, results[name])
 
     # The production row is the shipped artifact itself, not a refit, so it
     # matches metrics/metrics.json exactly.
     production = joblib.load(cfg.model.model_path)
-    results[PRODUCTION] = score(test_df["label"], production.predict(test_df["text"]))
+    predictions[PRODUCTION] = production.predict(test_df["text"])
+    results[PRODUCTION] = score(test_df["label"], predictions[PRODUCTION], seed)
     logger.info("%s (production): %s", PRODUCTION, results[PRODUCTION])
 
     alternatives = {k: v for k, v in results.items() if k not in (PRODUCTION, "majority_class")}
@@ -87,6 +98,9 @@ def main() -> None:
         "best_alternative": best,
         "best_alternative_margin_f1_macro": margin,
         "clear_win_margin": CLEAR_WIN_MARGIN,
+        # Same test rows, so a paired test. Below 0.05: the gap is unlikely
+        # to be an accident of which messages landed in the test set.
+        "mcnemar_p": mcnemar_p(test_df["label"], predictions[PRODUCTION], predictions[best]),
         "production_beaten": bool(margin > CLEAR_WIN_MARGIN),
     }
 
