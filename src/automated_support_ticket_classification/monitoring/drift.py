@@ -151,12 +151,32 @@ def summarise(result, current_rows: int, min_rows: int = MIN_SAMPLE_ROWS) -> dic
 
 
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Compare current traffic with training data")
+    parser.add_argument(
+        "--current",
+        type=Path,
+        help="a CSV with text and label columns to use as current data instead of the "
+        "prediction log, e.g. data/india_eval/india_messages.csv",
+    )
+    parser.add_argument(
+        "--name",
+        default="drift",
+        help="output file stem, so a one-off run does not overwrite metrics/drift.json",
+    )
+    args = parser.parse_args()
+
     cfg = load_config()
     processed = Path(cfg.data.processed_dir)
     reference = pd.read_csv(processed / "train.csv")
 
     log_path = Path(cfg.monitoring.predictions_path)
-    current = load_predictions(log_path, backup_count=cfg.monitoring.backup_count)
+    if args.current is not None:
+        current = pd.read_csv(args.current)
+        logger.info("Using %s as current data (%d rows)", args.current, len(current))
+    else:
+        current = load_predictions(log_path, backup_count=cfg.monitoring.backup_count)
 
     if current is None:
         # No traffic yet. Fall back to the held-out split so the mechanism is
@@ -174,7 +194,7 @@ def main() -> None:
     out_dir = Path(cfg.evaluate.metrics_path).parent
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    html_path = out_dir / "drift_report.html"
+    html_path = out_dir / f"{args.name}_report.html"
     result.save_html(str(html_path))
 
     summary = summarise(result, current_rows=len(current))
@@ -183,7 +203,7 @@ def main() -> None:
     if summary["status"] == "insufficient_data":
         logger.warning("%s", summary["note"])
 
-    json_path = out_dir / "drift.json"
+    json_path = out_dir / f"{args.name}.json"
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
