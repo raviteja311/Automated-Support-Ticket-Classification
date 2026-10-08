@@ -86,7 +86,7 @@ def test_issues_no_verdict_on_a_thin_sample():
     """The failure this gate exists to stop.
 
     Five predictions spread evenly across five classes look drifted against a
-    training set that is 38% billing and 8% shipping. That is an artifact of
+    training set that is 38% billing and 8% card_delivery. That is an artifact of
     five being too few to estimate a share from, not a signal. Observed for
     real: a five-row sample reported label drift 0.1764 against a 0.10
     threshold.

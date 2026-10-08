@@ -30,7 +30,10 @@ TEMPLATES = {
         "I want to delete my account and all of my data.",
         "How do I enable two factor authentication on my profile?",
     ],
-    "shipping": [
+    # Was "shipping". The label follows the banking77 queue name, so both
+    # corpora share one taxonomy; the templates keep their original e-commerce
+    # wording so the synthetic data behind E1 and E2 is unchanged.
+    "card_delivery": [
         "My order {order} has not arrived after two weeks.",
         "The tracking number for order {order} shows no updates.",
         "I received the wrong item in shipment {order}.",

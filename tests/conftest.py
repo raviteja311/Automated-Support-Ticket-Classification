@@ -33,7 +33,7 @@ def ensure_model():
                     ["billing"] * 10
                     + ["technical"] * 10
                     + ["account"] * 10
-                    + ["shipping"] * 10
+                    + ["card_delivery"] * 10
                     + ["general"] * 10
                 ),
             }

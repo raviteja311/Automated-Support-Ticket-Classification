@@ -20,9 +20,9 @@ def test_clean_text_lowercases_and_collapses_spaces():
 
 def test_generate_covers_all_five_categories():
     # Guards against the page-break transcription bug that dropped the
-    # shipping templates and merged technical into account (see E2).
+    # delivery templates and merged technical into account (see E2).
     df = generate(n_samples=500, seed=0)
-    assert set(df["label"]) == {"billing", "technical", "account", "shipping", "general"}
+    assert set(df["label"]) == {"billing", "technical", "account", "card_delivery", "general"}
 
 
 def test_banking77_mapping_is_complete_and_uses_the_five_categories():
@@ -38,4 +38,4 @@ def test_banking77_mapping_is_complete_and_uses_the_five_categories():
 
     assert len(INTENT_MAP) == 77
     assert set(INTENT_MAP.values()) == set(CATEGORIES)
-    assert set(CATEGORIES) == {"billing", "technical", "account", "shipping", "general"}
+    assert set(CATEGORIES) == {"billing", "technical", "account", "card_delivery", "general"}

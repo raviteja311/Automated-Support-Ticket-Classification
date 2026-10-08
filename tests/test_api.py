@@ -46,7 +46,7 @@ def test_predict_returns_label_and_confidence():
 def test_predict_scores_cover_every_class_and_sum_to_one():
     response = client.post("/predict", json={"text": "my package arrived damaged"})
     scores = response.json()["all_scores"]
-    assert set(scores) == {"billing", "technical", "account", "shipping", "general"}
+    assert set(scores) == {"billing", "technical", "account", "card_delivery", "general"}
     assert abs(sum(scores.values()) - 1.0) < 1e-6
 
 
@@ -69,7 +69,7 @@ def test_ui_page_renders():
     assert response.headers["content-type"].startswith("text/html")
     # The five example buttons are what make the page useful; if the label set
     # ever drifts again (see D1) this catches it in the UI too.
-    for label in ("billing", "technical", "account", "shipping", "general"):
+    for label in ("billing", "technical", "account", "card_delivery", "general"):
         assert label in response.text
 
 

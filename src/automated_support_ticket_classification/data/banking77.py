@@ -9,17 +9,17 @@ Why this corpus. The obvious candidate, the CFPB consumer-complaints database,
 turns out to publish no complaint narrative in either its bulk export or its
 API, so there is no text to classify. banking77 is real support traffic, it is
 1 MB rather than 347 MB, and its intents cover all five categories including
-card delivery, which is what makes a `shipping` class possible at all.
+card delivery, which is what makes a `card_delivery` class possible at all.
 
 About the mapping. It is a judgement, not a ground truth. The rule applied
 throughout is *what would a support team need to do about this*, which is what
 a routing model is for:
 
-  billing    money moved wrongly, or a charge needs explaining or reversing
-  technical  something did not work: declined, failed, unrecognised by a device
-  account    identity, credentials, limits, and the account's lifecycle
-  shipping   a physical card needs to arrive
-  general    an informational question with no fault to fix
+  billing        money moved wrongly, or a charge needs explaining or reversing
+  technical      something did not work: declined, failed, unrecognised by a device
+  account        identity, credentials, limits, and the account's lifecycle
+  card_delivery  a physical card needs to arrive
+  general        an informational question with no fault to fix
 
 Borderline calls are marked below. They are the honest cost of reusing a corpus
 built for a different taxonomy, and a reviewer is entitled to disagree with any
@@ -104,15 +104,15 @@ INTENT_MAP: dict[str, str] = {
     "top_up_limits": "account",
     "automatic_top_up": "account",
     "cancel_transfer": "account",
-    # ---- shipping: a physical card needs to arrive ----
-    "card_arrival": "shipping",
-    "card_delivery_estimate": "shipping",
-    "get_physical_card": "shipping",
-    "getting_spare_card": "shipping",
-    "order_physical_card": "shipping",
+    # ---- card_delivery: a physical card needs to arrive ----
+    "card_arrival": "card_delivery",
+    "card_delivery_estimate": "card_delivery",
+    "get_physical_card": "card_delivery",
+    "getting_spare_card": "card_delivery",
+    "order_physical_card": "card_delivery",
     # Borderline: an expiring card is a status question, but resolving it means
     # posting a replacement, so it routes to the same team.
-    "card_about_to_expire": "shipping",
+    "card_about_to_expire": "card_delivery",
     # ---- general: informational, nothing to fix ----
     "country_support": "general",
     "fiat_currency_support": "general",
@@ -129,7 +129,7 @@ INTENT_MAP: dict[str, str] = {
     "transfer_not_received_by_recipient": "general",
 }
 
-CATEGORIES = ("billing", "technical", "account", "shipping", "general")
+CATEGORIES = ("billing", "technical", "account", "card_delivery", "general")
 
 
 def map_intent(intent: str) -> str | None:
