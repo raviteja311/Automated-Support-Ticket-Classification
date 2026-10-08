@@ -84,10 +84,19 @@ after 20 warm-up calls, texts drawn from the test split):
 | Measurement | p50 | p95 | p99 |
 |---|---|---|---|
 | `POST /predict`, in-process TestClient | 10.34 ms | 13.89 ms | 17.33 ms |
+| `POST /predict` over HTTP, local uvicorn on loopback | 12.19 ms | 16.80 ms | 21.26 ms |
 | `predict_proba` on one message, model only | 0.36 ms | 0.51 ms | 0.57 ms |
+| `POST /predict` over the internet, deployed | not yet measured | | |
+
+The HTTP row comes from `python scripts/benchmark_latency.py --url
+http://127.0.0.1:8000 -n 500` against a local `uvicorn` server: real sockets
+and uvicorn, but no network distance. Run the same command with the deployed
+URL to fill in the last row. The script reports the first request separately
+as `first_request_ms`, because a free-tier instance that has been asleep takes
+30 to 60 seconds to answer it, and that cold start would otherwise distort p95.
 
 Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.10), one request at a
-time. The API figure excludes the network and uvicorn but includes validation,
+time. The in-process figure excludes the network and uvicorn but includes validation,
 JSON encoding and the prediction log write. Treat both as an order of
 magnitude, not a service-level objective: they will differ on other machines
 and under concurrent load. Almost all of the API time is framework and I/O,

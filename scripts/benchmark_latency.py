@@ -12,12 +12,23 @@ Texts are drawn from the held-out split, so lengths are realistic. Prediction
 log writes go to a temporary file, so benchmarking never pollutes the log the
 drift monitor reads.
 
-Numbers depend heavily on the machine. Treat them as an order of magnitude for
-this laptop, not a service-level objective.
+With --url, it measures a running server over real HTTP instead:
+
+  http   POST <url>/predict with httpx over one keep-alive connection, after
+         the same warm-up. Includes the network, TLS and uvicorn, which the
+         in-process numbers leave out. The very first request is reported on
+         its own as first_request_ms: on a free tier that sleeps when idle, it
+         is the cold start, and folding it into p95 would hide it.
+
+Numbers depend heavily on the machine and, with --url, on the network between
+you and the server. Treat them as an order of magnitude, not a service-level
+objective, and always say which kind a quoted number is.
 
 Usage:
-    python scripts/benchmark_latency.py            # N=500
+    python scripts/benchmark_latency.py            # N=500, in process
     python scripts/benchmark_latency.py -n 1000
+    python scripts/benchmark_latency.py --url https://<service>.onrender.com
+    python scripts/benchmark_latency.py --url http://127.0.0.1:8000 --out metrics/latency.json
 """
 
 from __future__ import annotations
@@ -74,14 +85,52 @@ def time_calls(fn, texts: list[str]) -> list[float]:
     return samples
 
 
+def measure_http(url: str, texts: list[str], timeout_s: float = 90.0) -> dict:
+    """Time POST /predict against a running server, cold start reported separately."""
+    import httpx
+
+    endpoint = url.rstrip("/") + "/predict"
+    # A generous timeout: a sleeping free-tier instance can take a minute to wake.
+    with httpx.Client(timeout=timeout_s) as client:
+
+        def call(text: str) -> None:
+            client.post(endpoint, json={"text": text}).raise_for_status()
+
+        start = time.perf_counter()
+        call(texts[0])
+        first_ms = (time.perf_counter() - start) * 1000
+        samples = time_calls(call, texts)
+
+    return {
+        "url": url,
+        "first_request_ms": round(first_ms, 1),
+        "http_predict": percentiles(samples),
+    }
+
+
+def machine() -> dict:
+    return {
+        "platform": platform.platform(),
+        "processor": platform.processor(),
+        "python": platform.python_version(),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("-n", type=int, default=500, help="timed requests per measurement")
+    parser.add_argument("--url", help="measure a running server over HTTP instead of in process")
+    parser.add_argument("--out", type=Path, help="also write the JSON result to this file")
     args = parser.parse_args()
     if args.n < 200:
         sys.exit("Use n >= 200; fewer samples make p95 meaningless.")
 
     texts = load_texts(args.n)
+    if args.url:
+        # "client" is the machine sending the requests, not the server.
+        result = {"mode": "network", **measure_http(args.url, texts), "client": machine()}
+        emit(result, args.out)
+        return
 
     with tempfile.TemporaryDirectory() as tmp:
         real_load_config = app_module.load_config
@@ -108,15 +157,20 @@ def main() -> None:
     model_only = percentiles(time_calls(lambda t: model.predict_proba([t]), cleaned))
 
     result = {
+        "mode": "in_process",
         "api_predict": api,
         "model_predict_proba": model_only,
-        "machine": {
-            "platform": platform.platform(),
-            "processor": platform.processor(),
-            "python": platform.python_version(),
-        },
+        "machine": machine(),
     }
-    print(json.dumps(result, indent=2))
+    emit(result, args.out)
+
+
+def emit(result: dict, out: Path | None) -> None:
+    text = json.dumps(result, indent=2)
+    print(text)
+    if out is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
