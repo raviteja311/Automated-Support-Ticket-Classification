@@ -73,3 +73,17 @@ stages:
     metrics:
       - metrics/baselines.json:
           cache: false
+
+  eval_india:
+    cmd: python -m automated_support_ticket_classification.models.eval_india
+    deps:
+      - src/automated_support_ticket_classification/models/eval_india.py
+      - src/automated_support_ticket_classification/data/preprocess.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - models/model.joblib
+      - metrics/metrics.json
+      - data/india_eval/india_messages.csv
+    metrics:
+      - metrics/india.json:
+          cache: false
