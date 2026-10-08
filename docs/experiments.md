@@ -379,9 +379,9 @@ McNemar, mapped against direct on the same rows: p = 0.69.
 
 **Result.** Predicting intents and mapping them scores 0.46pp higher, well
 inside both confidence intervals, and McNemar finds no difference in the
-errors the two models make. The 77-way model is wrong on 14% of intents, but
-most of those mistakes land on a sibling intent in the same queue, so they
-vanish when mapped.
+errors the two models make. The 77-way model is wrong on 14.4% of intents but
+only 7.9% of queues: 45% of its intent mistakes land on a sibling intent in
+the same queue, and vanish when mapped.
 
 **Decision.** Keep the direct 5-way model. The fine-grained labels carry no
 measurable extra signal for routing, and the direct model is smaller and
