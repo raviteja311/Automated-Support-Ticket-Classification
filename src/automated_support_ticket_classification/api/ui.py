@@ -106,7 +106,7 @@ const EXAMPLES = [
   ["billing",   "Why was I charged a fee on a cash withdrawal?"],
   ["technical", "I think my transfer was declined, but why?"],
   ["account",   "What is the need to verify my identity?"],
-  ["shipping",  "Can I track when my card will be delivered?"],
+  ["card_delivery",  "Can I track when my card will be delivered?"],
   ["general",   "Are both Visa and Mastercard accepted?"],
 ];
 

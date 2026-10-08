@@ -7,20 +7,20 @@
       "f1_macro": 0.1097
     },
     "tfidf_linearsvc": {
-      "accuracy": 0.9404,
-      "f1_macro": 0.9333
+      "accuracy": 0.9373,
+      "f1_macro": 0.9301
     },
     "tfidf_complementnb": {
-      "accuracy": 0.9117,
-      "f1_macro": 0.8968
+      "accuracy": 0.9022,
+      "f1_macro": 0.8839
     },
     "tfidf_logreg": {
-      "accuracy": 0.9282,
-      "f1_macro": 0.9171
+      "accuracy": 0.9213,
+      "f1_macro": 0.9081
     }
   },
   "best_alternative": "tfidf_linearsvc",
-  "best_alternative_margin_f1_macro": 0.0162,
+  "best_alternative_margin_f1_macro": 0.022,
   "clear_win_margin": 0.01,
   "production_beaten": true
 }

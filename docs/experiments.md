@@ -297,3 +297,30 @@ stays visible in every pull request until it is resolved.
 is, against a floor of 0.11; it is also not the best a linear model on these
 exact features can do.
 
+
+---
+
+## E8 - Renaming a queue moved the score by 0.9pp
+
+**Not a planned experiment.** The `shipping` queue was renamed `card_delivery`,
+which reads naturally for a bank. No intent changed queue and no model setting
+changed. The pipeline still uses `data.split: random` on this branch.
+
+| run              | test rows | tfidf_logreg f1_macro | tfidf_linearsvc f1_macro | ComplementNB f1_macro |
+|------------------|----------:|----------------------:|-------------------------:|----------------------:|
+| before (shipping)| 2,617     | 0.9171                | 0.9333                   | 0.8968                |
+| after (card_delivery) | 2,617 | 0.9081              | 0.9301                   | 0.8839                |
+
+**Why.** `train_test_split(stratify=...)` draws each class's test rows in the
+sorted order of the class names. `card_delivery` sorts before `general`, where
+`shipping` sorted after it, so the same seed produced a different split: only
+2,040 of the 2,617 test rows are shared between the two runs.
+
+**What it shows.** Nothing about the model changed, so the 0.9pp drop is
+pure split noise: one random split versus another can move macro F1 by about a
+point. Any gap of that size between two models on a single random split is not
+evidence on its own. This is one more reason to evaluate on banking77's fixed
+official split (E7) and to put bootstrap confidence intervals on every score.
+
+The majority-class floor is unchanged, as expected: the class counts in the
+test set are the same, only the rows differ.

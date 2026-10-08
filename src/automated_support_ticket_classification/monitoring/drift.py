@@ -41,7 +41,7 @@ DRIFT_SHARE_THRESHOLD = 0.5
 # Drift tests compare distributions, and a distribution estimated from a
 # handful of requests is mostly noise. Five predictions spread evenly across
 # five classes look wildly "drifted" against a training set that is 38% billing
-# and 8% shipping, purely because five is too few to estimate a share from.
+# and 8% card_delivery, purely because five is too few to estimate a share from.
 # Observed directly: a five-row sample reported label drift of 0.1764 against a
 # 0.10 threshold, which was an artifact and nothing else.
 #

@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 An end-to-end MLOps service that classifies customer support tickets into
-**billing**, **technical**, **account**, **shipping** and **general**, returning a
+**billing**, **technical**, **account**, **card_delivery** and **general**, returning a
 label, a confidence score, and the full probability distribution.
 
 The machine learning is deliberately simple, a linear model that trains in
@@ -190,7 +190,7 @@ One ticket per class, against the locally running service:
 | Why was I charged a fee on a cash withdrawal? | billing | 0.999 |
 | I think my transfer was declined, but why? | technical | 0.987 |
 | What is the need to verify my identity? | account | 0.998 |
-| Can I track when my card will be delivered? | shipping | 0.946 |
+| Can I track when my card will be delivered? | card_delivery | 0.946 |
 | Are both Visa and Mastercard accepted? | general | 0.975 |
 
 The model is trained on banking support text, so it expects that domain.

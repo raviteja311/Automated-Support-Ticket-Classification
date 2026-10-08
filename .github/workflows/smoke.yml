@@ -57,4 +57,4 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"text":"I need a refund for the duplicate payment"}')
           echo "Response: $body"
-          echo "$body" | grep -qE '"label":"(billing|technical|account|shipping|general)"'
+          echo "$body" | grep -qE '"label":"(billing|technical|account|card_delivery|general)"'
