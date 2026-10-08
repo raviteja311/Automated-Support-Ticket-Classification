@@ -1,26 +1,41 @@
 {
-  "test_rows": 2617,
+  "test_rows": 3080,
   "production": "tfidf_logreg",
   "models": {
     "majority_class": {
-      "accuracy": 0.3779,
-      "f1_macro": 0.1097
+      "accuracy": 0.3247,
+      "f1_macro": 0.098,
+      "ci_low": 0.0944,
+      "ci_high": 0.1019
     },
     "tfidf_linearsvc": {
-      "accuracy": 0.9373,
-      "f1_macro": 0.9301
+      "accuracy": 0.9396,
+      "f1_macro": 0.9334,
+      "ci_low": 0.9236,
+      "ci_high": 0.9424
     },
     "tfidf_complementnb": {
-      "accuracy": 0.9022,
-      "f1_macro": 0.8839
+      "accuracy": 0.8951,
+      "f1_macro": 0.878,
+      "ci_low": 0.8638,
+      "ci_high": 0.8918
+    },
+    "tfidf_linearsvc_calibrated": {
+      "accuracy": 0.9377,
+      "f1_macro": 0.9313,
+      "ci_low": 0.9214,
+      "ci_high": 0.9399
     },
     "tfidf_logreg": {
-      "accuracy": 0.9213,
-      "f1_macro": 0.9081
+      "accuracy": 0.9185,
+      "f1_macro": 0.9086,
+      "ci_low": 0.8971,
+      "ci_high": 0.9195
     }
   },
   "best_alternative": "tfidf_linearsvc",
-  "best_alternative_margin_f1_macro": 0.022,
+  "best_alternative_margin_f1_macro": 0.0248,
   "clear_win_margin": 0.01,
+  "mcnemar_p": 5.683941372411479e-10,
   "production_beaten": true
 }
