@@ -1,6 +1,6 @@
-true,account,billing,general,shipping,technical
-account,711,21,9,10,9
-billing,8,967,14,0,11
-general,18,35,443,5,19
-shipping,20,7,8,204,1
-technical,7,24,22,3,504
+true,account,billing,card_delivery,general,technical
+account,711,21,10,9,9
+billing,8,967,0,14,11
+card_delivery,20,7,204,8,1
+general,18,35,5,443,19
+technical,7,24,3,22,504
