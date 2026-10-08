@@ -34,3 +34,27 @@ def test_pipeline_learns_easy_separation():
     pipe.fit(df["text"], df["label"])
 
     assert pipe.score(df["text"], df["label"]) > 0.9
+
+
+def test_calibrated_svc_gives_probabilities():
+    """The reason to calibrate: the API needs predict_proba for confidence."""
+    import pandas as pd
+
+    from automated_support_ticket_classification.config import load_config
+
+    cfg = load_config()
+    texts = ["refund my payment"] * 10 + ["app keeps crashing"] * 10
+    labels = ["billing"] * 10 + ["technical"] * 10
+    pipe = build_pipeline(cfg, "linearsvc_calibrated").fit(pd.Series(texts), labels)
+    proba = pipe.predict_proba(["refund please"])[0]
+    assert abs(proba.sum() - 1.0) < 1e-6
+    assert list(pipe.classes_) == ["billing", "technical"]
+
+
+def test_unknown_model_type_fails_loudly():
+    import pytest
+
+    from automated_support_ticket_classification.config import load_config
+
+    with pytest.raises(ValueError, match="Unknown model.type"):
+        build_pipeline(load_config(), "random_forest")

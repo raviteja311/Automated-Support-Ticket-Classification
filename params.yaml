@@ -11,6 +11,10 @@ data:
   # random = stratified re-split by test_size. synthetic needs random.
   split: official
 model:
+  # logreg | linearsvc_calibrated (LinearSVC wrapped in CalibratedClassifierCV)
+  type: logreg
+  # Calibration method for linearsvc_calibrated: sigmoid | isotonic
+  calibration: sigmoid
   max_features: 5000
   # 1 = unigrams only, 2 = unigrams + bigrams
   ngram_max: 2
@@ -28,3 +32,8 @@ monitoring:
   # Rotate the log at this size in bytes; 0 disables rotation
   max_bytes: 5000000
   backup_count: 3
+serve:
+  # Below this top probability, /predict answers label "needs_review" so a
+  # person routes the message. 0.0 disables the route. Pick the operating
+  # point from reports/coverage_accuracy.csv.
+  review_threshold: 0.0

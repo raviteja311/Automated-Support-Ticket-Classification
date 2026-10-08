@@ -162,10 +162,25 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/predict `
 ```
 
 ```
-label       confidence  all_scores
------       ----------  ----------
-billing     0.938       @{billing=0.938; technical=0.018; ...}
+label       predicted_label  confidence  all_scores
+-----       ---------------  ----------  ----------
+billing     billing          0.938       @{billing=0.938; technical=0.018; ...}
 ```
+
+### Human review for low-confidence predictions
+
+A real triage system routes the messages it is sure about and hands the rest
+to a person. When the top probability is below `serve.review_threshold` in
+`params.yaml`, `/predict` answers `label: "needs_review"`, and keeps the
+model's best guess in `predicted_label` and the full `all_scores`, so the
+reviewer starts from the suggestion. The default of `0.0` disables the route.
+
+The evaluate stage writes the trade-off to `reports/coverage_accuracy.csv` and
+`.png`: for each threshold, the share of messages auto-routed and the accuracy
+on them. The Prometheus counter `ticket_routed_total{queue=...}` counts
+answers by routed queue, so the review rate can be graphed and alerted on. A
+rising review rate means the model is less sure of its traffic, which is a
+drift signal of its own.
 
 Endpoints: `/` service info, `/ui` test page, `/health` liveness,
 `/predict` classification, `/docs` interactive docs, `/metrics` Prometheus.

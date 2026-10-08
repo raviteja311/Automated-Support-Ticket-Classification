@@ -40,6 +40,11 @@ class ModelConfig(BaseModel):
     C: float
     max_iter: int
     model_path: str
+    # "logreg" or "linearsvc_calibrated"; see models/train.py. Defaulted so
+    # older params.yaml files still load as the original LogReg model.
+    type: str = "logreg"
+    # CalibratedClassifierCV method for linearsvc_calibrated: sigmoid or isotonic.
+    calibration: str = "sigmoid"
 
 
 class EvaluateConfig(BaseModel):
@@ -62,6 +67,15 @@ class MonitoringConfig(BaseModel):
     backup_count: int = 3
 
 
+class ServeConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    # Predictions whose top probability is below this are answered with
+    # label "needs_review" instead of a queue. 0 disables the route. Choose it
+    # from reports/coverage_accuracy.csv, written by the evaluate stage.
+    review_threshold: float = 0.0
+
+
 class Config(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
 
@@ -69,6 +83,7 @@ class Config(BaseModel):
     model: ModelConfig
     evaluate: EvaluateConfig
     monitoring: MonitoringConfig = MonitoringConfig()
+    serve: ServeConfig = ServeConfig()
 
 
 def load_config(path: str | Path = PARAMS_PATH) -> Config:

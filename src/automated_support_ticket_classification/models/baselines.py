@@ -30,25 +30,40 @@ from sklearn.svm import LinearSVC
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.logger import get_logger
 from automated_support_ticket_classification.models.stats import bootstrap_f1_ci, mcnemar_p
-from automated_support_ticket_classification.models.train import build_pipeline
+from automated_support_ticket_classification.models.train import (
+    MODEL_TYPES,
+    build_pipeline,
+    make_classifier,
+)
 
 logger = get_logger(__name__)
 
-PRODUCTION = "tfidf_logreg"
 
 # One percentage point of macro F1. Smaller gaps are within what a different
 # random split would move, so they are not a reason to change models.
 CLEAR_WIN_MARGIN = 0.01
 
 
+def production_name(cfg) -> str:
+    """The results key for the shipped model, e.g. tfidf_logreg."""
+    return f"tfidf_{cfg.model.type}"
+
+
 def candidates(cfg) -> dict:
-    """Alternative estimators, each on the production TF-IDF settings."""
+    """Alternative estimators, each on the production TF-IDF settings.
+
+    Every model type train.py can ship is a candidate, except the one that is
+    currently shipped: that row is the artifact itself, scored in main().
+    """
     models = {}
     for name, clf in (
         ("majority_class", DummyClassifier(strategy="most_frequent")),
         ("tfidf_linearsvc", LinearSVC(C=cfg.model.C, random_state=cfg.data.random_state)),
         ("tfidf_complementnb", ComplementNB()),
+        *((f"tfidf_{t}", make_classifier(cfg, t)) for t in MODEL_TYPES),
     ):
+        if name == production_name(cfg):
+            continue
         pipe = build_pipeline(cfg)
         # Swap only the classifier, so the vectoriser is configured identically.
         pipe.set_params(clf=clf)
@@ -73,6 +88,7 @@ def main() -> None:
     test_df = pd.read_csv(processed / "test.csv")
 
     seed = cfg.data.random_state
+    production_key = production_name(cfg)
     results, predictions = {}, {}
     for name, pipe in candidates(cfg).items():
         pipe.fit(train_df["text"], train_df["label"])
@@ -83,24 +99,24 @@ def main() -> None:
     # The production row is the shipped artifact itself, not a refit, so it
     # matches metrics/metrics.json exactly.
     production = joblib.load(cfg.model.model_path)
-    predictions[PRODUCTION] = production.predict(test_df["text"])
-    results[PRODUCTION] = score(test_df["label"], predictions[PRODUCTION], seed)
-    logger.info("%s (production): %s", PRODUCTION, results[PRODUCTION])
+    predictions[production_key] = production.predict(test_df["text"])
+    results[production_key] = score(test_df["label"], predictions[production_key], seed)
+    logger.info("%s (production): %s", production_key, results[production_key])
 
-    alternatives = {k: v for k, v in results.items() if k not in (PRODUCTION, "majority_class")}
+    alternatives = {k: v for k, v in results.items() if k not in (production_key, "majority_class")}
     best = max(alternatives, key=lambda k: alternatives[k]["f1_macro"])
-    margin = round(alternatives[best]["f1_macro"] - results[PRODUCTION]["f1_macro"], 4)
+    margin = round(alternatives[best]["f1_macro"] - results[production_key]["f1_macro"], 4)
 
     report = {
         "test_rows": len(test_df),
-        "production": PRODUCTION,
+        "production": production_key,
         "models": results,
         "best_alternative": best,
         "best_alternative_margin_f1_macro": margin,
         "clear_win_margin": CLEAR_WIN_MARGIN,
         # Same test rows, so a paired test. Below 0.05: the gap is unlikely
         # to be an accident of which messages landed in the test set.
-        "mcnemar_p": mcnemar_p(test_df["label"], predictions[PRODUCTION], predictions[best]),
+        "mcnemar_p": mcnemar_p(test_df["label"], predictions[production_key], predictions[best]),
         "production_beaten": bool(margin > CLEAR_WIN_MARGIN),
     }
 

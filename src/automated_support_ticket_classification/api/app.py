@@ -4,9 +4,14 @@ from pathlib import Path
 import joblib
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from prometheus_client import Counter
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from automated_support_ticket_classification.api.schemas import TicketRequest, TicketResponse
+from automated_support_ticket_classification.api.schemas import (
+    NEEDS_REVIEW,
+    TicketRequest,
+    TicketResponse,
+)
 from automated_support_ticket_classification.api.ui import INDEX_HTML
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.data.preprocess import clean_text
@@ -20,6 +25,12 @@ app = FastAPI(title="Automated Support Ticket Classification API", version="1.0.
 # Adds request count, latency and error-rate metrics, and serves them at
 # /metrics for Prometheus to scrape. The RED signals: Rate, Errors, Duration.
 Instrumentator().instrument(app).expose(app)
+
+# One count per answered /predict, by where it was routed. The review rate is
+# needs_review over the total, e.g. in PromQL:
+#   sum(rate(ticket_routed_total{queue="needs_review"}[1h]))
+#     / sum(rate(ticket_routed_total[1h]))
+ROUTED = Counter("ticket_routed", "Predictions answered, by routed queue", ["queue"])
 
 
 class ModelUnavailableError(RuntimeError):
@@ -117,6 +128,15 @@ def predict(request: TicketRequest) -> TicketResponse:
 
     # Feeds monitoring/drift.py. Without a record of what the model actually
     # saw in production, drift cannot be measured at all.
+    # The model's answer, not the routing decision: drift compares it with the
+    # training labels, which never contain needs_review.
     _log_prediction(text, best)
 
-    return TicketResponse(label=best, confidence=scores[best], all_scores=scores)
+    # Route only confident predictions; send the rest to a person. A rising
+    # share of needs_review is itself a drift signal.
+    label = best if scores[best] >= load_config().serve.review_threshold else NEEDS_REVIEW
+    ROUTED.labels(queue=label).inc()
+
+    return TicketResponse(
+        label=label, predicted_label=best, confidence=scores[best], all_scores=scores
+    )

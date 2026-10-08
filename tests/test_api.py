@@ -132,3 +132,32 @@ def test_prediction_log_redaction_can_be_switched_off(monkeypatch, tmp_path):
     _config_with(monkeypatch, monitoring__predictions_path=str(log), monitoring__redact=False)
     client.post("/predict", json={"text": "write to jane@example.com"})
     assert "jane@example.com" in log.read_text(encoding="utf-8")
+
+
+def _routed(queue: str) -> float:
+    return app_module.ROUTED.labels(queue=queue)._value.get()
+
+
+def test_confident_prediction_is_routed_to_its_queue(monkeypatch):
+    # 0.0 disables the route: every prediction is routed to a queue.
+    _config_with(monkeypatch, serve__review_threshold=0.0)
+    review_before = _routed("needs_review")
+    body = client.post("/predict", json={"text": "I was charged twice this month"}).json()
+    assert body["label"] == body["predicted_label"] != "needs_review"
+    assert _routed("needs_review") == review_before
+
+
+def test_unconfident_prediction_goes_to_review_with_the_models_guess(monkeypatch):
+    # A threshold above 1.0 sends everything to review.
+    _config_with(monkeypatch, serve__review_threshold=1.01)
+    before = _routed("needs_review")
+    body = client.post("/predict", json={"text": "I was charged twice this month"}).json()
+    assert body["label"] == "needs_review"
+    assert body["predicted_label"] in body["all_scores"]
+    assert body["confidence"] == body["all_scores"][body["predicted_label"]]
+    assert _routed("needs_review") == before + 1
+
+
+def test_review_counter_is_exposed_to_prometheus():
+    client.post("/predict", json={"text": "I was charged twice this month"})
+    assert "ticket_routed_total" in client.get("/metrics").text
