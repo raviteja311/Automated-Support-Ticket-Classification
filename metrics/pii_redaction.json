@@ -1,0 +1,18 @@
+{
+  "pii_values": 45,
+  "recall": 1.0,
+  "recall_by_kind": {
+    "aadhaar": 1.0,
+    "account": 1.0,
+    "card": 1.0,
+    "card_fragment": 1.0,
+    "email": 1.0,
+    "ifsc": 1.0,
+    "mobile": 1.0,
+    "multi": 1.0,
+    "pan": 1.0,
+    "upi": 1.0
+  },
+  "pii_free_messages": 15,
+  "untouched": 1.0
+}

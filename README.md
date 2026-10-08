@@ -169,8 +169,28 @@ the file appears.
 ### Prediction log and privacy
 
 Every prediction is appended to `data/predictions.jsonl`, which the drift
-monitor reads. Before anything is written, emails and runs of 8 or more digits
-(card, account and phone numbers) are replaced with `[email]` and `[number]`.
+monitor reads. Before anything is written, personal identifiers are replaced
+with placeholders:
+
+| Identifier | Example | Becomes |
+|---|---|---|
+| Email | `ravi.kumar@gmail.com` | `[email]` |
+| UPI ID | `ravi@okaxis`, `9876543210@ybl` | `[upi]` |
+| PAN | `ABCDE1234F` (any case) | `[pan]` |
+| IFSC | `SBIN0001234` (any case) | `[ifsc]` |
+| 8+ digit runs: card, account, Aadhaar, phone | `1234 5678 9012`, `+91 98765 43210` | `[number]` |
+| Card fragments | `card ending 4321`, `xxxx4321` | `card ending [number]` |
+
+Short numbers such as amounts and order IDs are kept, because they help routing
+and identify nobody. `python scripts/pii_recall.py` scores the redaction on 56
+hand-written cases in `tests/fixtures/pii_cases.csv` and writes
+`metrics/pii_redaction.json`. Recall went from 0.53 (emails and digit runs
+only) to 1.00, with all 15 PII-free messages left untouched. Those cases were
+written alongside the patterns, so treat 1.00 as "covers what it was designed
+for", not as a measure on unseen text. This is a regex baseline: names and
+street addresses have no fixed shape and would need named-entity recognition,
+which is out of scope.
+
 The file rotates at 5 MB and keeps 3 rotated copies, so raw traffic is not
 retained indefinitely; the drift monitor reads the rotated copies too. All of
 it is configurable under `monitoring:` in `params.yaml` (`redact`, `max_bytes`,
@@ -202,7 +222,7 @@ distribution and will be routed on surface vocabulary rather than meaning.
 - **Model registry with a promotion gate** ([`models/registry.py`](src/automated_support_ticket_classification/models/registry.py), [`models/promote.py`](src/automated_support_ticket_classification/models/promote.py)): a new model only takes the MLflow `production` alias if it beats the current one on macro F1, trained on the same corpus.
 - **Drift monitoring** ([`monitoring/drift.py`](src/automated_support_ticket_classification/monitoring/drift.py)): Evidently checks label and text drift, with results in [metrics/drift.json](metrics/drift.json). It stays quiet on train vs test and fires on real vs synthetic data.
 - **API plus Prometheus in one command**: `docker compose up` runs the service and a Prometheus instance scraping `/metrics`.
-- **Tests and CI**: `pytest` runs 43 tests across the data generators and corpus mapping, the corpus download retry, the model pipeline, the API (including input length limits and the missing-model 503), prediction-log redaction and rotation, drift and the registry promotion gate. CI runs `ruff format --check .`, `ruff check .`, the tests, a Docker build and a container smoke test.
+- **Tests and CI**: `pytest` runs 104 tests across the data generators and corpus mapping, the corpus download retry, the model pipeline, the API (including input length limits and the missing-model 503), prediction-log redaction (including Indian identifiers: PAN, UPI, IFSC, Aadhaar) and rotation, drift and the registry promotion gate. CI runs `ruff format --check .`, `ruff check .`, the tests, a Docker build and a container smoke test.
 
 See [docs/experiments.md](docs/experiments.md) for the experiment log and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 

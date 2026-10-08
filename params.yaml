@@ -20,7 +20,7 @@ evaluate:
   baselines_path: metrics/baselines.json
 monitoring:
   predictions_path: data/predictions.jsonl
-  # Mask emails and long digit runs (card, account numbers) before logging
+  # Mask emails, UPI IDs, PAN, IFSC and long digit runs before logging
   redact: true
   # Rotate the log at this size in bytes; 0 disables rotation
   max_bytes: 5000000

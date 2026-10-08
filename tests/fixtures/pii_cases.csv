@@ -1,0 +1,57 @@
+kind,pii,text
+email,ravi.kumar@gmail.com,please send the statement to ravi.kumar@gmail.com
+email,a.b+bank@mail.example.co.in,my new email is a.b+bank@mail.example.co.in kindly update
+email,support_user@yahoo.co.in,mail me at support_user@yahoo.co.in.
+upi,ravi@okaxis,sent 500 to ravi@okaxis but it failed
+upi,9876543210@ybl,refund to 9876543210@ybl please
+upi,priya.sharma@oksbi,my upi id is priya.sharma@oksbi
+upi,shop-123@paytm,paid to shop-123@paytm amount debited not received
+upi,raviteja@ibl,collect request from raviteja@ibl is not showing
+upi,9123456789@upi,send it to 9123456789@upi.
+upi,anita@okhdfcbank,UPI ID anita@okhdfcbank blocked suddenly
+pan,ABCDE1234F,my PAN is ABCDE1234F please link it
+pan,abcde1234f,pan abcde1234f not getting verified
+pan,PQRSX9876K,kyc rejected for PAN PQRSX9876K why
+pan,AbCdE1234f,update pan AbCdE1234f on my account
+ifsc,SBIN0001234,ifsc SBIN0001234 is showing invalid
+ifsc,hdfc0000123,neft failed with ifsc hdfc0000123
+ifsc,ICIC0ABC123,beneficiary branch ICIC0ABC123 not found
+ifsc,UTIB0002345,what is the timing for IFSC UTIB0002345 branch
+aadhaar,1234 5678 9012,aadhaar 1234 5678 9012 linked wrongly
+aadhaar,234567890123,my aadhaar number is 234567890123
+aadhaar,3456-7890-1234,link aadhaar 3456-7890-1234 to account
+mobile,+91 98765 43210,call me on +91 98765 43210
+mobile,+919876543210,otp not coming to +919876543210
+mobile,9876543210,registered mobile 9876543210 changed
+mobile,98765 43210,my number 98765 43210 is not getting sms
+mobile,+91-9123456789,whatsapp +91-9123456789 for details
+card,4111 1111 1111 1111,card 4111 1111 1111 1111 blocked
+card,5500-0000-0000-0004,charged twice on 5500-0000-0000-0004
+card,4012888888881881,new card 4012888888881881 not activated
+account,12345678901,account 12345678901 frozen after kyc
+account,000123456789,transfer to a/c 000123456789 not reached
+account,50100123456789,money not credited to 50100123456789
+card_fragment,4321,card ending 4321 was declined
+card_fragment,9876,my debit card ending in 9876 is lost
+card_fragment,1234,unknown charge on card ending with 1234
+card_fragment,5678,card number xxxx5678 shows a fee
+card_fragment,4455,account XXXXXXXX4455 debited twice
+multi,ravi@okaxis|SBIN0001234,refund to ravi@okaxis or neft to ifsc SBIN0001234
+multi,ABCDE1234F|1234 5678 9012,pan ABCDE1234F and aadhaar 1234 5678 9012 mismatch
+multi,ravi.kumar@gmail.com|9876543210,email ravi.kumar@gmail.com phone 9876543210
+multi,9876543210@ybl|+91 98765 43210,upi 9876543210@ybl mobile +91 98765 43210
+none,,charged $49 twice on order #10231 in 2024
+none,,my upi payment of 2500 failed but money got debited
+none,,what is the ifsc code for my branch
+none,,how do i link my pan card to my account
+none,,aadhaar otp nahi aa raha
+none,,neft to my father's account not reached since yesterday
+none,,what is the imps limit per day
+none,,i was charged a 2% fee on 15000 rupees
+none,,transaction id 4567 failed at 10:30 on 12/09/2026
+none,,contact @support on twitter they did not reply
+none,,card delivery estimate is 7 days
+none,,emi of 3999 debited on 5th
+none,,top up of 1000 via upi not reflecting
+none,,kyc pending for 3 weeks account frozen
+none,,the app version 2.10.3 keeps crashing
