@@ -68,6 +68,7 @@ stages:
     cmd: python -m automated_support_ticket_classification.models.baselines
     deps:
       - src/automated_support_ticket_classification/models/baselines.py
+      - src/automated_support_ticket_classification/models/stats.py
       - src/automated_support_ticket_classification/models/train.py
       - src/automated_support_ticket_classification/config.py
       - src/automated_support_ticket_classification/logger.py
@@ -81,4 +82,24 @@ stages:
       - data.random_state
     metrics:
       - metrics/baselines.json:
+          cache: false
+
+  granularity:
+    cmd: python -m automated_support_ticket_classification.models.granularity
+    deps:
+      - src/automated_support_ticket_classification/models/granularity.py
+      - src/automated_support_ticket_classification/models/train.py
+      - src/automated_support_ticket_classification/data/banking77.py
+      - src/automated_support_ticket_classification/config.py
+      - src/automated_support_ticket_classification/logger.py
+      - models/model.joblib
+      - data/processed/train.csv
+      - data/processed/test.csv
+    params:
+      - model.max_features
+      - model.ngram_max
+      - model.C
+      - model.max_iter
+    metrics:
+      - metrics/granularity.json:
           cache: false
