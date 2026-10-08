@@ -117,13 +117,25 @@ stages:
       size: 631
     - path: src/automated_support_ticket_classification/models/evaluate.py
       hash: md5
-      md5: 30e36be1586d294e08bc9b70a3cbdbb5
-      size: 1123
+      md5: bea51bf75e6c4f9001d7629732385efb
+      size: 3822
     outs:
     - path: metrics/metrics.json
       hash: md5
       md5: 2ebb61c4902c954edbc4b964f2194682
       size: 1289
+    - path: reports/confusion_matrix.csv
+      hash: md5
+      md5: 60bcc7624576d3df2c197c4fdd19aab8
+      size: 167
+    - path: reports/confusion_matrix.png
+      hash: md5
+      md5: a57a1057f329399213146f99551ec520
+      size: 32446
+    - path: reports/errors.csv
+      hash: md5
+      md5: 0a899a6359a6fcf1ddb07749c68e8729
+      size: 24984
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
     deps:

@@ -55,6 +55,14 @@ stages:
     metrics:
       - metrics/metrics.json:
           cache: false
+    # Committed to git, not the DVC cache: small, and read in review.
+    outs:
+      - reports/confusion_matrix.csv:
+          cache: false
+      - reports/confusion_matrix.png:
+          cache: false
+      - reports/errors.csv:
+          cache: false
 
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
