@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 
@@ -76,6 +77,59 @@ def plot_confusion(cm: pd.DataFrame, path: Path) -> None:
     plt.close(fig)
 
 
+COVERAGE_THRESHOLDS = [round(0.30 + 0.05 * i, 2) for i in range(14)]  # 0.30 to 0.95
+
+
+def coverage_table(confidence, correct, thresholds=COVERAGE_THRESHOLDS) -> pd.DataFrame:
+    """Coverage and accuracy if only predictions at or above each threshold are auto-routed.
+
+    coverage  share of messages whose top probability is >= the threshold
+    accuracy  accuracy on exactly those messages; the rest go to a person
+
+    This is the trade-off behind serve.review_threshold: a higher threshold
+    routes fewer messages automatically, and gets more of those right.
+    """
+    confidence = np.asarray(confidence)
+    correct = np.asarray(correct, dtype=bool)
+    rows = []
+    for t in thresholds:
+        routed = confidence >= t
+        rows.append(
+            {
+                "threshold": t,
+                "coverage": round(float(routed.mean()), 4),
+                "accuracy": round(float(correct[routed].mean()), 4) if routed.any() else None,
+                "to_review": int((~routed).sum()),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def plot_coverage(table: pd.DataFrame, path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    ax.plot(table["coverage"], table["accuracy"], marker="o")
+    for row in table.itertuples():
+        if row.threshold in (0.5, 0.7, 0.9):
+            ax.annotate(
+                f"t={row.threshold}",
+                (row.coverage, row.accuracy),
+                textcoords="offset points",
+                xytext=(6, -12),
+            )
+    ax.set_xlabel("coverage (share auto-routed)")
+    ax.set_ylabel("accuracy on auto-routed messages")
+    ax.set_title("Coverage vs accuracy, test set")
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
 def main() -> None:
     cfg = load_config()
     model = joblib.load(cfg.model.model_path)
@@ -101,6 +155,11 @@ def main() -> None:
     errors = errors_frame(test_df, preds, confidence)
     errors.to_csv(REPORTS_DIR / "errors.csv", index=False)
     logger.info("%d misclassified test rows written to %s", len(errors), REPORTS_DIR)
+
+    coverage = coverage_table(confidence, preds == test_df["label"].to_numpy())
+    coverage.to_csv(REPORTS_DIR / "coverage_accuracy.csv", index=False)
+    plot_coverage(coverage, REPORTS_DIR / "coverage_accuracy.png")
+    logger.info("Coverage vs accuracy written to %s", REPORTS_DIR)
 
 
 if __name__ == "__main__":

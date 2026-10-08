@@ -152,7 +152,9 @@ async function classify() {
 
 function render(body) {
   $("label").textContent = body.label;
-  $("conf").textContent = (body.confidence * 100).toFixed(1) + "% confident";
+  $("conf").textContent = body.label === "needs_review"
+    ? `best guess ${body.predicted_label}, only ${(body.confidence * 100).toFixed(1)}% confident`
+    : (body.confidence * 100).toFixed(1) + "% confident";
   const sorted = Object.entries(body.all_scores).sort((a, b) => b[1] - a[1]);
   $("bars").innerHTML = sorted.map(([name, p], i) => `
     <div class="bar-row">

@@ -46,3 +46,16 @@ def test_errors_frame_without_intent_column():
     test_df = pd.DataFrame({"text": ["a"], "label": ["billing"]})
     errors = errors_frame(test_df, np.array(["account"]), np.array([0.5]))
     assert "intent" not in errors.columns
+
+
+def test_coverage_table_trades_coverage_for_accuracy():
+    from automated_support_ticket_classification.models.evaluate import coverage_table
+
+    confidence = np.array([0.95, 0.9, 0.6, 0.4])
+    correct = np.array([True, True, False, False])
+    table = coverage_table(confidence, correct, thresholds=[0.3, 0.5, 0.8, 0.99])
+    assert list(table["coverage"]) == [1.0, 0.75, 0.5, 0.0]
+    assert list(table["accuracy"][:3]) == [0.5, 0.6667, 1.0]
+    # Nothing routed at 0.99: accuracy is undefined, not zero.
+    assert pd.isna(table["accuracy"].iloc[3])
+    assert list(table["to_review"]) == [0, 1, 2, 4]
