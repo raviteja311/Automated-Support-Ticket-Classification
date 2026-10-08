@@ -3,10 +3,12 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
 
 from automated_support_ticket_classification.config import load_config
 from automated_support_ticket_classification.logger import get_logger
@@ -21,7 +23,30 @@ except ImportError:
     USE_MLFLOW = False
 
 
-def build_pipeline(cfg) -> Pipeline:
+MODEL_TYPES = ("logreg", "linearsvc_calibrated")
+
+
+def make_classifier(cfg, model_type: str | None = None):
+    """The classifier for `model_type`, defaulting to the configured model.type.
+
+    LinearSVC has no predict_proba, and the API needs probabilities for its
+    confidence score and the needs-review route. CalibratedClassifierCV fits
+    the SVC on cross-validation folds and learns a mapping from its decision
+    scores to probabilities on the held-out fold.
+    """
+    model_type = model_type or cfg.model.type
+    if model_type == "logreg":
+        return LogisticRegression(C=cfg.model.C, max_iter=cfg.model.max_iter)
+    if model_type == "linearsvc_calibrated":
+        return CalibratedClassifierCV(
+            LinearSVC(C=cfg.model.C, random_state=cfg.data.random_state),
+            method=cfg.model.calibration,
+            cv=5,
+        )
+    raise ValueError(f"Unknown model.type {model_type!r}; expected one of {MODEL_TYPES}")
+
+
+def build_pipeline(cfg, model_type: str | None = None) -> Pipeline:
     return Pipeline(
         steps=[
             (
@@ -33,7 +58,7 @@ def build_pipeline(cfg) -> Pipeline:
             ),
             (
                 "clf",
-                LogisticRegression(C=cfg.model.C, max_iter=cfg.model.max_iter),
+                make_classifier(cfg, model_type),
             ),
         ]
     )
@@ -51,6 +76,7 @@ def main() -> None:
         mlflow.start_run()
         mlflow.log_params(
             {
+                "model_type": cfg.model.type,
                 "max_features": cfg.model.max_features,
                 "ngram_max": cfg.model.ngram_max,
                 "C": cfg.model.C,

@@ -41,6 +41,8 @@ stages:
       - model.ngram_max
       - model.C
       - model.max_iter
+      - model.type
+      - model.calibration
     outs:
       - models/model.joblib
 
@@ -63,6 +65,10 @@ stages:
           cache: false
       - reports/errors.csv:
           cache: false
+      - reports/coverage_accuracy.csv:
+          cache: false
+      - reports/coverage_accuracy.png:
+          cache: false
 
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
@@ -79,6 +85,9 @@ stages:
       - model.max_features
       - model.ngram_max
       - model.C
+      - model.max_iter
+      - model.type
+      - model.calibration
       - data.random_state
     metrics:
       - metrics/baselines.json:
@@ -100,6 +109,8 @@ stages:
       - model.ngram_max
       - model.C
       - model.max_iter
+      - model.type
+      - model.calibration
     metrics:
       - metrics/granularity.json:
           cache: false
