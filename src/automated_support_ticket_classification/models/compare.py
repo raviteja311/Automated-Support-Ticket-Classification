@@ -18,10 +18,6 @@ numbers would make it a description, not a test.
 
 This is run once, by hand, not as a DVC stage:
     python -m automated_support_ticket_classification.models.compare
-
-YOUR CODE: reliability_table and expected_calibration_error are stubs.
-tests/test_compare.py says what they must do; remove the xfail marker there
-once they are implemented.
 """
 
 from __future__ import annotations
@@ -65,15 +61,38 @@ def reliability_table(confidence, correct, n_bins: int = N_BINS) -> pd.DataFrame
     """
     confidence = np.asarray(confidence, dtype=float)
     correct = np.asarray(correct, dtype=bool)
-    raise NotImplementedError("reliability_table: write this in models/compare.py")
+    # Bin index by multiplication rather than comparing with np.linspace
+    # edges: linspace(0, 1, 11)[7] is 0.7000000000000001, which would push a
+    # confidence of exactly 0.7 into the bin below. min() puts 1.0 in the
+    # last bin instead of an eleventh one.
+    bins = np.minimum(np.floor(confidence * n_bins).astype(int), n_bins - 1)
+    rows = []
+    for b in range(n_bins):
+        in_bin = bins == b
+        if not in_bin.any():
+            continue
+        rows.append(
+            {
+                "bin_low": b / n_bins,
+                "bin_high": (b + 1) / n_bins,
+                "count": int(in_bin.sum()),
+                "mean_confidence": float(confidence[in_bin].mean()),
+                "accuracy": float(correct[in_bin].mean()),
+            }
+        )
+    return pd.DataFrame(rows)
 
 
 def expected_calibration_error(confidence, correct, n_bins: int = N_BINS) -> float:
     """ECE: the count-weighted mean of |accuracy - mean_confidence| over the bins.
 
-    Build it on reliability_table. Return a float rounded to 4 places.
+    Weighting by count means a badly calibrated bin with a handful of
+    predictions barely moves ECE, while one holding most of the traffic
+    dominates it: it measures miscalibration where predictions actually fall.
     """
-    raise NotImplementedError("expected_calibration_error: write this in models/compare.py")
+    table = reliability_table(confidence, correct, n_bins)
+    gaps = (table["accuracy"] - table["mean_confidence"]).abs()
+    return round(float((table["count"] * gaps).sum() / table["count"].sum()), 4)
 
 
 def check_rule(path: Path = RULE_PATH) -> str:
