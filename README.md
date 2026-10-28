@@ -95,9 +95,9 @@ in [metrics/latency.json](metrics/latency.json) (in process) and
 
 | Measurement | p50 | p95 | p99 |
 |---|---|---|---|
-| `POST /predict`, in-process TestClient | 5.25 ms | 5.72 ms | 6.25 ms |
-| `POST /predict` over HTTP, local uvicorn on loopback | 2.58 ms | 3.03 ms | 3.31 ms |
-| `predict_proba` on one message, model only | 0.32 ms | 0.37 ms | 0.41 ms |
+| `POST /predict`, in-process TestClient | 7.66 ms | 9.67 ms | 13.07 ms |
+| `POST /predict` over HTTP, local uvicorn on loopback | 4.79 ms | 6.54 ms | 10.11 ms |
+| `predict_proba` on one message, model only | 1.75 ms | 3.22 ms | 3.81 ms |
 | `POST /predict` over the internet, deployed | not yet measured | | |
 
 The HTTP row comes from `python scripts/benchmark_latency.py --url
@@ -107,8 +107,12 @@ URL to fill in the last row. The script reports the first request separately
 as `first_request_ms`, because a free-tier instance that has been asleep takes
 30 to 60 seconds to answer it, and that cold start would otherwise distort p95.
 
-Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.16), one request at a
-time. Both API figures include validation, JSON encoding and the prediction log
+Measured for the calibrated LinearSVC on a Windows 11 laptop (AMD64 CPU,
+family 25 model 80, Python 3.12.16), one request at a time. Each benchmark
+was run three times on an idle machine and the run with the median API p50 is
+the one committed; p95 varied by up to 3 ms between runs.
+The model is about five times slower than the LogisticRegression it replaced
+(0.32 ms p50), because it averages five calibrated SVCs. Both API figures include validation, JSON encoding and the prediction log
 write. The in-process figure is the higher one because TestClient adds its own
 per-request overhead, which here costs more than a loopback round trip to a
 real uvicorn server. Treat both as an order of magnitude, not a service-level
@@ -251,11 +255,11 @@ One ticket per class, against the locally running service:
 
 | Ticket | Predicted | Confidence |
 |---|---|---|
-| Why was I charged a fee on a cash withdrawal? | billing | 0.997 |
-| I think my transfer was declined, but why? | technical | 0.990 |
-| What is the need to verify my identity? | account | 0.998 |
-| Can I track when my card will be delivered? | card_delivery | 0.925 |
-| Are both Visa and Mastercard accepted? | general | 0.970 |
+| Why was I charged a fee on a cash withdrawal? | billing | 0.999 |
+| I think my transfer was declined, but why? | technical | 0.998 |
+| What is the need to verify my identity? | account | 0.999 |
+| Can I track when my card will be delivered? | card_delivery | 0.992 |
+| Are both Visa and Mastercard accepted? | general | 0.978 |
 
 These values come from a model trained locally with `dvc repro` and can differ
 slightly by platform.

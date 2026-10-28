@@ -1,12 +1,12 @@
 {
   "mode": "network",
   "url": "http://127.0.0.1:8000",
-  "first_request_ms": 116.7,
+  "first_request_ms": 136.7,
   "http_predict": {
-    "p50_ms": 2.58,
-    "p95_ms": 3.028,
-    "p99_ms": 3.307,
-    "mean_ms": 2.737,
+    "p50_ms": 4.785,
+    "p95_ms": 6.54,
+    "p99_ms": 10.108,
+    "mean_ms": 5.296,
     "n": 500
   },
   "client": {
