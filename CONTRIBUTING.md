@@ -45,6 +45,11 @@ Explain *why* in the body when the reason is not obvious from the diff.
 Code and artifacts are versioned separately. Git holds the code and DVC
 pointers; the bytes live in the DVC remote.
 
+The remote committed in `.dvc/config` is a local folder on the author's
+machine, so `dvc push` and `dvc pull` will fail for anyone else. To push, add
+your own remote with `dvc remote add -d --local <name> <url>`. That writes
+`.dvc/config.local`, which is not tracked, so the committed config stays as it is.
+
 ```powershell
 dvc repro          # rerun only the stages whose inputs changed
 dvc push           # upload the new artifacts

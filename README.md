@@ -126,6 +126,11 @@ dvc repro          # generate -> preprocess -> train -> evaluate
 to start if the port is busy, waits until the server actually answers, then
 opens http://127.0.0.1:8000/ui in your browser. Press Ctrl+C to stop it.
 
+Use `dvc repro`, not `dvc pull`, on a fresh clone. `dvc pull` needs a DVC
+remote, and the one committed in `.dvc/config` is a folder on the author's
+machine, so it will fail for anyone else. `dvc repro` rebuilds everything from
+the corpus instead.
+
 ```powershell
 .\run.ps1 -Port 8010      # serve somewhere else
 .\run.ps1 -NoBrowser      # start without opening a browser
