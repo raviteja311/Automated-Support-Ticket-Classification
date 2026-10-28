@@ -87,13 +87,15 @@ above. Whether to switch waits on the pre-registered comparison in
 ### Latency
 
 Measured with `python scripts/benchmark_latency.py -n 500` (500 timed calls
-after 20 warm-up calls, texts drawn from the test split):
+after 20 warm-up calls, texts drawn from the test split). Results are committed
+in [metrics/latency.json](metrics/latency.json) (in process) and
+[metrics/latency_http.json](metrics/latency_http.json) (over HTTP):
 
 | Measurement | p50 | p95 | p99 |
 |---|---|---|---|
-| `POST /predict`, in-process TestClient | 10.34 ms | 13.89 ms | 17.33 ms |
-| `POST /predict` over HTTP, local uvicorn on loopback | 12.19 ms | 16.80 ms | 21.26 ms |
-| `predict_proba` on one message, model only | 0.36 ms | 0.51 ms | 0.57 ms |
+| `POST /predict`, in-process TestClient | 5.25 ms | 5.72 ms | 6.25 ms |
+| `POST /predict` over HTTP, local uvicorn on loopback | 2.58 ms | 3.03 ms | 3.31 ms |
+| `predict_proba` on one message, model only | 0.32 ms | 0.37 ms | 0.41 ms |
 | `POST /predict` over the internet, deployed | not yet measured | | |
 
 The HTTP row comes from `python scripts/benchmark_latency.py --url
@@ -103,12 +105,13 @@ URL to fill in the last row. The script reports the first request separately
 as `first_request_ms`, because a free-tier instance that has been asleep takes
 30 to 60 seconds to answer it, and that cold start would otherwise distort p95.
 
-Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.10), one request at a
-time. The in-process figure excludes the network and uvicorn but includes validation,
-JSON encoding and the prediction log write. Treat both as an order of
-magnitude, not a service-level objective: they will differ on other machines
-and under concurrent load. Almost all of the API time is framework and I/O,
-not the model.
+Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.16), one request at a
+time. Both API figures include validation, JSON encoding and the prediction log
+write. The in-process figure is the higher one because TestClient adds its own
+per-request overhead, which here costs more than a loopback round trip to a
+real uvicorn server. Treat both as an order of magnitude, not a service-level
+objective: they will differ on other machines and under concurrent load. Almost
+all of the API time is framework and I/O, not the model.
 
 ## Quickstart
 
@@ -187,6 +190,8 @@ to a person. When the top probability is below `serve.review_threshold` in
 `params.yaml`, `/predict` answers `label: "needs_review"`, and keeps the
 model's best guess in `predicted_label` and the full `all_scores`, so the
 reviewer starts from the suggestion. The default of `0.0` disables the route.
+The API reads `params.yaml` once per process, so restart it after changing
+the threshold or the `monitoring:` settings.
 
 The evaluate stage writes the trade-off to `reports/coverage_accuracy.csv` and
 `.png`: for each threshold, the share of messages auto-routed and the accuracy

@@ -34,6 +34,16 @@ Instrumentator().instrument(app).expose(app)
 ROUTED = Counter("ticket_routed", "Predictions answered, by routed queue", ["queue"])
 
 
+@lru_cache
+def get_config():
+    """Read params.yaml once per process instead of on every request.
+
+    The trade-off: a change to params.yaml (review threshold, log settings)
+    takes effect only after a restart.
+    """
+    return load_config()
+
+
 class ModelUnavailableError(RuntimeError):
     """The model artifact is missing, so predictions cannot be served."""
 
@@ -82,7 +92,7 @@ def _log_prediction(text: str, label: str) -> None:
     fail a request. If the disk is full the user still gets their answer.
     """
     try:
-        mon = load_config().monitoring
+        mon = get_config().monitoring
         # Redacted before it touches disk; see monitoring/prediction_log.py.
         logged = prediction_log.redact(text) if mon.redact else text
         prediction_log.append(
@@ -135,7 +145,7 @@ def predict(request: TicketRequest) -> TicketResponse:
 
     # Route only confident predictions; send the rest to a person. A rising
     # share of needs_review is itself a drift signal.
-    label = best if scores[best] >= load_config().serve.review_threshold else NEEDS_REVIEW
+    label = best if scores[best] >= get_config().serve.review_threshold else NEEDS_REVIEW
     ROUTED.labels(queue=label).inc()
 
     return TicketResponse(

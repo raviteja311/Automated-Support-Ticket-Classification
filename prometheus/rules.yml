@@ -1,0 +1,40 @@
+groups:
+  - name: automated-support-ticket-classification
+    rules:
+      # Share of /predict answers routed to a person over the last hour.
+      # Only meaningful once serve.review_threshold in params.yaml is above 0.0;
+      # at the default of 0.0 nothing is routed to review and this never fires.
+      # 0.25 assumes a threshold around 0.55 to 0.6, where about 16% of the
+      # test split goes to review (reports/coverage_accuracy.csv). Revisit it
+      # whenever the threshold changes.
+      - alert: ReviewRateHigh
+        expr: |
+          sum(rate(ticket_routed_total{queue="needs_review"}[1h]))
+            / sum(rate(ticket_routed_total[1h]))
+          > 0.25
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 25% of tickets are going to human review
+          description: >-
+            The review rate over the last hour is {{ $value | humanizePercentage }}.
+            The model is less sure of its traffic than it was of the test split,
+            which is often the first sign of drift. Run the drift monitor.
+
+      # Share of requests answered with a 5xx over the last 5 minutes. The
+      # instrumentator groups status codes, so 5xx is a single label value.
+      # /metrics is excluded so Prometheus's own scrapes do not dilute it.
+      - alert: ApiErrorRateHigh
+        expr: |
+          sum(rate(http_requests_total{status="5xx", handler!="/metrics"}[5m]))
+            / sum(rate(http_requests_total{handler!="/metrics"}[5m]))
+          > 0.05
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: More than 5% of API requests are failing with 5xx
+          description: >-
+            The 5xx rate over the last 5 minutes is {{ $value | humanizePercentage }}.
+            A missing model answers 503; check that the artifact exists.

@@ -12,6 +12,14 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
+def fresh_config():
+    """get_config() caches per process; each test starts from its own config."""
+    app_module.get_config.cache_clear()
+    yield
+    app_module.get_config.cache_clear()
+
+
+@pytest.fixture(autouse=True)
 def scratch_prediction_log(monkeypatch, tmp_path):
     """Keep test requests out of the real log the drift monitor reads."""
     real = app_module.load_config
@@ -22,6 +30,7 @@ def scratch_prediction_log(monkeypatch, tmp_path):
         return cfg
 
     monkeypatch.setattr(app_module, "load_config", patched)
+    app_module.get_config.cache_clear()
 
 
 def test_root_points_at_the_docs():
@@ -108,6 +117,7 @@ def _config_with(monkeypatch, **overrides):
         return cfg
 
     monkeypatch.setattr(app_module, "load_config", patched)
+    app_module.get_config.cache_clear()
 
 
 def test_missing_model_returns_503_not_500(monkeypatch, tmp_path):

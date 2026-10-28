@@ -141,6 +141,8 @@ def main() -> None:
             return cfg
 
         app_module.load_config = load_config_with_scratch_log
+        # get_config() caches; clear it so the patched loader is the one used.
+        app_module.get_config.cache_clear()
         try:
             client = TestClient(app_module.app)
 
@@ -151,6 +153,7 @@ def main() -> None:
             api = percentiles(time_calls(call_api, texts))
         finally:
             app_module.load_config = real_load_config
+            app_module.get_config.cache_clear()
 
     model = app_module.get_model()
     cleaned = [clean_text(t) for t in texts]
