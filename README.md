@@ -44,37 +44,45 @@ A Render blueprint (`render.yaml`) is included but not deployed.
 
 | Metric | Value |
 |---|---|
-| accuracy | 0.9282 |
-| macro F1 | 0.9171 |
+| accuracy | 0.9185 |
+| macro F1 | 0.9086 |
 | classes | 5 |
 | corpus | banking77, 13,083 real support messages |
+| test split | banking77 official, 3,080 messages |
 
 Per-class scores live in [metrics/metrics.json](metrics/metrics.json), which is
 Git-tracked so metric changes appear in pull request diffs.
 
 ### Baselines
 
-The `baselines` stage scores a majority-class predictor and two alternative
-classifiers on the same 2,617-row test split and the same TF-IDF settings
+The `baselines` stage scores a majority-class predictor and three alternative
+classifiers on the same 3,080-row official test split and the same TF-IDF settings
 (5,000 features, unigrams + bigrams). Written to
 [metrics/baselines.json](metrics/baselines.json), Git-tracked like the metrics.
+The CI column is a bootstrap 95% confidence interval for macro F1.
 
-| Model | accuracy | macro F1 |
-|---|---|---|
-| majority class (DummyClassifier) | 0.3779 | 0.1097 |
-| TF-IDF + ComplementNB | 0.9117 | 0.8968 |
-| **TF-IDF + LogisticRegression (production)** | **0.9282** | **0.9171** |
-| TF-IDF + LinearSVC | 0.9404 | 0.9333 |
+| Model | accuracy | macro F1 | macro F1 95% CI |
+|---|---|---|---|
+| majority class (DummyClassifier) | 0.3247 | 0.0980 | 0.0944 to 0.1019 |
+| TF-IDF + ComplementNB | 0.8951 | 0.8780 | 0.8638 to 0.8918 |
+| **TF-IDF + LogisticRegression (production)** | **0.9185** | **0.9086** | **0.8971 to 0.9195** |
+| TF-IDF + calibrated LinearSVC | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| TF-IDF + LinearSVC | 0.9396 | 0.9334 | 0.9236 to 0.9424 |
 
 The majority-class floor shows how little of the headline number is class
-balance: always answering `billing` gets 37.8% accuracy and 0.11 macro F1.
+balance: always answering `billing` gets 32.5% accuracy and 0.098 macro F1.
 
-LinearSVC beats production by 1.62pp macro F1, past the stage's 1pp "clear win"
-margin, so `baselines.json` reports `production_beaten: true`. Production is
-deliberately unchanged: LinearSVC has no `predict_proba`, and the API returns a
-confidence and a full probability distribution. Adopting it means wrapping it
-in `CalibratedClassifierCV` and re-measuring, which is a separate change. See
-E6 in [docs/experiments.md](docs/experiments.md).
+LinearSVC beats production by 2.48pp macro F1, past the stage's 1pp "clear win"
+margin, so `baselines.json` reports `production_beaten: true`. A McNemar test on
+the two models' test-set errors gives p = 5.68e-10, so the difference is not
+noise. Production is still LogisticRegression: plain LinearSVC has no
+`predict_proba`, and the API returns a confidence and a full probability
+distribution. The calibrated variant (`model.type: linearsvc_calibrated`, LinearSVC
+wrapped in `CalibratedClassifierCV`) is implemented and scores 0.9313 macro F1
+above. Whether to switch waits on the pre-registered comparison in
+`models/compare.py`, which runs only once the decision rule in
+[docs/model-decision.md](docs/model-decision.md) is written. See E6 and E7 in
+[docs/experiments.md](docs/experiments.md).
 
 ### Latency
 
@@ -117,6 +125,11 @@ dvc repro          # generate -> preprocess -> train -> evaluate
 `run.ps1` finds the virtual environment whether or not it is activated, refuses
 to start if the port is busy, waits until the server actually answers, then
 opens http://127.0.0.1:8000/ui in your browser. Press Ctrl+C to stop it.
+
+Use `dvc repro`, not `dvc pull`, on a fresh clone. `dvc pull` needs a DVC
+remote, and the one committed in `.dvc/config` is a folder on the author's
+machine, so it will fail for anyone else. `dvc repro` rebuilds everything from
+the corpus instead.
 
 ```powershell
 .\run.ps1 -Port 8010      # serve somewhere else
@@ -231,11 +244,14 @@ One ticket per class, against the locally running service:
 
 | Ticket | Predicted | Confidence |
 |---|---|---|
-| Why was I charged a fee on a cash withdrawal? | billing | 0.999 |
-| I think my transfer was declined, but why? | technical | 0.987 |
+| Why was I charged a fee on a cash withdrawal? | billing | 0.997 |
+| I think my transfer was declined, but why? | technical | 0.990 |
 | What is the need to verify my identity? | account | 0.998 |
-| Can I track when my card will be delivered? | card_delivery | 0.946 |
-| Are both Visa and Mastercard accepted? | general | 0.975 |
+| Can I track when my card will be delivered? | card_delivery | 0.925 |
+| Are both Visa and Mastercard accepted? | general | 0.970 |
+
+These values come from a model trained locally with `dvc repro` and can differ
+slightly by platform.
 
 The model is trained on banking support text, so it expects that domain.
 Retail-style tickets about parcels or app crashes are outside its training
@@ -246,7 +262,7 @@ distribution and will be routed on surface vocabulary rather than meaning.
 - **Model registry with a promotion gate** ([`models/registry.py`](src/automated_support_ticket_classification/models/registry.py), [`models/promote.py`](src/automated_support_ticket_classification/models/promote.py)): a new model only takes the MLflow `production` alias if it beats the current one on macro F1, trained on the same corpus.
 - **Drift monitoring** ([`monitoring/drift.py`](src/automated_support_ticket_classification/monitoring/drift.py)): Evidently checks label and text drift, with results in [metrics/drift.json](metrics/drift.json). It stays quiet on train vs test and fires on real vs synthetic data.
 - **API plus Prometheus in one command**: `docker compose up` runs the service and a Prometheus instance scraping `/metrics`.
-- **Tests and CI**: `pytest` runs 140 tests across the data generators and corpus mapping, the corpus download retry, the model pipeline, the API (including input length limits and the missing-model 503), prediction-log redaction (including Indian identifiers: PAN, UPI, IFSC, Aadhaar) and rotation, drift, the registry promotion gate, and the evaluation statistics (bootstrap CIs, McNemar, the 77-way comparison, ECE). CI runs `ruff format --check .`, `ruff check .`, the tests, a Docker build and a container smoke test.
+- **Tests and CI**: `pytest` runs 141 tests across the data generators and corpus mapping, the corpus download retry, the model pipeline, the API (including input length limits and the missing-model 503), prediction-log redaction (including Indian identifiers: PAN, UPI, IFSC, Aadhaar) and rotation, drift, the registry promotion gate, and the evaluation statistics (bootstrap CIs, McNemar, the 77-way comparison, ECE). CI runs `ruff format --check .`, `ruff check .`, the tests, a Docker build and a container smoke test.
 
 See [docs/experiments.md](docs/experiments.md) for the experiment log and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 

@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from prometheus_client import Counter
 from prometheus_fastapi_instrumentator import Instrumentator
 
+from automated_support_ticket_classification import __version__
 from automated_support_ticket_classification.api.schemas import (
     NEEDS_REVIEW,
     TicketRequest,
@@ -20,7 +21,7 @@ from automated_support_ticket_classification.monitoring import prediction_log
 
 logger = get_logger(__name__)
 
-app = FastAPI(title="Automated Support Ticket Classification API", version="1.0.0")
+app = FastAPI(title="Automated Support Ticket Classification API", version=__version__)
 
 # Adds request count, latency and error-rate metrics, and serves them at
 # /metrics for Prometheus to scrape. The RED signals: Rate, Errors, Duration.
