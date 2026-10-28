@@ -244,11 +244,14 @@ One ticket per class, against the locally running service:
 
 | Ticket | Predicted | Confidence |
 |---|---|---|
-| Why was I charged a fee on a cash withdrawal? | billing | 0.999 |
-| I think my transfer was declined, but why? | technical | 0.987 |
+| Why was I charged a fee on a cash withdrawal? | billing | 0.997 |
+| I think my transfer was declined, but why? | technical | 0.990 |
 | What is the need to verify my identity? | account | 0.998 |
-| Can I track when my card will be delivered? | card_delivery | 0.946 |
-| Are both Visa and Mastercard accepted? | general | 0.975 |
+| Can I track when my card will be delivered? | card_delivery | 0.925 |
+| Are both Visa and Mastercard accepted? | general | 0.970 |
+
+These values come from a model trained locally with `dvc repro` and can differ
+slightly by platform.
 
 The model is trained on banking support text, so it expects that domain.
 Retail-style tickets about parcels or app crashes are outside its training
