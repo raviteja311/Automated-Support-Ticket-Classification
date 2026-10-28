@@ -434,22 +434,23 @@ model only), which is small next to the API's own overhead.
 used by Indian bank customers, who ask about UPI, KYC, branches and deposits,
 and often write in Hinglish. The `eval_india` stage existed but had no data.
 
-**Method.** 190 messages written by hand by two people (95 each), 38 per queue:
-100 English, 50 Hinglish, 40 short or misspelled. Scored with the shipped
+**Method.** 200 messages written by hand by two people (100 each), 39 to 41
+per queue: 104 English, 53 Hinglish, 43 short or misspelled. The first run
+used 190; ten more were added so the drift monitor could give a verdict. Scored with the shipped
 calibrated LinearSVC; no retraining.
 
 | style | rows | accuracy | macro F1 |
 |---|---:|---:|---:|
-| english | 100 | 0.600 | 0.583 |
-| hinglish | 50 | 0.620 | 0.560 |
-| short_or_misspelled | 40 | 0.650 | 0.613 |
-| **overall** | **190** | **0.616** | **0.593** |
+| english | 104 | 0.596 | 0.579 |
+| hinglish | 53 | 0.623 | 0.562 |
+| short_or_misspelled | 43 | 0.651 | 0.606 |
+| **overall** | **200** | **0.615** | **0.591** |
 
-Recall by queue: billing 0.89, card_delivery 0.87, account 0.66, technical
-0.47, general 0.18. There are 73 errors, and 23 of them have confidence of 0.9
-or more (mean confidence 0.755 when wrong, 0.837 when right).
+Recall by queue: billing 0.90, card_delivery 0.87, account 0.68, technical
+0.44, general 0.18. There are 77 errors, and 24 of them have confidence of 0.9
+or more (mean confidence 0.75 when wrong, 0.843 when right).
 
-**Result.** Macro F1 drops from 0.931 to 0.593. English is no better than
+**Result.** Macro F1 drops from 0.931 to 0.591. English is no better than
 Hinglish, so language mixing is not the main cause. The confident errors fall
 into three patterns:
 
@@ -466,10 +467,11 @@ Some account-opening questions are borderline under the queue definitions,
 where `account` covers the account's lifecycle, so part of the `general` to
 `account` error is a labelling question rather than a model one.
 
-The drift monitor scores text drift at 0.752 against a 0.55 threshold and
-label drift at 0.184 against 0.10, but 190 rows is under the 200-row minimum,
-so it reports `insufficient_data`. The label score is partly by design: the set
-is balanced, while training is skewed towards billing.
+The drift monitor flags the set as drifted: text drift 0.791 against a 0.55
+threshold and label drift 0.179 against 0.10. At 190 rows it had reported
+`insufficient_data`, one of the cases the 200-row minimum exists for. The label
+score is partly by design: the set is balanced, while training is skewed
+towards billing.
 
 **Decision.** No model change from this. The gap is missing domain coverage,
 which a different classifier on the same corpus would not fix. Closing it needs
@@ -509,3 +511,6 @@ from 25% to 20%: about double the normal rate, so ordinary variation should not
 trip it over its 15-minute window, and 10 points below the India rate. With only
 190 India messages that 30.5% is uncertain, which is why the alert does not sit
 closer to it. Both numbers should be revisited against real traffic.
+
+With the India set at 200 messages (E11), its review share at 0.7 is 30.0%,
+so the 20% alert still fires on it.

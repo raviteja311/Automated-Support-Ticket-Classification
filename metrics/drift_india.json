@@ -1,27 +1,26 @@
 {
   "columns": {
     "label": {
-      "score": 0.184453,
+      "score": 0.179076,
       "threshold": 0.1,
       "method": "Jensen-Shannon distance",
-      "drifted": null
+      "drifted": true
     },
     "text": {
-      "score": 0.752447,
+      "score": 0.79124,
       "threshold": 0.55,
       "method": "Absolute text content drift",
-      "drifted": null
+      "drifted": true
     }
   },
   "columns_drifted": 2,
   "drift_share": 1.0,
   "columns_checked": 2,
-  "current_rows": 190,
+  "current_rows": 200,
   "min_sample_rows": 200,
-  "sufficient_sample": false,
-  "status": "insufficient_data",
-  "dataset_drifted": null,
-  "note": "190 rows is below the 200-row minimum; scores are reported but no drift verdict is issued.",
+  "sufficient_sample": true,
+  "status": "ok",
+  "dataset_drifted": true,
   "reference_rows": 10003,
   "current_source": "data/india_eval/india_messages.csv"
 }

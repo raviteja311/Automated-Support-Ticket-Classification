@@ -1,27 +1,27 @@
 {
   "overall": {
-    "rows": 190,
-    "accuracy": 0.6158,
-    "f1_macro": 0.5933
+    "rows": 200,
+    "accuracy": 0.615,
+    "f1_macro": 0.5907
   },
   "by_style": {
     "english": {
-      "rows": 100,
-      "accuracy": 0.6,
-      "f1_macro": 0.5828
+      "rows": 104,
+      "accuracy": 0.5962,
+      "f1_macro": 0.5789
     },
     "hinglish": {
-      "rows": 50,
-      "accuracy": 0.62,
-      "f1_macro": 0.5596
+      "rows": 53,
+      "accuracy": 0.6226,
+      "f1_macro": 0.5618
     },
     "short_or_misspelled": {
-      "rows": 40,
-      "accuracy": 0.65,
-      "f1_macro": 0.6133
+      "rows": 43,
+      "accuracy": 0.6512,
+      "f1_macro": 0.6056
     }
   },
   "status": "ok",
   "banking77_test_f1_macro": 0.9313,
-  "f1_macro_drop": 0.338
+  "f1_macro_drop": 0.3406
 }

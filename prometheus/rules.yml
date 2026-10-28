@@ -4,7 +4,7 @@ groups:
       # Share of /predict answers routed to a person over the last hour.
       # At serve.review_threshold 0.7, about 10.3% of the test split goes to
       # review (reports/coverage_accuracy.csv), so 0.20 is roughly double the
-      # normal rate. The India robustness set, a real shift, sends 30.5% to
+      # normal rate. The India robustness set, a real shift, sends 30.0% to
       # review at the same threshold, so this fires on it with margin (E12).
       # Revisit both numbers together if the threshold or the model changes.
       - alert: ReviewRateHigh
