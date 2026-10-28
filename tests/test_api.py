@@ -3,6 +3,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
+from automated_support_ticket_classification import __version__
 from automated_support_ticket_classification.api import app as app_module
 from automated_support_ticket_classification.api.app import app
 from automated_support_ticket_classification.api.schemas import MAX_TEXT_LENGTH
@@ -76,6 +77,12 @@ def test_ui_page_renders():
 def test_ui_is_not_in_the_openapi_schema():
     # /ui is a convenience for humans, not part of the documented API contract.
     assert "/ui" not in client.get("/openapi.json").json()["paths"]
+
+
+def test_api_version_is_the_package_version():
+    # One source for the version: the package attribute, not a literal in app.py.
+    assert app.version == __version__
+    assert client.get("/openapi.json").json()["info"]["version"] == __version__
 
 
 def test_predict_accepts_text_at_the_length_limit():

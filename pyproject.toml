@@ -1,6 +1,6 @@
 [project]
 name = "automated_support_ticket_classification"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Production-grade MLOps service that classifies customer support tickets."
 requires-python = ">=3.11"
 
@@ -10,6 +10,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "automated_support_ticket_classification.__version__"}
 
 [tool.ruff]
 line-length = 100
