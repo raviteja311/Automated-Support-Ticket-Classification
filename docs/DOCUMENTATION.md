@@ -51,7 +51,7 @@ This project is an end-to-end MLOps service that routes customer support message
 
 For each message, the API returns a routed label, the model's top prediction, a confidence score, and the full probability distribution over all five queues.
 
-The model is deliberately simple: a TF-IDF vectoriser feeding a logistic regression classifier, packaged as a single scikit-learn `Pipeline` that trains in seconds. The project's emphasis is the engineering around the model, which includes a reproducible DVC pipeline, MLflow experiment tracking with a gated model registry, statistical evaluation (bootstrap confidence intervals, McNemar tests), a FastAPI service with a confidence-based human-review route, PII redaction in the prediction log, Evidently drift monitoring, Prometheus metrics, Docker packaging, and GitHub Actions CI.
+The model is deliberately simple: a TF-IDF vectoriser feeding a linear SVM (LinearSVC) wrapped in sigmoid calibration so it returns probabilities, packaged as a single scikit-learn `Pipeline` that trains in seconds. The project's emphasis is the engineering around the model, which includes a reproducible DVC pipeline, MLflow experiment tracking with a gated model registry, statistical evaluation (bootstrap confidence intervals, McNemar tests), a FastAPI service with a confidence-based human-review route, PII redaction in the prediction log, Evidently drift monitoring, Prometheus metrics, Docker packaging, and GitHub Actions CI.
 
 The training data is **banking77**, a public corpus of 13,083 real customer-support messages from a digital bank, labelled with 77 fine-grained intents. The project folds those 77 intents into the five queues with a hand-written, documented mapping.
 
@@ -93,8 +93,8 @@ Each feature below is implemented in the repository. The file that implements it
 
 | Feature | Implementation |
 |---|---|
-| Five-queue text classifier (TF-IDF with unigrams and bigrams, logistic regression) | `models/train.py` |
-| Optional calibrated LinearSVC (`CalibratedClassifierCV`, sigmoid or isotonic) selectable by config | `models/train.py`, `params.yaml` |
+| Five-queue text classifier (TF-IDF with unigrams and bigrams, calibrated LinearSVC) | `models/train.py` |
+| LogisticRegression or calibrated LinearSVC (`CalibratedClassifierCV`, sigmoid or isotonic) selectable by config | `models/train.py`, `params.yaml` |
 | banking77 download with retry, exponential backoff and atomic writes | `data/banking77.py` |
 | 77-intent to 5-queue mapping, with a test enforcing completeness | `data/banking77.py`, `tests/test_data.py` |
 | Seeded synthetic template generator for offline builds | `data/generate.py` |
@@ -142,7 +142,7 @@ flowchart LR
     end
 
     subgraph Serving["Serving: Docker image"]
-        I[FastAPI app] --> J[TF-IDF + LogReg pipeline]
+        I[FastAPI app] --> J[TF-IDF + calibrated LinearSVC]
         I --> K[Prediction log<br/>redacted, rotated]
         I --> L[/metrics endpoint/]
     end
@@ -317,11 +317,11 @@ Intents per queue under the current mapping: billing 25, account 19, technical 1
 ```python
 Pipeline([
     ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),
-    ("clf",   LogisticRegression(C=1.0, max_iter=1000)),
+    ("clf",   CalibratedClassifierCV(LinearSVC(C=1.0, random_state=42), method="sigmoid", cv=5)),
 ])
 ```
 
-`model.type: linearsvc_calibrated` swaps the classifier for `CalibratedClassifierCV(LinearSVC(...), method=sigmoid|isotonic, cv=5)`, which provides `predict_proba` for the API.
+This is `model.type: linearsvc_calibrated`, shipped since 2026-10-28 (see [9.2](#92-baselines-metricsbaselinesjson) and `docs/model-decision.md`). Calibration provides the `predict_proba` the API needs. `model.type: logreg` swaps the classifier back to `LogisticRegression(C=1.0, max_iter=1000)`.
 
 The whole pipeline is saved as one `joblib` artifact. When MLflow is available and `DISABLE_MLFLOW` is not `1`, training logs params and metrics to the `ticket-triage` experiment, logs the model with `mlflow.sklearn.log_model`, and registers a new version of `ticket-classifier`.
 
@@ -443,20 +443,20 @@ All results are on banking77's **official test split (3,080 messages)** unless s
 
 | Metric | Value |
 |---|---|
-| Accuracy | 0.9185 |
-| Macro F1 | 0.9086 |
-| Macro precision | 0.9173 |
-| Macro recall | 0.9009 |
+| Accuracy | 0.9377 |
+| Macro F1 | 0.9313 |
+| Macro precision | 0.9329 |
+| Macro recall | 0.9297 |
 
 | Queue | Precision | Recall | F1 | Support |
 |---|---|---|---|---|
-| billing | 0.917 | 0.967 | 0.942 | 1,000 |
-| account | 0.931 | 0.936 | 0.933 | 760 |
-| technical | 0.926 | 0.900 | 0.913 | 560 |
-| card_delivery | 0.919 | 0.850 | 0.883 | 240 |
-| general | 0.893 | 0.852 | 0.872 | 520 |
+| billing | 0.948 | 0.960 | 0.954 | 1,000 |
+| account | 0.946 | 0.951 | 0.949 | 760 |
+| technical | 0.939 | 0.929 | 0.934 | 560 |
+| card_delivery | 0.920 | 0.912 | 0.916 | 240 |
+| general | 0.912 | 0.896 | 0.904 | 520 |
 
-`general` is the weakest class. The experiment log attributes this to its role as a residual category with the least coherent vocabulary. The confusion matrix (`reports/confusion_matrix.csv`) shows the largest single error is `general` predicted as `billing` (35 rows), and `card_delivery` loses most recall to `account` (20 rows). `reports/errors.csv` lists all 251 misclassified rows.
+`general` is the weakest class. The experiment log attributes this to its role as a residual category with the least coherent vocabulary. The confusion matrix (`reports/confusion_matrix.csv`) shows the largest single error is `general` predicted as `billing` (23 rows), and `card_delivery` loses most recall to `account` (10 rows). `reports/errors.csv` lists all 192 misclassified rows.
 
 ### 9.2 Baselines (`metrics/baselines.json`)
 
@@ -464,32 +464,32 @@ All results are on banking77's **official test split (3,080 messages)** unless s
 |---|---|---|---|
 | Majority class | 0.3247 | 0.0980 | 0.0944 to 0.1019 |
 | TF-IDF + ComplementNB | 0.8951 | 0.8780 | 0.8638 to 0.8918 |
-| **TF-IDF + LogisticRegression (production)** | **0.9185** | **0.9086** | **0.8971 to 0.9195** |
-| TF-IDF + calibrated LinearSVC | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| TF-IDF + LogisticRegression (production until 2026-10-28) | 0.9185 | 0.9086 | 0.8971 to 0.9195 |
+| **TF-IDF + calibrated LinearSVC (production)** | **0.9377** | **0.9313** | **0.9214 to 0.9399** |
 | TF-IDF + LinearSVC | 0.9396 | 0.9334 | 0.9236 to 0.9424 |
 
-LinearSVC beats production by 2.48 points of macro F1 with McNemar p of about 5.7e-10, so `production_beaten` is `true`. Production was kept because the plain LinearSVC has no `predict_proba`. The calibrated variant, which does, scores 0.9313. The formal switch decision is pending the pre-registered comparison (see [Limitations](#16-limitations)).
+The calibrated LinearSVC replaced LogisticRegression on 2026-10-28, after a comparison against a rule committed in advance (`docs/model-decision.md`, `metrics/model_comparison.json`): +2.27 points of macro F1, McNemar p = 7.25e-10, expected calibration error 0.036 against 0.155, and 2.39 ms p95 model latency against a 5 ms limit. LogReg's high calibration error comes from underconfidence (`reports/reliability.png`). Plain LinearSVC is still 0.21 points ahead, inside the 1-point clear-win margin (McNemar p = 0.31), so `production_beaten` is `false`.
 
 ### 9.3 Coverage versus accuracy (`reports/coverage_accuracy.csv`)
 
 | Review threshold | Share auto-routed | Accuracy on routed | Sent to review |
 |---|---|---|---|
-| 0.30 | 99.7% | 92.1% | 10 |
-| 0.50 | 87.8% | 95.9% | 377 |
-| 0.70 | 67.4% | 98.9% | 1,005 |
-| 0.90 | 28.9% | 99.7% | 2,191 |
+| 0.30 | 100.0% | 93.8% | 0 |
+| 0.50 | 98.5% | 94.6% | 46 |
+| 0.70 | 89.7% | 97.1% | 317 |
+| 0.90 | 71.7% | 99.1% | 873 |
 
-This is the operating curve for `serve.review_threshold`. The shipped default is `0.0` (route everything).
+This is the operating curve for `serve.review_threshold`. The shipped default is `0.0` (route everything). The calibrated model is far less underconfident than LogReg was, so the same threshold now sends many fewer messages to review: at 0.70, 10.3% instead of about a third.
 
 ### 9.4 Granularity study (`metrics/granularity.json`)
 
 | Model | Scored against | Accuracy | Macro F1 | 95% CI |
 |---|---|---|---|---|
-| Direct 5-way (production) | queues | 0.9185 | 0.9086 | 0.8971 to 0.9195 |
-| 77-way | intents | 0.8562 | 0.8556 | 0.8427 to 0.8671 |
-| 77-way mapped to queues | queues | 0.9208 | 0.9132 | 0.9025 to 0.9245 |
+| Direct 5-way (production) | queues | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| 77-way | intents | 0.8838 | 0.8841 | 0.8717 to 0.8938 |
+| 77-way mapped to queues | queues | 0.9429 | 0.9353 | 0.9256 to 0.9443 |
 
-Mapped minus direct is +0.46 points with McNemar p = 0.69, so there is no measurable advantage to predicting intents first. The direct 5-way model was kept as the simpler design.
+Both use the calibrated LinearSVC pipeline. Mapped minus direct is +0.40 points with McNemar p = 0.24, so there is no measurable advantage to predicting intents first. The direct 5-way model was kept as the simpler design.
 
 ### 9.5 PII redaction (`metrics/pii_redaction.json`)
 
@@ -501,15 +501,15 @@ No live traffic exists, so the committed summary compares the test split (3,080 
 
 ### 9.7 Latency (`metrics/latency.json`, `metrics/latency_http.json`)
 
-Single run on a Windows 11 laptop, Python 3.12.16, 500 sequential calls after 20 warm-up calls:
+Calibrated LinearSVC on a Windows 11 laptop, Python 3.12.16, 500 sequential calls after 20 warm-up calls. Each benchmark was run three times on an idle machine, and the run with the median API p50 is committed:
 
 | Measurement | p50 | p95 | p99 |
 |---|---|---|---|
-| `POST /predict`, in-process TestClient | 5.25 ms | 5.72 ms | 6.25 ms |
-| `POST /predict` over HTTP, local uvicorn | 2.58 ms | 3.03 ms | 3.31 ms |
-| `predict_proba` on one message, model only | 0.32 ms | 0.37 ms | 0.41 ms |
+| `POST /predict`, in-process TestClient | 7.66 ms | 9.67 ms | 13.07 ms |
+| `POST /predict` over HTTP, local uvicorn | 4.79 ms | 6.54 ms | 10.11 ms |
+| `predict_proba` on one message, model only | 1.75 ms | 3.22 ms | 3.81 ms |
 
-The in-process figure is higher than the HTTP one because TestClient adds its own per-request overhead, which here costs more than a loopback round trip to a real uvicorn server. The first HTTP request took 116.7 ms. No deployed measurement exists. The README treats these as order-of-magnitude figures, not a service-level objective.
+The in-process figure is higher than the HTTP one because TestClient adds its own per-request overhead, which here costs more than a loopback round trip to a real uvicorn server. The first HTTP request took 136.7 ms. The model is about five times slower than LogReg (0.32 ms p50) because it averages five calibrated SVCs. No deployed measurement exists. The README treats these as order-of-magnitude figures, not a service-level objective.
 
 ### 9.8 Experiment log summary (`docs/experiments.md`)
 
@@ -524,6 +524,7 @@ The in-process figure is higher than the HTTP one because TestClient adds its ow
 | E7 | Official split vs random split | Official split adopted; production 0.9086 macro F1, LinearSVC gap widens to 2.48 points |
 | E8 | Renaming a queue changed the random split | About 0.9 points of pure split noise; motivates fixed split and CIs |
 | E9 | 5-way vs 77-way | No significant gain from predicting intents; direct model kept |
+| E10 | Calibrated LinearSVC vs LogReg under a pre-written rule | All four conditions passed; calibrated LinearSVC ships (macro F1 0.9313, ECE 0.036) |
 
 ### 9.9 Reproducibility check
 
@@ -703,7 +704,7 @@ All values from `params.yaml`.
 | `data.test_size` | `0.2` | Test share for the random split |
 | `data.random_state` | `42` | Seed for generation, splitting, bootstrap |
 | `data.cache_dir` | `data/external` | banking77 download cache |
-| `model.type` | `logreg` | `logreg` or `linearsvc_calibrated` |
+| `model.type` | `linearsvc_calibrated` | `logreg` or `linearsvc_calibrated` |
 | `model.calibration` | `sigmoid` | `sigmoid` or `isotonic` (calibrated SVC only) |
 | `model.max_features` | `5000` | TF-IDF vocabulary size |
 | `model.ngram_max` | `2` | 1 = unigrams, 2 = unigrams and bigrams |
@@ -805,8 +806,9 @@ These are trade-offs documented in the code comments and experiment log, useful 
 | Macro F1 as the gate metric | Accuracy can rise while a minority class collapses (E2) |
 | Natural class imbalance kept | Real traffic is skewed; resampling would hide what macro F1 measures |
 | Official banking77 split | Comparable with the literature; random re-splits moved macro F1 by about 0.9 points with no model change (E8) |
-| LogReg kept despite LinearSVC scoring higher | The API contract needs probabilities; switching requires calibration and a pre-registered comparison |
-| Direct 5-way model rather than 77-way then map | No statistically significant gain (p = 0.69), and simpler (E9) |
+| Calibrated LinearSVC rather than plain LinearSVC | The API contract needs probabilities; calibration costs 0.21 points of macro F1, inside the clear-win margin |
+| Switch from LogReg decided by a rule written first | The rule was committed before the comparison ran, and its hash is recorded with the result (E10) |
+| Direct 5-way model rather than 77-way then map | No statistically significant gain (p = 0.24), and simpler (E9, rerun in E10) |
 | Registry aliases, corpus-tagged versions | Promotion and rollback are one operation; scores from different corpora are never compared (E4) |
 | `needs_review` route with `predicted_label` kept | Uncertain messages go to a person, who starts from the model's suggestion |
 | Shared `clean_text` for training and serving | Prevents train/serve skew |
@@ -828,7 +830,7 @@ Each item below can be verified in the repository.
 - The model is a bag-of-n-grams linear classifier. It routes on surface vocabulary, and the README notes that retail-style tickets outside the banking domain will be routed on wording rather than meaning.
 - The 77-to-5 intent mapping is one person's judgement. The annotation tooling exists, but `docs/mapping/annotations/` contains no completed sheets and no `metrics/mapping_agreement.json` has been produced.
 - banking77 comes from a European digital bank. The India robustness set (`data/india_eval/india_messages.csv`) contains only a header row, so `metrics/india.json` reports `no_messages_yet` and transfer to Indian banking language is unmeasured.
-- LinearSVC outperforms production by 2.48 points of macro F1 (p < 0.001), but the switch is undecided: `docs/model-decision.md` still contains `TODO`, so `models/compare.py` has not been run and no `metrics/model_comparison.json` or reliability diagram exists.
+- The review threshold has not been chosen for the calibrated model, and the 25% review-rate alert was set while LogReg shipped; both need revisiting against the new coverage curve.
 - Bootstrap intervals capture test-set sampling noise only, not training variance.
 
 **Serving and operations**
@@ -863,7 +865,7 @@ The first group is work the repository has already scaffolded or explicitly call
 
 **Scaffolded in the repository**
 
-1. Write the decision rule in `docs/model-decision.md`, run `models/compare.py`, and adopt `linearsvc_calibrated` if it passes, promoting it through the registry gate.
+1. Done on 2026-10-28: `linearsvc_calibrated` passed the pre-written rule and was promoted through the registry gate. A next step is to compare isotonic calibration under a new rule written in advance.
 2. Collect 200 to 300 hand-written Indian-banking messages (the target in `data/india_eval/README.md`) and run `eval_india` and the drift monitor against them.
 3. Gather independent annotations of the intent mapping, then run `agree` and `sensitivity` and write up `docs/mapping-validation.md`.
 4. Deploy with `render.yaml`, enable the scheduled smoke test, and record internet latency including cold starts.

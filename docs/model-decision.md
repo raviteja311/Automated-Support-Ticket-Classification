@@ -59,7 +59,8 @@ stays much closer to the diagonal.
 
 `linearsvc_calibrated` (sigmoid) ships: it passes all four conditions.
 
-Not applied yet. The switch is a separate change: set
-`model.type: linearsvc_calibrated` in `params.yaml`, run `dvc repro`, promote
-the new version through the gate in `models/promote.py`, and update the
-figures in the README and docs. If the gate refuses, record why here.
+Applied on 2026-10-28: `model.type: linearsvc_calibrated` in `params.yaml`,
+then `dvc repro`. In a local MLflow registry, LogReg was registered and promoted
+as version 1, then the calibrated SVC as version 2. The gate in
+`models/promote.py` promoted version 2 ("Candidate f1_macro=0.9313 beats
+production 0.9086", exit code 0).

@@ -46,8 +46,9 @@ A Render blueprint (`render.yaml`) is included but not deployed.
 
 | Metric | Value |
 |---|---|
-| accuracy | 0.9185 |
-| macro F1 | 0.9086 |
+| model | TF-IDF + calibrated LinearSVC (sigmoid) |
+| accuracy | 0.9377 |
+| macro F1 | 0.9313 |
 | classes | 5 |
 | corpus | banking77, 13,083 real support messages |
 | test split | banking77 official, 3,080 messages |
@@ -67,24 +68,23 @@ The CI column is a bootstrap 95% confidence interval for macro F1.
 |---|---|---|---|
 | majority class (DummyClassifier) | 0.3247 | 0.0980 | 0.0944 to 0.1019 |
 | TF-IDF + ComplementNB | 0.8951 | 0.8780 | 0.8638 to 0.8918 |
-| **TF-IDF + LogisticRegression (production)** | **0.9185** | **0.9086** | **0.8971 to 0.9195** |
-| TF-IDF + calibrated LinearSVC | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| TF-IDF + LogisticRegression (production until 2026-10-28) | 0.9185 | 0.9086 | 0.8971 to 0.9195 |
+| **TF-IDF + calibrated LinearSVC (production)** | **0.9377** | **0.9313** | **0.9214 to 0.9399** |
 | TF-IDF + LinearSVC | 0.9396 | 0.9334 | 0.9236 to 0.9424 |
 
 The majority-class floor shows how little of the headline number is class
 balance: always answering `billing` gets 32.5% accuracy and 0.098 macro F1.
 
-LinearSVC beats production by 2.48pp macro F1, past the stage's 1pp "clear win"
-margin, so `baselines.json` reports `production_beaten: true`. A McNemar test on
-the two models' test-set errors gives p = 5.68e-10, so the difference is not
-noise. Production is still LogisticRegression: plain LinearSVC has no
-`predict_proba`, and the API returns a confidence and a full probability
-distribution. The calibrated variant (`model.type: linearsvc_calibrated`, LinearSVC
-wrapped in `CalibratedClassifierCV`) is implemented and scores 0.9313 macro F1
-above. Whether to switch waits on the pre-registered comparison in
-`models/compare.py`, which runs only once the decision rule in
-[docs/model-decision.md](docs/model-decision.md) is written. See E6 and E7 in
-[docs/experiments.md](docs/experiments.md).
+Production is LinearSVC wrapped in `CalibratedClassifierCV` (sigmoid), which
+gives the API the probabilities plain LinearSVC lacks. It replaced
+LogisticRegression on 2026-10-28 after a comparison against a rule written in
+advance ([docs/model-decision.md](docs/model-decision.md)): +2.27pp macro F1,
+McNemar p = 7.25e-10, and much better calibration (expected calibration error
+0.036 against LogReg's 0.155, see
+[reports/reliability.png](reports/reliability.png)). Plain LinearSVC is still
+0.21pp ahead, but that is inside the stage's 1pp "clear win" margin (McNemar
+p = 0.31), so `baselines.json` reports `production_beaten: false`. See E6, E7
+and E10 in [docs/experiments.md](docs/experiments.md).
 
 ### Latency
 

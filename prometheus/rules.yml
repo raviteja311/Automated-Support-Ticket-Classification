@@ -4,9 +4,11 @@ groups:
       # Share of /predict answers routed to a person over the last hour.
       # Only meaningful once serve.review_threshold in params.yaml is above 0.0;
       # at the default of 0.0 nothing is routed to review and this never fires.
-      # 0.25 assumes a threshold around 0.55 to 0.6, where about 16% of the
-      # test split goes to review (reports/coverage_accuracy.csv). Revisit it
-      # whenever the threshold changes.
+      # 0.25 was chosen while LogReg shipped, assuming a threshold around 0.55
+      # to 0.6, where about 16% of the test split went to review. The calibrated
+      # LinearSVC sends only 3.5% to 5.8% to review at those thresholds
+      # (reports/coverage_accuracy.csv), so 0.25 now fires only on a large
+      # shift. Revisit it when the threshold is chosen.
       - alert: ReviewRateHigh
         expr: |
           sum(rate(ticket_routed_total{queue="needs_review"}[1h]))
