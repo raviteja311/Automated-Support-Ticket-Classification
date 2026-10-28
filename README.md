@@ -44,37 +44,45 @@ A Render blueprint (`render.yaml`) is included but not deployed.
 
 | Metric | Value |
 |---|---|
-| accuracy | 0.9282 |
-| macro F1 | 0.9171 |
+| accuracy | 0.9185 |
+| macro F1 | 0.9086 |
 | classes | 5 |
 | corpus | banking77, 13,083 real support messages |
+| test split | banking77 official, 3,080 messages |
 
 Per-class scores live in [metrics/metrics.json](metrics/metrics.json), which is
 Git-tracked so metric changes appear in pull request diffs.
 
 ### Baselines
 
-The `baselines` stage scores a majority-class predictor and two alternative
-classifiers on the same 2,617-row test split and the same TF-IDF settings
+The `baselines` stage scores a majority-class predictor and three alternative
+classifiers on the same 3,080-row official test split and the same TF-IDF settings
 (5,000 features, unigrams + bigrams). Written to
 [metrics/baselines.json](metrics/baselines.json), Git-tracked like the metrics.
+The CI column is a bootstrap 95% confidence interval for macro F1.
 
-| Model | accuracy | macro F1 |
-|---|---|---|
-| majority class (DummyClassifier) | 0.3779 | 0.1097 |
-| TF-IDF + ComplementNB | 0.9117 | 0.8968 |
-| **TF-IDF + LogisticRegression (production)** | **0.9282** | **0.9171** |
-| TF-IDF + LinearSVC | 0.9404 | 0.9333 |
+| Model | accuracy | macro F1 | macro F1 95% CI |
+|---|---|---|---|
+| majority class (DummyClassifier) | 0.3247 | 0.0980 | 0.0944 to 0.1019 |
+| TF-IDF + ComplementNB | 0.8951 | 0.8780 | 0.8638 to 0.8918 |
+| **TF-IDF + LogisticRegression (production)** | **0.9185** | **0.9086** | **0.8971 to 0.9195** |
+| TF-IDF + calibrated LinearSVC | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| TF-IDF + LinearSVC | 0.9396 | 0.9334 | 0.9236 to 0.9424 |
 
 The majority-class floor shows how little of the headline number is class
-balance: always answering `billing` gets 37.8% accuracy and 0.11 macro F1.
+balance: always answering `billing` gets 32.5% accuracy and 0.098 macro F1.
 
-LinearSVC beats production by 1.62pp macro F1, past the stage's 1pp "clear win"
-margin, so `baselines.json` reports `production_beaten: true`. Production is
-deliberately unchanged: LinearSVC has no `predict_proba`, and the API returns a
-confidence and a full probability distribution. Adopting it means wrapping it
-in `CalibratedClassifierCV` and re-measuring, which is a separate change. See
-E6 in [docs/experiments.md](docs/experiments.md).
+LinearSVC beats production by 2.48pp macro F1, past the stage's 1pp "clear win"
+margin, so `baselines.json` reports `production_beaten: true`. A McNemar test on
+the two models' test-set errors gives p = 5.68e-10, so the difference is not
+noise. Production is still LogisticRegression: plain LinearSVC has no
+`predict_proba`, and the API returns a confidence and a full probability
+distribution. The calibrated variant (`model.type: linearsvc_calibrated`, LinearSVC
+wrapped in `CalibratedClassifierCV`) is implemented and scores 0.9313 macro F1
+above. Whether to switch waits on the pre-registered comparison in
+`models/compare.py`, which runs only once the decision rule in
+[docs/model-decision.md](docs/model-decision.md) is written. See E6 and E7 in
+[docs/experiments.md](docs/experiments.md).
 
 ### Latency
 
