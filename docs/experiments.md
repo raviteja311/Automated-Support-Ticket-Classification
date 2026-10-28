@@ -475,3 +475,37 @@ is balanced, while training is skewed towards billing.
 which a different classifier on the same corpus would not fix. Closing it needs
 Indian banking examples in training, and a larger held-out set to measure the
 result.
+
+---
+
+## E12 - Choosing the review threshold and the alert level
+
+**Why.** The `needs_review` route shipped switched off (`review_threshold:
+0.0`), and the 25% review-rate alert was set while LogReg shipped, against a
+coverage curve that no longer applies after E10.
+
+**Method.** The calibrated model's coverage curve on the banking77 test split
+(`reports/coverage_accuracy.csv`), next to the same thresholds applied to the
+India set from E11:
+
+| threshold | test split: to review | test split: accuracy on routed | test split: wrong routes | India: to review | India: accuracy on routed |
+|---|---:|---:|---:|---:|---:|
+| 0.0 | 0% | 93.8% | 192 | 0% | 61.6% |
+| 0.5 | 1.5% | 94.6% | 164 | 5.8% | 64.2% |
+| 0.6 | 5.8% | 96.0% | 116 | 16.3% | 64.2% |
+| 0.7 | 10.3% | 97.1% | 81 | 30.5% | 67.4% |
+| 0.8 | 16.3% | 98.1% | 48 | 41.6% | 68.5% |
+
+**Result.** At 0.7, wrong routes fall by 58% (192 to 81) for about one message
+in ten going to a person. Going to 0.8 saves 33 more wrong routes but adds six
+points of review load, which is where the returns flatten.
+
+On the India set the threshold barely helps accuracy, because many of its errors
+are confident. What it does do is triple the review share, from 10.3% to 30.5%,
+which makes the review rate a usable signal for that kind of shift.
+
+**Decision.** `serve.review_threshold: 0.7`. The `ReviewRateHigh` alert moves
+from 25% to 20%: about double the normal rate, so ordinary variation should not
+trip it over its 15-minute window, and 10 points below the India rate. With only
+190 India messages that 30.5% is uncertain, which is why the alert does not sit
+closer to it. Both numbers should be revisited against real traffic.

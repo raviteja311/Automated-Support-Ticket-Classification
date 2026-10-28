@@ -37,4 +37,6 @@ serve:
   # Below this top probability, /predict answers label "needs_review" so a
   # person routes the message. 0.0 disables the route. Pick the operating
   # point from reports/coverage_accuracy.csv.
-  review_threshold: 0.0
+  # 0.7 sends about 10% of the test split to review and routes the rest at
+  # 97.1% accuracy; see E12 in docs/experiments.md.
+  review_threshold: 0.7
