@@ -1,0 +1,74 @@
+text,label,language_style,author,predicted,confidence
+What customer support channels are available on weekends?,general,english,poojitha,technical,0.35
+Banking website open hi nahi ho rahi,technical,hinglish,poojitha,account,0.3785
+Online banking gives me a server error on every attempt,technical,english,ravi,account,0.3926
+Branch visit ke liye appointment lena zaroori hai?,general,hinglish,poojitha,account,0.4452
+branch timings?,general,short_or_misspelled,ravi,account,0.4492
+Transaction processing pe atka hua hai kaafi time se,technical,hinglish,poojitha,billing,0.4653
+My date of birth is incorrect in the customer profile,account,english,poojitha,billing,0.4712
+qr scan not wrking,technical,short_or_misspelled,poojitha,billing,0.4901
+My account has been frozen and I would like to know why,account,english,ravi,technical,0.4996
+My card chip is not being read at the merchant terminal,technical,english,poojitha,billing,0.5031
+Bank mein joint account open kar sakte hain kya?,general,hinglish,ravi,account,0.5034
+Mobile banking app mein kaun kaunse services milte hain?,general,hinglish,poojitha,technical,0.5233
+My mobile banking app crashes whenever I open the transaction page,technical,english,ravi,general,0.5662
+need docs list for savings acct,general,short_or_misspelled,ravi,account,0.5665
+My new bank card was dispatched two weeks ago and is still missing,card_delivery,english,poojitha,billing,0.5715
+OTP enter karne ke baad screen freeze ho jaati hai,technical,hinglish,ravi,account,0.5785
+ATM se cash nahi nikla lekin paise cut gaye,billing,hinglish,poojitha,technical,0.6055
+I received a delivery notification but there was no package,card_delivery,english,ravi,billing,0.6192
+My KYC verification has been pending for several weeks,account,english,poojitha,billing,0.6243
+My bank app keeps logging me out during transfers,technical,english,ravi,billing,0.6283
+Account close karne ki request pending hai,account,hinglish,ravi,billing,0.6351
+I cannot download my account statement because the page fails,technical,english,ravi,billing,0.638
+The biometric login feature stopped working on my phone,technical,english,ravi,account,0.6427
+The payment terminal says card not supported,technical,english,ravi,billing,0.6509
+How often are savings account interest rates updated?,general,english,poojitha,billing,0.6567
+Where can I read the terms and conditions for digital banking?,general,english,poojitha,account,0.6568
+The QR scanner does not recognise any merchant codes,technical,english,poojitha,billing,0.6658
+What is the process for nominating a family member?,general,english,ravi,account,0.6699
+kyc docs which ones?,account,short_or_misspelled,poojitha,general,0.6781
+Unknown transaction ka paisa mere account se deduct hua,billing,hinglish,poojitha,account,0.681
+card not recvd,card_delivery,short_or_misspelled,ravi,technical,0.7047
+Bank ke working hours kya hain public holiday pe?,general,hinglish,ravi,technical,0.7277
+My debit card works at ATMs but fails at online checkout,technical,english,poojitha,billing,0.7333
+The banking application crashes when I try to update my profile,technical,english,ravi,account,0.7412
+Can I visit a branch without making an appointment?,general,english,poojitha,account,0.7559
+app wont refresh balance,technical,short_or_misspelled,poojitha,billing,0.7632
+I need to know which documents are accepted for KYC,account,english,ravi,general,0.7932
+I transferred money but the recipient says they received it twice,billing,english,ravi,general,0.7996
+Where can I find the current interest rates for savings accounts?,general,english,poojitha,billing,0.8235
+My debit card shipment has been stuck in transit for days,card_delivery,english,ravi,billing,0.8237
+My payment gets stuck on processing and never finishes,technical,english,poojitha,billing,0.8238
+What is the difference between a savings account and a current account?,general,english,ravi,account,0.8367
+Mera account dormant hai isko reactivate kaise karein?,account,hinglish,ravi,technical,0.846
+What are the bank's working hours on public holidays?,general,english,ravi,technical,0.8522
+My account application is still under review,account,english,ravi,billing,0.859
+acct frozen why,account,short_or_misspelled,poojitha,technical,0.8695
+What services are available through the mobile banking app?,general,english,ravi,technical,0.871
+International money transfer ki facility available hai?,general,hinglish,poojitha,billing,0.8722
+Nearest ATM ka location kaise pata karu?,general,hinglish,ravi,technical,0.8788
+What are the eligibility requirements for a student account?,general,english,ravi,account,0.899
+Which documents are required to open a basic savings account?,general,english,poojitha,account,0.9151
+I cannot reset the app PIN because the confirmation screen is blank,technical,english,poojitha,account,0.921
+Recurring deposit scheme ke baare mein details chahiye,general,hinglish,ravi,account,0.9229
+My account closure request has not been processed,account,english,poojitha,billing,0.9292
+Student account ke liye eligibility kya hai?,general,hinglish,poojitha,account,0.9331
+joint account availble?,general,short_or_misspelled,ravi,account,0.9331
+student account eligiblity,general,short_or_misspelled,ravi,account,0.9331
+Savings account open karne ke liye kaunse documents chahiye?,general,hinglish,poojitha,account,0.9377
+The banking website is unavailable whenever I try to log in,technical,english,ravi,account,0.9424
+atm near me?,general,short_or_misspelled,poojitha,technical,0.9452
+My salary credit appears twice and I need clarification,billing,english,ravi,general,0.9574
+Do you have a minimum age requirement for opening an account?,general,english,poojitha,account,0.9635
+How can I locate the nearest branch or ATM?,general,english,poojitha,technical,0.9681
+min balance requirement kya?,general,short_or_misspelled,poojitha,billing,0.9746
+Can I change the shipping address for my replacement card?,card_delivery,english,poojitha,account,0.9759
+QR scan nahi ho raha payment ke liye,technical,hinglish,ravi,billing,0.9772
+Passbook statement email pe mil sakta hai kya?,general,hinglish,ravi,billing,0.98
+The OTP verification screen freezes after I enter the code,technical,english,poojitha,account,0.9847
+Mera KYC abhi tak pending hai please status check karo,account,hinglish,ravi,billing,0.9904
+Is there a fee for requesting a paper account statement?,general,english,ravi,billing,0.9917
+interest rates pls,general,short_or_misspelled,poojitha,billing,0.9936
+account closure still pending,account,short_or_misspelled,ravi,billing,0.9947
+kyc pending pls help,account,short_or_misspelled,ravi,billing,0.9962

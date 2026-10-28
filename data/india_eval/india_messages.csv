@@ -1,1 +1,191 @@
 text,label,language_style,author
+"My account was charged twice for the same transaction",billing,english,ravi
+"I paid my electricity bill but the amount was deducted two times",billing,english,poojitha
+"Why is there an extra fee on my monthly statement?",billing,english,ravi
+"My refund has not arrived even after ten business days",billing,english,poojitha
+"I transferred money but the recipient says they received it twice",billing,english,ravi
+"There is a transaction on my statement that I do not understand",billing,english,poojitha
+"Please reverse the duplicate payment from yesterday",billing,english,ravi
+"My account balance decreased but the merchant cancelled the order",billing,english,poojitha
+"Can you explain this international transaction fee?",billing,english,ravi
+"I was charged a maintenance fee without any prior notification",billing,english,poojitha
+"Amount debited but refund not credited yet",billing,english,ravi
+"Why did you deduct money for a service I never subscribed to?",billing,english,poojitha
+"My salary credit appears twice and I need clarification",billing,english,ravi
+"The merchant refunded me but my bank balance has not updated",billing,english,poojitha
+"I see an unfamiliar debit in my transaction history",billing,english,ravi
+"Please explain why my minimum balance penalty was applied",billing,english,poojitha
+"Money was deducted for an ATM withdrawal that failed",billing,english,ravi
+"I need a breakdown of the charges on my latest statement",billing,english,poojitha
+"Why was I charged interest even though I paid on time?",billing,english,ravi
+"My payment was reversed but the fee was not returned",billing,english,poojitha
+"UPI se paisa do baar cut ho gaya same payment ke liye",billing,hinglish,ravi
+"Refund abhi tak account mein nahi aaya, please check karo",billing,hinglish,poojitha
+"Mere statement mein extra charges kyu lage hain?",billing,hinglish,ravi
+"Payment fail hua but amount debit ho gaya",billing,hinglish,poojitha
+"Merchant ne refund kar diya bola but balance update nahi hua",billing,hinglish,ravi
+"Kal ke transaction ka duplicate debit reverse kar do",billing,hinglish,poojitha
+"Maine subscription cancel kiya tha phir bhi charge laga",billing,hinglish,ravi
+"ATM se cash nahi nikla lekin paise cut gaye",billing,hinglish,poojitha
+"Minimum balance maintain tha phir bhi penalty lagi",billing,hinglish,ravi
+"Unknown transaction ka paisa mere account se deduct hua",billing,hinglish,poojitha
+"double debit pls reverse",billing,short_or_misspelled,ravi
+"refund nt recvd yet",billing,short_or_misspelled,poojitha
+"extra charge why??",billing,short_or_misspelled,ravi
+"amt cut but order cancelled",billing,short_or_misspelled,poojitha
+"money deducted twice",billing,short_or_misspelled,ravi
+"fee charged wrongly",billing,short_or_misspelled,poojitha
+"refund pending 10 days",billing,short_or_misspelled,ravi
+"unwanted debit in statement",billing,short_or_misspelled,poojitha
+"My mobile banking app crashes whenever I open the transaction page",technical,english,ravi
+"I cannot complete a UPI payment because the app keeps showing an error",technical,english,poojitha
+"The ATM rejected my card even though it is active",technical,english,ravi
+"My payment gets stuck on processing and never finishes",technical,english,poojitha
+"The banking website is unavailable whenever I try to log in",technical,english,ravi
+"My card is not being detected by the contactless payment terminal",technical,english,poojitha
+"I cannot download my account statement because the page fails",technical,english,ravi
+"The OTP verification screen freezes after I enter the code",technical,english,poojitha
+"My bank app keeps logging me out during transfers",technical,english,ravi
+"The QR scanner does not recognise any merchant codes",technical,english,poojitha
+"Every time I try to add a beneficiary the app returns an error",technical,english,ravi
+"My debit card works at ATMs but fails at online checkout",technical,english,poojitha
+"The biometric login feature stopped working on my phone",technical,english,ravi
+"I cannot see my latest transactions because the app will not refresh",technical,english,poojitha
+"The payment terminal says card not supported",technical,english,ravi
+"My scheduled transfer failed repeatedly this morning",technical,english,poojitha
+"The banking application crashes when I try to update my profile",technical,english,ravi
+"I cannot reset the app PIN because the confirmation screen is blank",technical,english,poojitha
+"Online banking gives me a server error on every attempt",technical,english,ravi
+"My card chip is not being read at the merchant terminal",technical,english,poojitha
+"UPI payment karte time app error dikha raha hai",technical,hinglish,ravi
+"App baar baar crash ho raha hai login karte hi",technical,hinglish,poojitha
+"OTP enter karne ke baad screen freeze ho jaati hai",technical,hinglish,ravi
+"Mera card machine mein read nahi ho raha",technical,hinglish,poojitha
+"Beneficiary add karte time error aa raha hai",technical,hinglish,ravi
+"Banking website open hi nahi ho rahi",technical,hinglish,poojitha
+"QR scan nahi ho raha payment ke liye",technical,hinglish,ravi
+"Transaction processing pe atka hua hai kaafi time se",technical,hinglish,poojitha
+"Fingerprint login kaam nahi kar raha app mein",technical,hinglish,ravi
+"Statement download karne pe error aata hai",technical,hinglish,poojitha
+"app crash on login",technical,short_or_misspelled,ravi
+"upi payment failing",technical,short_or_misspelled,poojitha
+"otp screen stuck",technical,short_or_misspelled,ravi
+"card not detected",technical,short_or_misspelled,poojitha
+"website keeps erroring",technical,short_or_misspelled,ravi
+"qr scan not wrking",technical,short_or_misspelled,poojitha
+"beneficiary add failed",technical,short_or_misspelled,ravi
+"app wont refresh balance",technical,short_or_misspelled,poojitha
+"I need help updating the identity document linked to my account",account,english,ravi
+"My KYC verification has been pending for several weeks",account,english,poojitha
+"I forgot my banking password and cannot access my account",account,english,ravi
+"Please explain how I can increase my daily transfer limit",account,english,poojitha
+"My account has been frozen and I would like to know why",account,english,ravi
+"I want to change the mobile number registered with my account",account,english,poojitha
+"My account application is still under review",account,english,ravi
+"I received a notification that my identity verification failed",account,english,poojitha
+"How can I close my savings account permanently?",account,english,ravi
+"I need to update my residential address in the bank records",account,english,poojitha
+"I cannot recover my username after changing my phone",account,english,ravi
+"My account has been restricted and I cannot make transfers",account,english,poojitha
+"How do I reactivate an account that has been dormant?",account,english,ravi
+"My date of birth is incorrect in the customer profile",account,english,poojitha
+"I need to know which documents are accepted for KYC",account,english,ravi
+"My registered email address is no longer accessible",account,english,poojitha
+"I want to change the transaction limit on my account",account,english,ravi
+"My account closure request has not been processed",account,english,poojitha
+"Why is additional verification required to access my account?",account,english,ravi
+"I need to unlock my account after too many login attempts",account,english,poojitha
+"Mera KYC abhi tak pending hai please status check karo",account,hinglish,ravi
+"Account freeze ho gaya hai reason kya hai?",account,hinglish,poojitha
+"Registered mobile number change karna hai",account,hinglish,ravi
+"Daily transfer limit increase kaise karu?",account,hinglish,poojitha
+"Password bhool gaya hoon account login nahi ho raha",account,hinglish,ravi
+"Address update karne ke liye kaunse documents chahiye?",account,hinglish,poojitha
+"Mera account dormant hai isko reactivate kaise karein?",account,hinglish,ravi
+"KYC reject ho gaya hai ab kya karna padega?",account,hinglish,poojitha
+"Account close karne ki request pending hai",account,hinglish,ravi
+"Email id change karna hai bank account mein",account,hinglish,poojitha
+"kyc pending pls help",account,short_or_misspelled,ravi
+"acct frozen why",account,short_or_misspelled,poojitha
+"forgot pwd cant login",account,short_or_misspelled,ravi
+"change reg mobile no",account,short_or_misspelled,poojitha
+"need higher transfer limit",account,short_or_misspelled,ravi
+"kyc docs which ones?",account,short_or_misspelled,poojitha
+"account closure still pending",account,short_or_misspelled,ravi
+"unlock my acct asap",account,short_or_misspelled,poojitha
+"I ordered a replacement debit card but it has not arrived",card_delivery,english,ravi
+"My new bank card was dispatched two weeks ago and is still missing",card_delivery,english,poojitha
+"How can I track the delivery of my debit card?",card_delivery,english,ravi
+"The courier tracking page says delivered but I received nothing",card_delivery,english,poojitha
+"I need to know when my replacement card will reach my address",card_delivery,english,ravi
+"My card delivery attempt failed although I was at home",card_delivery,english,poojitha
+"The bank sent my card to my old address",card_delivery,english,ravi
+"My new credit card has not been dispatched yet",card_delivery,english,poojitha
+"I received a delivery notification but there was no package",card_delivery,english,ravi
+"Can I change the shipping address for my replacement card?",card_delivery,english,poojitha
+"My debit card shipment has been stuck in transit for days",card_delivery,english,ravi
+"The courier could not locate my building and returned the card",card_delivery,english,poojitha
+"I applied for a card last month and have not received it",card_delivery,english,ravi
+"My card was returned to the bank because delivery failed",card_delivery,english,poojitha
+"Please confirm whether my new card has been sent out",card_delivery,english,ravi
+"The package containing my card arrived damaged",card_delivery,english,poojitha
+"My replacement card tracking number is not showing updates",card_delivery,english,ravi
+"I need to reschedule the delivery of my bank card",card_delivery,english,poojitha
+"The courier marked my card delivered to the wrong person",card_delivery,english,ravi
+"How long does standard delivery take for a new debit card?",card_delivery,english,poojitha
+"Mera debit card abhi tak deliver nahi hua",card_delivery,hinglish,ravi
+"Card dispatch ho gaya bola tha lekin mila nahi",card_delivery,hinglish,poojitha
+"Tracking mein delivered dikha raha hai par parcel nahi mila",card_delivery,hinglish,ravi
+"Replacement card ki delivery kab hogi?",card_delivery,hinglish,poojitha
+"Courier ghar aaya hi nahi phir bhi delivery failed dikha raha hai",card_delivery,hinglish,ravi
+"Mera card old address pe send kar diya",card_delivery,hinglish,poojitha
+"New card ka tracking update nahi aa raha",card_delivery,hinglish,ravi
+"Card ka parcel bank ko wapas chala gaya kya?",card_delivery,hinglish,poojitha
+"Delivery address change karna hai card ke liye",card_delivery,hinglish,ravi
+"Card apply kiya tha abhi tak receive nahi hua",card_delivery,hinglish,poojitha
+"card not recvd",card_delivery,short_or_misspelled,ravi
+"replacement card tracking stuck",card_delivery,short_or_misspelled,poojitha
+"delivery says done but no card",card_delivery,short_or_misspelled,ravi
+"new card not dispatched yet",card_delivery,short_or_misspelled,poojitha
+"courier failed delivery wrongly",card_delivery,short_or_misspelled,ravi
+"wrong address card shipped",card_delivery,short_or_misspelled,poojitha
+"card parcel missing",card_delivery,short_or_misspelled,ravi
+"need card delivery status",card_delivery,short_or_misspelled,poojitha
+"What are the bank's working hours on public holidays?",general,english,ravi
+"Which documents are required to open a basic savings account?",general,english,poojitha
+"Does your bank offer joint accounts for family members?",general,english,ravi
+"Where can I find the current interest rates for savings accounts?",general,english,poojitha
+"Are international wire transfers supported by your bank?",general,english,ravi
+"How can I locate the nearest branch or ATM?",general,english,poojitha
+"What is the difference between a savings account and a current account?",general,english,ravi
+"Do you provide monthly statements by email?",general,english,poojitha
+"What are the eligibility requirements for a student account?",general,english,ravi
+"Can I visit a branch without making an appointment?",general,english,poojitha
+"Is there a fee for requesting a paper account statement?",general,english,ravi
+"What customer support channels are available on weekends?",general,english,poojitha
+"Does the bank support recurring deposits?",general,english,ravi
+"Where can I read the terms and conditions for digital banking?",general,english,poojitha
+"What is the process for nominating a family member?",general,english,ravi
+"Do you have a minimum age requirement for opening an account?",general,english,poojitha
+"Can customers use their debit cards while travelling abroad?",general,english,ravi
+"How often are savings account interest rates updated?",general,english,poojitha
+"What services are available through the mobile banking app?",general,english,ravi
+"Do you offer accounts designed specifically for small businesses?",general,english,poojitha
+"Bank ke working hours kya hain public holiday pe?",general,hinglish,ravi
+"Savings account open karne ke liye kaunse documents chahiye?",general,hinglish,poojitha
+"Nearest ATM ka location kaise pata karu?",general,hinglish,ravi
+"Student account ke liye eligibility kya hai?",general,hinglish,poojitha
+"Bank mein joint account open kar sakte hain kya?",general,hinglish,ravi
+"International money transfer ki facility available hai?",general,hinglish,poojitha
+"Passbook statement email pe mil sakta hai kya?",general,hinglish,ravi
+"Branch visit ke liye appointment lena zaroori hai?",general,hinglish,poojitha
+"Recurring deposit scheme ke baare mein details chahiye",general,hinglish,ravi
+"Mobile banking app mein kaun kaunse services milte hain?",general,hinglish,poojitha
+"branch timings?",general,short_or_misspelled,ravi
+"min balance requirement kya?",general,short_or_misspelled,poojitha
+"need docs list for savings acct",general,short_or_misspelled,ravi
+"atm near me?",general,short_or_misspelled,poojitha
+"joint account availble?",general,short_or_misspelled,ravi
+"interest rates pls",general,short_or_misspelled,poojitha
+"student account eligiblity",general,short_or_misspelled,ravi
+"support open on sunday?",general,short_or_misspelled,poojitha

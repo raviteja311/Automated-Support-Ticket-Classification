@@ -1,4 +1,27 @@
 {
-  "status": "no_messages_yet",
-  "path": "data/india_eval/india_messages.csv"
+  "overall": {
+    "rows": 190,
+    "accuracy": 0.6158,
+    "f1_macro": 0.5933
+  },
+  "by_style": {
+    "english": {
+      "rows": 100,
+      "accuracy": 0.6,
+      "f1_macro": 0.5828
+    },
+    "hinglish": {
+      "rows": 50,
+      "accuracy": 0.62,
+      "f1_macro": 0.5596
+    },
+    "short_or_misspelled": {
+      "rows": 40,
+      "accuracy": 0.65,
+      "f1_macro": 0.6133
+    }
+  },
+  "status": "ok",
+  "banking77_test_f1_macro": 0.9313,
+  "f1_macro_drop": 0.338
 }

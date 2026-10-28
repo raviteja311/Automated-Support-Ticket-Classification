@@ -86,6 +86,34 @@ McNemar p = 7.25e-10, and much better calibration (expected calibration error
 p = 0.31), so `baselines.json` reports `production_beaten: false`. See E6, E7
 and E10 in [docs/experiments.md](docs/experiments.md).
 
+### India robustness
+
+190 hand-written messages in the style of Indian bank customers (UPI, KYC,
+branches, Hinglish), 38 per queue, in
+[data/india_eval/india_messages.csv](data/india_eval/india_messages.csv).
+Scores are in [metrics/india.json](metrics/india.json):
+
+| style | rows | accuracy | macro F1 |
+|---|---:|---:|---:|
+| english | 100 | 0.600 | 0.583 |
+| hinglish | 50 | 0.620 | 0.560 |
+| short_or_misspelled | 40 | 0.650 | 0.613 |
+| **overall** | **190** | **0.616** | **0.593** |
+
+Macro F1 drops 33.8pp from banking77's 0.931. English scores no better than
+Hinglish, so the gap is mostly what customers ask about, not the language:
+
+- "pending" means billing to this model, because banking77's `pending_*`
+  intents are all billing, so "KYC pending" lands in billing.
+- Retail-branch topics (interest rates, minimum balance, branches and ATMs,
+  account-opening documents) do not exist in banking77, which comes from an
+  app-only bank. `general` recall is 0.18.
+- Login and app faults go to `account`, where banking77's passcode intents sit.
+
+Text drift against training is 0.752 (threshold 0.55), but 190 rows is under
+the 200-row minimum, so the monitor issues no verdict. See E11 in
+[docs/experiments.md](docs/experiments.md).
+
 ### Latency
 
 Measured with `python scripts/benchmark_latency.py -n 500` (500 timed calls

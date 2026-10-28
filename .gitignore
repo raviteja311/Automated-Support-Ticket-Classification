@@ -245,3 +245,5 @@ docs/build/
 # Prediction log feeding the drift monitor
 /data/predictions.jsonl
 /metrics/drift_report.html
+# Named drift runs, e.g. --name drift_india
+/metrics/*_report.html

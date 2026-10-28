@@ -106,6 +106,9 @@ stages:
     metrics:
       - metrics/india.json:
           cache: false
+    outs:
+      - reports/india_errors.csv:
+          cache: false
 
   granularity:
     cmd: python -m automated_support_ticket_classification.models.granularity

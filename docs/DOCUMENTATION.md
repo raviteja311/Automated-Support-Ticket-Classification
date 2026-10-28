@@ -271,7 +271,7 @@ Automated-Support-Ticket-Classification/
 │   └── *-MLOps-Guide-CORRECTED.pdf  # 49-page build guide
 ├── data/
 │   ├── raw/, processed/        # DVC outputs (Git-ignored)
-│   └── india_eval/             # India robustness set (header only so far)
+│   └── india_eval/             # India robustness set (190 hand-written messages)
 ├── models/                     # model.joblib (Git-ignored)
 ├── .github/workflows/          # ci.yml, smoke.yml
 ├── dvc.yaml, dvc.lock, params.yaml
@@ -525,10 +525,26 @@ The in-process figure is higher than the HTTP one because TestClient adds its ow
 | E8 | Renaming a queue changed the random split | About 0.9 points of pure split noise; motivates fixed split and CIs |
 | E9 | 5-way vs 77-way | No significant gain from predicting intents; direct model kept |
 | E10 | Calibrated LinearSVC vs LogReg under a pre-written rule | All four conditions passed; calibrated LinearSVC ships (macro F1 0.9313, ECE 0.036) |
+| E11 | Transfer to Indian banking messages | Macro F1 0.593 on 190 hand-written messages, a 33.8-point drop; caused by missing domain coverage, not language |
 
 ### 9.9 Reproducibility check
 
 While preparing this documentation, the suite and pipeline were re-run on Linux (Python 3.12.3) with `requirements-dev.txt`. All 140 tests passed, and `ruff format --check` and `ruff check` were clean. `dvc repro` reproduced the official-split results closely but not bit-for-bit (accuracy 0.9188, macro F1 0.9091 against the committed 0.9185 and 0.9086), which is consistent with library and platform differences from the Windows lock file. A local uvicorn run answered `/`, `/health`, `/predict` and `/metrics` as documented, returned 422 for whitespace-only input, and wrote a redacted line to the prediction log.
+
+### 9.10 India robustness (`metrics/india.json`)
+
+190 hand-written messages from two authors, 38 per queue, scored with the shipped model:
+
+| style | rows | accuracy | macro F1 |
+|---|---:|---:|---:|
+| english | 100 | 0.600 | 0.583 |
+| hinglish | 50 | 0.620 | 0.560 |
+| short_or_misspelled | 40 | 0.650 | 0.613 |
+| **overall** | **190** | **0.616** | **0.593** |
+
+Macro F1 drops 33.8 points from the banking77 test score of 0.931. Recall by queue is billing 0.89, card_delivery 0.87, account 0.66, technical 0.47 and general 0.18. Of 73 errors (`reports/india_errors.csv`), 23 have confidence of 0.9 or more. English scores no better than Hinglish: the errors come from topics banking77 does not cover (branches, deposits, interest rates, account opening), from "pending" being learned as a billing word, and from login faults being routed to `account`. See E11.
+
+Against the training split, `metrics/drift_india.json` scores text drift at 0.752 (threshold 0.55) and label drift at 0.184 (threshold 0.10), but 190 rows is under the 200-row minimum, so `status` is `insufficient_data` and no verdict is issued.
 
 ---
 
@@ -829,7 +845,7 @@ Each item below can be verified in the repository.
 
 - The model is a bag-of-n-grams linear classifier. It routes on surface vocabulary, and the README notes that retail-style tickets outside the banking domain will be routed on wording rather than meaning.
 - The 77-to-5 intent mapping is one person's judgement. The annotation tooling exists, but `docs/mapping/annotations/` contains no completed sheets and no `metrics/mapping_agreement.json` has been produced.
-- banking77 comes from a European digital bank. The India robustness set (`data/india_eval/india_messages.csv`) contains only a header row, so `metrics/india.json` reports `no_messages_yet` and transfer to Indian banking language is unmeasured.
+- banking77 comes from a European digital bank, and the model does not transfer well to Indian banking messages: macro F1 is 0.593 on 190 hand-written messages, against 0.931 on banking77 (E11). The gap comes from topics the corpus never covers, so closing it needs Indian banking examples in training.
 - The review threshold has not been chosen for the calibrated model, and the 25% review-rate alert was set while LogReg shipped; both need revisiting against the new coverage curve.
 - Bootstrap intervals capture test-set sampling noise only, not training variance.
 
@@ -866,7 +882,7 @@ The first group is work the repository has already scaffolded or explicitly call
 **Scaffolded in the repository**
 
 1. Done on 2026-10-28: `linearsvc_calibrated` passed the pre-written rule and was promoted through the registry gate. A next step is to compare isotonic calibration under a new rule written in advance.
-2. Collect 200 to 300 hand-written Indian-banking messages (the target in `data/india_eval/README.md`) and run `eval_india` and the drift monitor against them.
+2. Grow the India set from 190 messages to the 200 to 300 target in `data/india_eval/README.md`. Ten more would give the drift monitor enough rows for a verdict.
 3. Gather independent annotations of the intent mapping, then run `agree` and `sensitivity` and write up `docs/mapping-validation.md`.
 4. Deploy with `render.yaml`, enable the scheduled smoke test, and record internet latency including cold starts.
 5. Choose a non-zero `review_threshold` from the coverage curve.
