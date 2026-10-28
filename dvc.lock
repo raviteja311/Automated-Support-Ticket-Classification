@@ -92,12 +92,12 @@ stages:
         model.max_features: 5000
         model.max_iter: 1000
         model.ngram_max: 2
-        model.type: logreg
+        model.type: linearsvc_calibrated
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 8e545230b0c7595874870320a3a699e7
-      size: 396977
+      md5: b29e41e168256071e2b7c01348f8157a
+      size: 1203448
   evaluate:
     cmd: python -m automated_support_ticket_classification.models.evaluate
     deps:
@@ -107,8 +107,8 @@ stages:
       size: 267023
     - path: models/model.joblib
       hash: md5
-      md5: 8e545230b0c7595874870320a3a699e7
-      size: 396977
+      md5: b29e41e168256071e2b7c01348f8157a
+      size: 1203448
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
       md5: ce920ac9e381484b60d9c4a9edb0feeb
@@ -124,28 +124,28 @@ stages:
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: 9190c0e110df064eb436f5054e8dbefe
-      size: 1294
+      md5: df73f36d3a9813b9a993cd004141ac7b
+      size: 1305
     - path: reports/confusion_matrix.csv
       hash: md5
-      md5: f0b955f3f32d566d359e89523b6f20cb
-      size: 177
+      md5: 1afdc7a4160ada17748b96f70028c6a2
+      size: 178
     - path: reports/confusion_matrix.png
       hash: md5
-      md5: 3524144e685646a3983cb78aa13ee862
-      size: 34197
+      md5: 3a070b2a192548b950f4909b35f9f9cc
+      size: 34084
     - path: reports/coverage_accuracy.csv
       hash: md5
-      md5: dccf5425e83528fec4b8a8c396262323
-      size: 368
+      md5: 4e8a4d9742fb4419f1aed8bc2b2c579d
+      size: 355
     - path: reports/coverage_accuracy.png
       hash: md5
-      md5: 35e0c5d15b79cf2ac2194c00d5696c4f
-      size: 41997
+      md5: 4061f8234f9e42049cb7da4363a77d04
+      size: 40104
     - path: reports/errors.csv
       hash: md5
-      md5: 694c9dd71d3edf961d33b9f6c0dc62b6
-      size: 25254
+      md5: 555abe1af074aeaaf92894e21f739264
+      size: 19276
   baselines:
     cmd: python -m automated_support_ticket_classification.models.baselines
     deps:
@@ -159,8 +159,8 @@ stages:
       size: 926188
     - path: models/model.joblib
       hash: md5
-      md5: 8e545230b0c7595874870320a3a699e7
-      size: 396977
+      md5: b29e41e168256071e2b7c01348f8157a
+      size: 1203448
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
       md5: ce920ac9e381484b60d9c4a9edb0feeb
@@ -175,8 +175,8 @@ stages:
       size: 5460
     - path: src/automated_support_ticket_classification/models/stats.py
       hash: md5
-      md5: 2004a2dd9697c1bee401321c6debf8d1
-      size: 3026
+      md5: d2ff7571e8183f8479b3717159aa60ce
+      size: 3096
     - path: src/automated_support_ticket_classification/models/train.py
       hash: md5
       md5: d8d62370bc1516361ffdbbcfcc2d0b34
@@ -189,12 +189,12 @@ stages:
         model.max_features: 5000
         model.max_iter: 1000
         model.ngram_max: 2
-        model.type: logreg
+        model.type: linearsvc_calibrated
     outs:
     - path: metrics/baselines.json
       hash: md5
-      md5: b786a313006c7847a29b056e87d52a1a
-      size: 963
+      md5: 3be990357d47a34f5b3d258034000737
+      size: 976
   eval_india:
     cmd: python -m automated_support_ticket_classification.models.eval_india
     deps:
@@ -204,12 +204,12 @@ stages:
       size: 34
     - path: metrics/metrics.json
       hash: md5
-      md5: 9190c0e110df064eb436f5054e8dbefe
-      size: 1294
+      md5: df73f36d3a9813b9a993cd004141ac7b
+      size: 1305
     - path: models/model.joblib
       hash: md5
-      md5: 8e545230b0c7595874870320a3a699e7
-      size: 396977
+      md5: b29e41e168256071e2b7c01348f8157a
+      size: 1203448
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
       md5: ce920ac9e381484b60d9c4a9edb0feeb
@@ -244,8 +244,8 @@ stages:
       size: 926188
     - path: models/model.joblib
       hash: md5
-      md5: 8e545230b0c7595874870320a3a699e7
-      size: 396977
+      md5: b29e41e168256071e2b7c01348f8157a
+      size: 1203448
     - path: src/automated_support_ticket_classification/config.py
       hash: md5
       md5: ce920ac9e381484b60d9c4a9edb0feeb
@@ -264,8 +264,8 @@ stages:
       size: 4668
     - path: src/automated_support_ticket_classification/models/stats.py
       hash: md5
-      md5: 2004a2dd9697c1bee401321c6debf8d1
-      size: 3026
+      md5: d2ff7571e8183f8479b3717159aa60ce
+      size: 3096
     - path: src/automated_support_ticket_classification/models/train.py
       hash: md5
       md5: d8d62370bc1516361ffdbbcfcc2d0b34
@@ -277,9 +277,9 @@ stages:
         model.max_features: 5000
         model.max_iter: 1000
         model.ngram_max: 2
-        model.type: logreg
+        model.type: linearsvc_calibrated
     outs:
     - path: metrics/granularity.json
       hash: md5
-      md5: 952a239541d0469de040b8472f8eea36
+      md5: 3c4bb8f67cc79f2ffb6733ff0d8187b0
       size: 506
