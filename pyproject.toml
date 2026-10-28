@@ -2,7 +2,7 @@
 name = "automated_support_ticket_classification"
 dynamic = ["version"]
 description = "Production-grade MLOps service that classifies customer support tickets."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -16,7 +16,7 @@ version = {attr = "automated_support_ticket_classification.__version__"}
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 # MLOps is this project's virtual environment. Ruff only auto-excludes
 # conventional names such as .venv, so it must be listed explicitly or
