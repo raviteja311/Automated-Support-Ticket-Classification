@@ -425,3 +425,53 @@ The granularity study was rerun with the new pipeline: 77-way then mapped is
 **Decision.** Ship `linearsvc_calibrated`. The MLflow gate promoted it over
 LogReg. The model is about five times slower (1.75 ms against 0.32 ms p50,
 model only), which is small next to the API's own overhead.
+
+---
+
+## E11 - Does the model transfer to Indian banking messages?
+
+**Why.** banking77 comes from a European app-only bank. The service would be
+used by Indian bank customers, who ask about UPI, KYC, branches and deposits,
+and often write in Hinglish. The `eval_india` stage existed but had no data.
+
+**Method.** 190 messages written by hand by two people (95 each), 38 per queue:
+100 English, 50 Hinglish, 40 short or misspelled. Scored with the shipped
+calibrated LinearSVC; no retraining.
+
+| style | rows | accuracy | macro F1 |
+|---|---:|---:|---:|
+| english | 100 | 0.600 | 0.583 |
+| hinglish | 50 | 0.620 | 0.560 |
+| short_or_misspelled | 40 | 0.650 | 0.613 |
+| **overall** | **190** | **0.616** | **0.593** |
+
+Recall by queue: billing 0.89, card_delivery 0.87, account 0.66, technical
+0.47, general 0.18. There are 73 errors, and 23 of them have confidence of 0.9
+or more (mean confidence 0.755 when wrong, 0.837 when right).
+
+**Result.** Macro F1 drops from 0.931 to 0.593. English is no better than
+Hinglish, so language mixing is not the main cause. The confident errors fall
+into three patterns:
+
+- "pending" means billing. banking77's `pending_*` intents all map to billing,
+  so "KYC pending" and "account closure still pending" go to billing at about
+  0.99.
+- Topics banking77 never covers: interest rates, minimum balance, recurring
+  deposits, passbooks, branch and ATM locators, account-opening documents and
+  eligibility. These are routed on surface words, mostly to `account`.
+- Login and app faults ("website unavailable when I log in", "can't reset the
+  app PIN") go to `account`, where banking77's passcode and identity intents sit.
+
+Some account-opening questions are borderline under the queue definitions,
+where `account` covers the account's lifecycle, so part of the `general` to
+`account` error is a labelling question rather than a model one.
+
+The drift monitor scores text drift at 0.752 against a 0.55 threshold and
+label drift at 0.184 against 0.10, but 190 rows is under the 200-row minimum,
+so it reports `insufficient_data`. The label score is partly by design: the set
+is balanced, while training is skewed towards billing.
+
+**Decision.** No model change from this. The gap is missing domain coverage,
+which a different classifier on the same corpus would not fix. Closing it needs
+Indian banking examples in training, and a larger held-out set to measure the
+result.
