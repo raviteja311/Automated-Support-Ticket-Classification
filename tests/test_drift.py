@@ -8,6 +8,10 @@ and would make the suite depend on a heavy optional dependency.
 The shapes below were taken from an actual `Report.dict()`.
 """
 
+import json
+
+import pandas as pd
+
 from automated_support_ticket_classification.monitoring import drift
 
 
@@ -122,3 +126,39 @@ def test_unknown_is_not_the_same_as_no_drift():
     assert thin["dataset_drifted"] is None
     assert clean["dataset_drifted"] is False
     assert thin["status"] != clean["status"]
+
+
+def _frame(texts):
+    return pd.DataFrame({"text": texts, "label": ["billing"] * len(texts)})
+
+
+def test_current_source_is_an_explicit_csv_when_given(tmp_path):
+    csv = tmp_path / "current.csv"
+    _frame(["from the csv"]).to_csv(csv, index=False)
+    (tmp_path / "predictions.jsonl").write_text(
+        json.dumps({"text": "from the log", "label": "billing"}) + "\n", encoding="utf-8"
+    )
+
+    current, source = drift.resolve_current(csv, tmp_path / "predictions.jsonl", 0, tmp_path)
+    assert source == csv.as_posix()
+    assert current["text"].tolist() == ["from the csv"]
+
+
+def test_current_source_is_the_prediction_log_when_it_has_traffic(tmp_path):
+    log = tmp_path / "predictions.jsonl"
+    log.write_text(
+        json.dumps({"text": "from the log", "label": "billing"}) + "\n", encoding="utf-8"
+    )
+    _frame(["from the test split"]).to_csv(tmp_path / "test.csv", index=False)
+
+    current, source = drift.resolve_current(None, log, 0, tmp_path)
+    assert source == drift.SOURCE_PREDICTION_LOG
+    assert current["text"].tolist() == ["from the log"]
+
+
+def test_current_source_falls_back_to_the_test_split_without_traffic(tmp_path):
+    _frame(["from the test split"]).to_csv(tmp_path / "test.csv", index=False)
+
+    current, source = drift.resolve_current(None, tmp_path / "predictions.jsonl", 0, tmp_path)
+    assert source == drift.SOURCE_TEST_SPLIT
+    assert current["text"].tolist() == ["from the test split"]
