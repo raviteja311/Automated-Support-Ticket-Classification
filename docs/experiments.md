@@ -388,3 +388,40 @@ measurable extra signal for routing, and the direct model is smaller and
 simpler. Note the 77-way score is the same linear pipeline on intents, not a
 tuned intent classifier, so it is not a comparison with published banking77
 results.
+
+---
+
+## E10 - Calibrated LinearSVC replaces LogReg
+
+**Why.** Since E6, LinearSVC had scored higher than the shipped LogReg, but it
+has no probabilities, and the API returns them. `CalibratedClassifierCV` adds
+them. The choice was made by a rule written and committed before the run
+(`docs/model-decision.md`), so the numbers could not shape the rule.
+
+**Method.** `models/compare.py` on the official split, sigmoid calibration,
+`cv=5`. Both models use the same TF-IDF settings.
+
+| model | macro F1 (95% CI) | ECE | p95 latency, model only |
+|---|---|---:|---:|
+| logreg | 0.9086 (0.8971 to 0.9195) | 0.155 | 0.409 ms |
+| linearsvc_calibrated | 0.9313 (0.9214 to 0.9399) | 0.0359 | 2.39 ms |
+
+McNemar p = 7.25e-10.
+
+**Result.** The calibrated SVC passed all four conditions of the rule: F1 up
+2.27pp, errors significantly different, ECE far lower, latency under 5 ms. The
+reliability diagram shows why LogReg's ECE was high: it is underconfident, right
+far more often than its stated confidence. Every queue's F1 improved, most for
+`card_delivery` (0.883 to 0.916) and `general` (0.872 to 0.904), and test
+errors fell from 251 to 192.
+
+Better calibration moves the review curve: at a 0.6 threshold, 5.8% of the
+test split goes to review instead of about 16%. Any threshold chosen against
+the old curve must be re-chosen.
+
+The granularity study was rerun with the new pipeline: 77-way then mapped is
+0.40pp above direct 5-way, McNemar p = 0.24, so E9's decision stands.
+
+**Decision.** Ship `linearsvc_calibrated`. The MLflow gate promoted it over
+LogReg. The model is about five times slower (1.75 ms against 0.32 ms p50,
+model only), which is small next to the API's own overhead.

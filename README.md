@@ -46,8 +46,9 @@ A Render blueprint (`render.yaml`) is included but not deployed.
 
 | Metric | Value |
 |---|---|
-| accuracy | 0.9185 |
-| macro F1 | 0.9086 |
+| model | TF-IDF + calibrated LinearSVC (sigmoid) |
+| accuracy | 0.9377 |
+| macro F1 | 0.9313 |
 | classes | 5 |
 | corpus | banking77, 13,083 real support messages |
 | test split | banking77 official, 3,080 messages |
@@ -67,24 +68,23 @@ The CI column is a bootstrap 95% confidence interval for macro F1.
 |---|---|---|---|
 | majority class (DummyClassifier) | 0.3247 | 0.0980 | 0.0944 to 0.1019 |
 | TF-IDF + ComplementNB | 0.8951 | 0.8780 | 0.8638 to 0.8918 |
-| **TF-IDF + LogisticRegression (production)** | **0.9185** | **0.9086** | **0.8971 to 0.9195** |
-| TF-IDF + calibrated LinearSVC | 0.9377 | 0.9313 | 0.9214 to 0.9399 |
+| TF-IDF + LogisticRegression (production until 2026-10-28) | 0.9185 | 0.9086 | 0.8971 to 0.9195 |
+| **TF-IDF + calibrated LinearSVC (production)** | **0.9377** | **0.9313** | **0.9214 to 0.9399** |
 | TF-IDF + LinearSVC | 0.9396 | 0.9334 | 0.9236 to 0.9424 |
 
 The majority-class floor shows how little of the headline number is class
 balance: always answering `billing` gets 32.5% accuracy and 0.098 macro F1.
 
-LinearSVC beats production by 2.48pp macro F1, past the stage's 1pp "clear win"
-margin, so `baselines.json` reports `production_beaten: true`. A McNemar test on
-the two models' test-set errors gives p = 5.68e-10, so the difference is not
-noise. Production is still LogisticRegression: plain LinearSVC has no
-`predict_proba`, and the API returns a confidence and a full probability
-distribution. The calibrated variant (`model.type: linearsvc_calibrated`, LinearSVC
-wrapped in `CalibratedClassifierCV`) is implemented and scores 0.9313 macro F1
-above. Whether to switch waits on the pre-registered comparison in
-`models/compare.py`, which runs only once the decision rule in
-[docs/model-decision.md](docs/model-decision.md) is written. See E6 and E7 in
-[docs/experiments.md](docs/experiments.md).
+Production is LinearSVC wrapped in `CalibratedClassifierCV` (sigmoid), which
+gives the API the probabilities plain LinearSVC lacks. It replaced
+LogisticRegression on 2026-10-28 after a comparison against a rule written in
+advance ([docs/model-decision.md](docs/model-decision.md)): +2.27pp macro F1,
+McNemar p = 7.25e-10, and much better calibration (expected calibration error
+0.036 against LogReg's 0.155, see
+[reports/reliability.png](reports/reliability.png)). Plain LinearSVC is still
+0.21pp ahead, but that is inside the stage's 1pp "clear win" margin (McNemar
+p = 0.31), so `baselines.json` reports `production_beaten: false`. See E6, E7
+and E10 in [docs/experiments.md](docs/experiments.md).
 
 ### Latency
 
@@ -95,9 +95,9 @@ in [metrics/latency.json](metrics/latency.json) (in process) and
 
 | Measurement | p50 | p95 | p99 |
 |---|---|---|---|
-| `POST /predict`, in-process TestClient | 5.25 ms | 5.72 ms | 6.25 ms |
-| `POST /predict` over HTTP, local uvicorn on loopback | 2.58 ms | 3.03 ms | 3.31 ms |
-| `predict_proba` on one message, model only | 0.32 ms | 0.37 ms | 0.41 ms |
+| `POST /predict`, in-process TestClient | 7.66 ms | 9.67 ms | 13.07 ms |
+| `POST /predict` over HTTP, local uvicorn on loopback | 4.79 ms | 6.54 ms | 10.11 ms |
+| `predict_proba` on one message, model only | 1.75 ms | 3.22 ms | 3.81 ms |
 | `POST /predict` over the internet, deployed | not yet measured | | |
 
 The HTTP row comes from `python scripts/benchmark_latency.py --url
@@ -107,8 +107,12 @@ URL to fill in the last row. The script reports the first request separately
 as `first_request_ms`, because a free-tier instance that has been asleep takes
 30 to 60 seconds to answer it, and that cold start would otherwise distort p95.
 
-Single run on a Windows 11 laptop (AMD64 CPU, family 25 model 80, Python 3.12.16), one request at a
-time. Both API figures include validation, JSON encoding and the prediction log
+Measured for the calibrated LinearSVC on a Windows 11 laptop (AMD64 CPU,
+family 25 model 80, Python 3.12.16), one request at a time. Each benchmark
+was run three times on an idle machine and the run with the median API p50 is
+the one committed; p95 varied by up to 3 ms between runs.
+The model is about five times slower than the LogisticRegression it replaced
+(0.32 ms p50), because it averages five calibrated SVCs. Both API figures include validation, JSON encoding and the prediction log
 write. The in-process figure is the higher one because TestClient adds its own
 per-request overhead, which here costs more than a loopback round trip to a
 real uvicorn server. Treat both as an order of magnitude, not a service-level
@@ -251,11 +255,11 @@ One ticket per class, against the locally running service:
 
 | Ticket | Predicted | Confidence |
 |---|---|---|
-| Why was I charged a fee on a cash withdrawal? | billing | 0.997 |
-| I think my transfer was declined, but why? | technical | 0.990 |
-| What is the need to verify my identity? | account | 0.998 |
-| Can I track when my card will be delivered? | card_delivery | 0.925 |
-| Are both Visa and Mastercard accepted? | general | 0.970 |
+| Why was I charged a fee on a cash withdrawal? | billing | 0.999 |
+| I think my transfer was declined, but why? | technical | 0.998 |
+| What is the need to verify my identity? | account | 0.999 |
+| Can I track when my card will be delivered? | card_delivery | 0.992 |
+| Are both Visa and Mastercard accepted? | general | 0.978 |
 
 These values come from a model trained locally with `dvc repro` and can differ
 slightly by platform.

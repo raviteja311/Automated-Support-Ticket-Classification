@@ -12,7 +12,8 @@ data:
   split: official
 model:
   # logreg | linearsvc_calibrated (LinearSVC wrapped in CalibratedClassifierCV)
-  type: logreg
+  # linearsvc_calibrated since 2026-10-28; see docs/model-decision.md.
+  type: linearsvc_calibrated
   # Calibration method for linearsvc_calibrated: sigmoid | isotonic
   calibration: sigmoid
   max_features: 5000

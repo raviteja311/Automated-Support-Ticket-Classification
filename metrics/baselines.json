@@ -1,6 +1,6 @@
 {
   "test_rows": 3080,
-  "production": "tfidf_logreg",
+  "production": "tfidf_linearsvc_calibrated",
   "models": {
     "majority_class": {
       "accuracy": 0.3247,
@@ -20,22 +20,22 @@
       "ci_low": 0.8638,
       "ci_high": 0.8918
     },
-    "tfidf_linearsvc_calibrated": {
-      "accuracy": 0.9377,
-      "f1_macro": 0.9313,
-      "ci_low": 0.9214,
-      "ci_high": 0.9399
-    },
     "tfidf_logreg": {
       "accuracy": 0.9185,
       "f1_macro": 0.9086,
       "ci_low": 0.8971,
       "ci_high": 0.9195
+    },
+    "tfidf_linearsvc_calibrated": {
+      "accuracy": 0.9377,
+      "f1_macro": 0.9313,
+      "ci_low": 0.9214,
+      "ci_high": 0.9399
     }
   },
   "best_alternative": "tfidf_linearsvc",
-  "best_alternative_margin_f1_macro": 0.0248,
+  "best_alternative_margin_f1_macro": 0.0021,
   "clear_win_margin": 0.01,
-  "mcnemar_p": 5.683941372411479e-10,
-  "production_beaten": true
+  "mcnemar_p": 0.30745625495910645,
+  "production_beaten": false
 }
