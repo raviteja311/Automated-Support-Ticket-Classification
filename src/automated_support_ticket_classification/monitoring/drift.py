@@ -14,7 +14,10 @@ suddenly routing everything to one queue. Text drift catches input changing
 before the predictions visibly do, which is the earlier and more useful signal.
 
 Reference is the training split, the data the model actually learned from.
-Current is whatever the API has served, read from the prediction log.
+Current is whatever the API has served, read from the prediction log. With no
+traffic it falls back to the test split, and a CSV can be passed instead. The
+summary records which one was used as `current_source`, so a committed result
+says what it measured.
 """
 
 from __future__ import annotations
@@ -50,6 +53,10 @@ DRIFT_SHARE_THRESHOLD = 0.5
 # few requests after a deploy is an alert people learn to ignore.
 MIN_SAMPLE_ROWS = 200
 
+# Values of `current_source` in the summary, besides a CSV path.
+SOURCE_PREDICTION_LOG = "prediction_log"
+SOURCE_TEST_SPLIT = "test_split_fallback"
+
 
 def load_predictions(path: Path, backup_count: int = 0) -> pd.DataFrame | None:
     """Read the API's prediction log, or None when nothing has been served.
@@ -72,6 +79,37 @@ def load_predictions(path: Path, backup_count: int = 0) -> pd.DataFrame | None:
     if not rows:
         return None
     return pd.DataFrame(rows)
+
+
+def resolve_current(
+    current_csv: Path | None,
+    log_path: Path,
+    backup_count: int,
+    processed_dir: Path,
+) -> tuple[pd.DataFrame, str]:
+    """Pick the current data and say where it came from.
+
+    In order: an explicit CSV, the prediction log, then the test split. The
+    returned source string ends up in the summary as `current_source`.
+    """
+    if current_csv is not None:
+        current = pd.read_csv(current_csv)
+        logger.info("Using %s as current data (%d rows)", current_csv, len(current))
+        return current, current_csv.as_posix()
+
+    current = load_predictions(log_path, backup_count=backup_count)
+    if current is not None:
+        return current, SOURCE_PREDICTION_LOG
+
+    # No traffic yet. Fall back to the held-out split so the mechanism is
+    # still exercised and the report is still produced. Says so loudly,
+    # because "no drift" and "no data" must never look the same.
+    logger.warning(
+        "No predictions at %s; comparing the test split against train instead. "
+        "This exercises the report but is not a measurement of real traffic.",
+        log_path,
+    )
+    return pd.read_csv(processed_dir / "test.csv"), SOURCE_TEST_SPLIT
 
 
 def build_report(reference: pd.DataFrame, current: pd.DataFrame):
@@ -171,23 +209,12 @@ def main() -> None:
     processed = Path(cfg.data.processed_dir)
     reference = pd.read_csv(processed / "train.csv")
 
-    log_path = Path(cfg.monitoring.predictions_path)
-    if args.current is not None:
-        current = pd.read_csv(args.current)
-        logger.info("Using %s as current data (%d rows)", args.current, len(current))
-    else:
-        current = load_predictions(log_path, backup_count=cfg.monitoring.backup_count)
-
-    if current is None:
-        # No traffic yet. Fall back to the held-out split so the mechanism is
-        # still exercised and the report is still produced. Says so loudly,
-        # because "no drift" and "no data" must never look the same.
-        logger.warning(
-            "No predictions at %s; comparing the test split against train instead. "
-            "This exercises the report but is not a measurement of real traffic.",
-            log_path,
-        )
-        current = pd.read_csv(processed / "test.csv")
+    current, current_source = resolve_current(
+        args.current,
+        Path(cfg.monitoring.predictions_path),
+        cfg.monitoring.backup_count,
+        processed,
+    )
 
     result = build_report(reference, current)
 
@@ -199,6 +226,7 @@ def main() -> None:
 
     summary = summarise(result, current_rows=len(current))
     summary["reference_rows"] = len(reference)
+    summary["current_source"] = current_source
 
     if summary["status"] == "insufficient_data":
         logger.warning("%s", summary["note"])

@@ -11,27 +11,44 @@
     },
     {
       "label": "Tests",
-      "type": "shell",
-      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m pytest",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "pytest"],
       "problemMatcher": [],
       "group": { "kind": "test", "isDefault": true }
     },
     {
+      "label": "Format",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "ruff", "format", "."],
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "ruff", "check", ".", "--fix"],
+      "problemMatcher": []
+    },
+    {
       "label": "Lint and format",
-      "type": "shell",
-      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m ruff format . ; ${workspaceFolder}/MLOps/Scripts/python.exe -m ruff check . --fix",
+      "dependsOn": ["Format", "Lint"],
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {
       "label": "Reproduce the pipeline (dvc repro)",
-      "type": "shell",
-      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m dvc repro",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "dvc", "repro"],
       "problemMatcher": []
     },
     {
       "label": "MLflow UI",
-      "type": "shell",
-      "command": "${workspaceFolder}/MLOps/Scripts/python.exe -m mlflow ui",
+      "type": "process",
+      "command": "${command:python.interpreterPath}",
+      "args": ["-m", "mlflow", "ui"],
       "problemMatcher": [],
       "presentation": { "panel": "dedicated" }
     }
