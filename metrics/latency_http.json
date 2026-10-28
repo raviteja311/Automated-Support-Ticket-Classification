@@ -1,0 +1,17 @@
+{
+  "mode": "network",
+  "url": "http://127.0.0.1:8000",
+  "first_request_ms": 116.7,
+  "http_predict": {
+    "p50_ms": 2.58,
+    "p95_ms": 3.028,
+    "p99_ms": 3.307,
+    "mean_ms": 2.737,
+    "n": 500
+  },
+  "client": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "python": "3.12.16"
+  }
+}
