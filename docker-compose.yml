@@ -5,12 +5,19 @@ services:
       - "8000:8000"
     environment:
       - DISABLE_MLFLOW=1
+    volumes:
+      # Keeps data/predictions.jsonl across container restarts and rebuilds.
+      # Serving does not read the build-time files in /app/data.
+      - prediction-data:/app/data
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.15.1
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     depends_on:
       - api
+
+volumes:
+  prediction-data:
