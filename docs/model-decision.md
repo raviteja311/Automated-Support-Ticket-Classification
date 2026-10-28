@@ -32,18 +32,34 @@ Written on: 2026-10-28
 
 ## Result
 
-Fill in after running `python -m automated_support_ticket_classification.models.compare`.
+From `python -m automated_support_ticket_classification.models.compare`, run on
+2026-10-28 against the rule above (rule SHA-256 `35ec183f...`, recorded in
+[metrics/model_comparison.json](../metrics/model_comparison.json)). Reliability
+diagram: [reports/reliability.png](../reports/reliability.png).
 
 | model | macro F1 (95% CI) | ECE | p95 latency |
 |---|---|---|---|
-| logreg | | | |
-| linearsvc_calibrated | | | |
+| logreg | 0.9086 (0.8971 to 0.9195) | 0.155 | 0.409 ms |
+| linearsvc_calibrated | 0.9313 (0.9214 to 0.9399) | 0.0359 | 2.39 ms |
 
-McNemar p:
+McNemar p: 7.25e-10
+
+Each condition of the rule:
+
+1. Macro F1: 0.9313 - 0.9086 = 0.0227, at least 0.01. Passes.
+2. McNemar p: 7.25e-10, below 0.05. Passes.
+3. ECE: 0.0359, no more than 0.155 + 0.02 = 0.175. Passes.
+4. Latency: p95 2.39 ms, at most 5 ms. Passes.
+
+LogReg's high ECE comes from underconfidence: in every bin of the reliability
+diagram its accuracy is well above its stated confidence. The calibrated SVC
+stays much closer to the diagonal.
 
 ## Decision
 
-Which model ships, and why, by the rule above. If it is the calibrated SVC, set
-`model.type: linearsvc_calibrated` in `params.yaml`, run `dvc repro`, and
-promote the new version through the gate in `models/promote.py`. If the gate
-refuses, record why here.
+`linearsvc_calibrated` (sigmoid) ships: it passes all four conditions.
+
+Not applied yet. The switch is a separate change: set
+`model.type: linearsvc_calibrated` in `params.yaml`, run `dvc repro`, promote
+the new version through the gate in `models/promote.py`, and update the
+figures in the README and docs. If the gate refuses, record why here.

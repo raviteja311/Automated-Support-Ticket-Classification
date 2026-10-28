@@ -1,0 +1,29 @@
+{
+  "split": "official",
+  "test_rows": 3080,
+  "rule_file": "docs\\model-decision.md",
+  "rule_sha256": "35ec183f3e07f8ad4d6d48da48ebc2a9e5990148f35ebcdbbf755a61fba4bbdc",
+  "models": {
+    "logreg": {
+      "f1_macro": 0.9086,
+      "ci_low": 0.8971,
+      "ci_high": 0.9195,
+      "ece": 0.155,
+      "latency": {
+        "p50_ms": 0.346,
+        "p95_ms": 0.409
+      }
+    },
+    "linearsvc_calibrated": {
+      "f1_macro": 0.9313,
+      "ci_low": 0.9214,
+      "ci_high": 0.9399,
+      "ece": 0.0359,
+      "latency": {
+        "p50_ms": 1.86,
+        "p95_ms": 2.39
+      }
+    }
+  },
+  "mcnemar_p": 7.252322160518573e-10
+}
