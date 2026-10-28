@@ -16,12 +16,19 @@ realistic to compare.
 This is a regex baseline. It catches identifiers with a fixed shape. Names and
 street addresses have no fixed shape and would need named-entity recognition,
 which is out of scope. scripts/pii_recall.py measures what it does catch.
+
+Appends are serialised by a lock. /predict is a sync endpoint, so FastAPI runs
+it in a thread pool, and without the lock two requests can interleave the size
+check, the rotation and the write, and lose lines. The lock covers threads in
+one process only. Several uvicorn workers or replicas writing the same file
+are not supported.
 """
 
 from __future__ import annotations
 
 import json
 import re
+import threading
 from pathlib import Path
 
 EMAIL_TOKEN = "[email]"
@@ -29,6 +36,9 @@ UPI_TOKEN = "[upi]"
 PAN_TOKEN = "[pan]"
 IFSC_TOKEN = "[ifsc]"
 NUMBER_TOKEN = "[number]"
+
+# Serialises append() across threads; see the module docstring.
+_write_lock = threading.Lock()
 
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 # UPI IDs (ravi@okaxis, 9876543210@ybl) look like emails without a dotted
@@ -100,8 +110,9 @@ def append(
     """Append one JSON line, rotating first if it would push the file past max_bytes."""
     line = json.dumps(record) + "\n"
     path.parent.mkdir(parents=True, exist_ok=True)
-    if max_bytes > 0 and path.exists():
-        if path.stat().st_size + len(line.encode("utf-8")) > max_bytes:
-            _rotate(path, backup_count)
-    with open(path, "a", encoding="utf-8") as f:
-        f.write(line)
+    with _write_lock:
+        if max_bytes > 0 and path.exists():
+            if path.stat().st_size + len(line.encode("utf-8")) > max_bytes:
+                _rotate(path, backup_count)
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(line)

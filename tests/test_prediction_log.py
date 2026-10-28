@@ -1,6 +1,7 @@
 """Tests for prediction-log redaction and rotation, and drift reading it back."""
 
 import json
+import threading
 from pathlib import Path
 
 import pytest
@@ -92,6 +93,33 @@ def test_rotation_disabled_when_max_bytes_is_zero(tmp_path):
         prediction_log.append(log, {"text": f"row {i}", "label": "x"}, max_bytes=0)
     assert len(log.read_text(encoding="utf-8").splitlines()) == 50
     assert not log.with_name(log.name + ".1").exists()
+
+
+def test_concurrent_appends_lose_no_lines(tmp_path):
+    # /predict is a sync endpoint, so FastAPI runs it in a thread pool and two
+    # requests can race through the size check, rotation and write at once.
+    log = tmp_path / "predictions.jsonl"
+    threads, per_thread, backup_count = 8, 50, 200
+    start = threading.Barrier(threads)
+
+    def worker(t: int) -> None:
+        start.wait()
+        for i in range(per_thread):
+            prediction_log.append(log, {"text": f"t{t} row {i}", "label": "x"}, 400, backup_count)
+
+    pool = [threading.Thread(target=worker, args=(t,)) for t in range(threads)]
+    for thread in pool:
+        thread.start()
+    for thread in pool:
+        thread.join()
+
+    files = [log, *(p for p in prediction_log.rotated_paths(log, backup_count) if p.exists())]
+    # A small cap and a generous backup_count, so nothing is rotated out.
+    assert not prediction_log.rotated_paths(log, backup_count)[-1].exists()
+    lines = [line for f in files for line in f.read_text(encoding="utf-8").splitlines()]
+    texts = {json.loads(line)["text"] for line in lines}
+    assert len(lines) == threads * per_thread
+    assert texts == {f"t{t} row {i}" for t in range(threads) for i in range(per_thread)}
 
 
 def test_drift_reads_rotated_files_oldest_first(tmp_path):
