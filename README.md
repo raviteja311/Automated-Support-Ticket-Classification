@@ -12,6 +12,8 @@ The machine learning is deliberately simple, a linear model that trains in
 seconds, so the engineering takes centre stage: reproducible pipelines, versioned
 data, experiment tracking, tests, containers, CI and monitoring.
 
+Full technical documentation: [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+
 > **Runs locally.** This is a portfolio project, not a hosted service. Everything
 > below runs on your machine in a couple of commands. A `render.yaml` blueprint is
 > included so it *can* be deployed, but no public instance exists and none is
