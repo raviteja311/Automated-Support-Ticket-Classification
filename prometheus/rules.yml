@@ -2,23 +2,21 @@ groups:
   - name: automated-support-ticket-classification
     rules:
       # Share of /predict answers routed to a person over the last hour.
-      # Only meaningful once serve.review_threshold in params.yaml is above 0.0;
-      # at the default of 0.0 nothing is routed to review and this never fires.
-      # 0.25 was chosen while LogReg shipped, assuming a threshold around 0.55
-      # to 0.6, where about 16% of the test split went to review. The calibrated
-      # LinearSVC sends only 3.5% to 5.8% to review at those thresholds
-      # (reports/coverage_accuracy.csv), so 0.25 now fires only on a large
-      # shift. Revisit it when the threshold is chosen.
+      # At serve.review_threshold 0.7, about 10.3% of the test split goes to
+      # review (reports/coverage_accuracy.csv), so 0.20 is roughly double the
+      # normal rate. The India robustness set, a real shift, sends 30.5% to
+      # review at the same threshold, so this fires on it with margin (E12).
+      # Revisit both numbers together if the threshold or the model changes.
       - alert: ReviewRateHigh
         expr: |
           sum(rate(ticket_routed_total{queue="needs_review"}[1h]))
             / sum(rate(ticket_routed_total[1h]))
-          > 0.25
+          > 0.20
         for: 15m
         labels:
           severity: warning
         annotations:
-          summary: More than 25% of tickets are going to human review
+          summary: More than 20% of tickets are going to human review
           description: >-
             The review rate over the last hour is {{ $value | humanizePercentage }}.
             The model is less sure of its traffic than it was of the test split,
