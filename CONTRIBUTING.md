@@ -7,8 +7,9 @@
 3. Open a pull request into `main`. CI must be green before merge.
 4. Squash-merge, so `main` keeps one commit per change.
 
-`main` is always deployable. Merging to `main` triggers an automatic deploy, so
-do not merge anything you would not want live.
+`main` is always deployable. `render.yaml` sets `autoDeploy: true`, so if the
+service is ever deployed on Render, every merge to `main` ships. No instance is
+deployed today.
 
 ## Before you push
 
