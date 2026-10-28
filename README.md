@@ -88,19 +88,19 @@ and E10 in [docs/experiments.md](docs/experiments.md).
 
 ### India robustness
 
-190 hand-written messages in the style of Indian bank customers (UPI, KYC,
-branches, Hinglish), 38 per queue, in
+200 hand-written messages in the style of Indian bank customers (UPI, KYC,
+branches, Hinglish), 39 to 41 per queue, in
 [data/india_eval/india_messages.csv](data/india_eval/india_messages.csv).
 Scores are in [metrics/india.json](metrics/india.json):
 
 | style | rows | accuracy | macro F1 |
 |---|---:|---:|---:|
-| english | 100 | 0.600 | 0.583 |
-| hinglish | 50 | 0.620 | 0.560 |
-| short_or_misspelled | 40 | 0.650 | 0.613 |
-| **overall** | **190** | **0.616** | **0.593** |
+| english | 104 | 0.596 | 0.579 |
+| hinglish | 53 | 0.623 | 0.562 |
+| short_or_misspelled | 43 | 0.651 | 0.606 |
+| **overall** | **200** | **0.615** | **0.591** |
 
-Macro F1 drops 33.8pp from banking77's 0.931. English scores no better than
+Macro F1 drops 34.1pp from banking77's 0.931. English scores no better than
 Hinglish, so the gap is mostly what customers ask about, not the language:
 
 - "pending" means billing to this model, because banking77's `pending_*`
@@ -110,8 +110,8 @@ Hinglish, so the gap is mostly what customers ask about, not the language:
   app-only bank. `general` recall is 0.18.
 - Login and app faults go to `account`, where banking77's passcode intents sit.
 
-Text drift against training is 0.752 (threshold 0.55), but 190 rows is under
-the 200-row minimum, so the monitor issues no verdict. See E11 in
+The drift monitor flags the set as drifted from training: text drift 0.791
+(threshold 0.55) and label drift 0.179 (threshold 0.10). See E11 in
 [docs/experiments.md](docs/experiments.md).
 
 ### Latency
@@ -235,7 +235,7 @@ The evaluate stage writes the trade-off to `reports/coverage_accuracy.csv` and
 on them. The Prometheus counter `ticket_routed_total{queue=...}` counts
 answers by routed queue, so the review rate can be graphed and alerted on. A
 rising review rate means the model is less sure of its traffic, which is a
-drift signal of its own: the India robustness set sends 30.5% to review at the
+drift signal of its own: the India robustness set sends 30.0% to review at the
 same threshold. `prometheus/rules.yml` alerts when the hourly review rate
 passes 20%, about double the normal rate. See E12 in
 [docs/experiments.md](docs/experiments.md).

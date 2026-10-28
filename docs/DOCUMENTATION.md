@@ -271,7 +271,7 @@ Automated-Support-Ticket-Classification/
 │   └── *-MLOps-Guide-CORRECTED.pdf  # 49-page build guide
 ├── data/
 │   ├── raw/, processed/        # DVC outputs (Git-ignored)
-│   └── india_eval/             # India robustness set (190 hand-written messages)
+│   └── india_eval/             # India robustness set (200 hand-written messages)
 ├── models/                     # model.joblib (Git-ignored)
 ├── .github/workflows/          # ci.yml, smoke.yml
 ├── dvc.yaml, dvc.lock, params.yaml
@@ -525,7 +525,7 @@ The in-process figure is higher than the HTTP one because TestClient adds its ow
 | E8 | Renaming a queue changed the random split | About 0.9 points of pure split noise; motivates fixed split and CIs |
 | E9 | 5-way vs 77-way | No significant gain from predicting intents; direct model kept |
 | E10 | Calibrated LinearSVC vs LogReg under a pre-written rule | All four conditions passed; calibrated LinearSVC ships (macro F1 0.9313, ECE 0.036) |
-| E11 | Transfer to Indian banking messages | Macro F1 0.593 on 190 hand-written messages, a 33.8-point drop; caused by missing domain coverage, not language |
+| E11 | Transfer to Indian banking messages | Macro F1 0.591 on 200 hand-written messages, a 34.1-point drop; caused by missing domain coverage, not language |
 | E12 | Choosing the review threshold and alert level | 0.7 threshold (10.3% to review, 192 to 81 wrong routes) and a 20% review-rate alert |
 
 ### 9.9 Reproducibility check
@@ -534,18 +534,18 @@ While preparing this documentation, the suite and pipeline were re-run on Linux 
 
 ### 9.10 India robustness (`metrics/india.json`)
 
-190 hand-written messages from two authors, 38 per queue, scored with the shipped model:
+200 hand-written messages from two authors, 39 to 41 per queue, scored with the shipped model:
 
 | style | rows | accuracy | macro F1 |
 |---|---:|---:|---:|
-| english | 100 | 0.600 | 0.583 |
-| hinglish | 50 | 0.620 | 0.560 |
-| short_or_misspelled | 40 | 0.650 | 0.613 |
-| **overall** | **190** | **0.616** | **0.593** |
+| english | 104 | 0.596 | 0.579 |
+| hinglish | 53 | 0.623 | 0.562 |
+| short_or_misspelled | 43 | 0.651 | 0.606 |
+| **overall** | **200** | **0.615** | **0.591** |
 
-Macro F1 drops 33.8 points from the banking77 test score of 0.931. Recall by queue is billing 0.89, card_delivery 0.87, account 0.66, technical 0.47 and general 0.18. Of 73 errors (`reports/india_errors.csv`), 23 have confidence of 0.9 or more. English scores no better than Hinglish: the errors come from topics banking77 does not cover (branches, deposits, interest rates, account opening), from "pending" being learned as a billing word, and from login faults being routed to `account`. See E11.
+Macro F1 drops 34.1 points from the banking77 test score of 0.931. Recall by queue is billing 0.90, card_delivery 0.87, account 0.68, technical 0.44 and general 0.18. Of 77 errors (`reports/india_errors.csv`), 24 have confidence of 0.9 or more. English scores no better than Hinglish: the errors come from topics banking77 does not cover (branches, deposits, interest rates, account opening), from "pending" being learned as a billing word, and from login faults being routed to `account`. See E11.
 
-Against the training split, `metrics/drift_india.json` scores text drift at 0.752 (threshold 0.55) and label drift at 0.184 (threshold 0.10), but 190 rows is under the 200-row minimum, so `status` is `insufficient_data` and no verdict is issued.
+Against the training split, `metrics/drift_india.json` reports `dataset_drifted: true`: text drift 0.791 (threshold 0.55) and label drift 0.179 (threshold 0.10). The label score is partly by design, because the set is balanced while training is skewed towards billing.
 
 ---
 
@@ -846,8 +846,8 @@ Each item below can be verified in the repository.
 
 - The model is a bag-of-n-grams linear classifier. It routes on surface vocabulary, and the README notes that retail-style tickets outside the banking domain will be routed on wording rather than meaning.
 - The 77-to-5 intent mapping is one person's judgement. The annotation tooling exists, but `docs/mapping/annotations/` contains no completed sheets and no `metrics/mapping_agreement.json` has been produced.
-- banking77 comes from a European digital bank, and the model does not transfer well to Indian banking messages: macro F1 is 0.593 on 190 hand-written messages, against 0.931 on banking77 (E11). The gap comes from topics the corpus never covers, so closing it needs Indian banking examples in training.
-- The review threshold (0.7) and the 20% alert were chosen on the banking77 test split and a 190-message India set; real traffic may need different values.
+- banking77 comes from a European digital bank, and the model does not transfer well to Indian banking messages: macro F1 is 0.591 on 200 hand-written messages, against 0.931 on banking77 (E11). The gap comes from topics the corpus never covers, so closing it needs Indian banking examples in training.
+- The review threshold (0.7) and the 20% alert were chosen on the banking77 test split and a 200-message India set; real traffic may need different values.
 - Bootstrap intervals capture test-set sampling noise only, not training variance.
 
 **Serving and operations**
@@ -883,7 +883,7 @@ The first group is work the repository has already scaffolded or explicitly call
 **Scaffolded in the repository**
 
 1. Done on 2026-10-28: `linearsvc_calibrated` passed the pre-written rule and was promoted through the registry gate. A next step is to compare isotonic calibration under a new rule written in advance.
-2. Grow the India set from 190 messages to the 200 to 300 target in `data/india_eval/README.md`. Ten more would give the drift monitor enough rows for a verdict.
+2. The India set has 200 messages, enough for a drift verdict (drifted). Growing it towards the 300 upper target in `data/india_eval/README.md` would narrow the per-style scores.
 3. Gather independent annotations of the intent mapping, then run `agree` and `sensitivity` and write up `docs/mapping-validation.md`.
 4. Deploy with `render.yaml`, enable the scheduled smoke test, and record internet latency including cold starts.
 5. Done on 2026-10-28: `review_threshold` is 0.7 with a 20% review-rate alert (E12). Revisit both against real traffic.
