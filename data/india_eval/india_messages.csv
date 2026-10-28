@@ -189,3 +189,13 @@ text,label,language_style,author
 "interest rates pls",general,short_or_misspelled,poojitha
 "student account eligiblity",general,short_or_misspelled,ravi
 "support open on sunday?",general,short_or_misspelled,poojitha
+"My account was charged a fee I was not expecting",billing,english,ravi
+"UPI se payment kiya aur amount do baar cut hua",billing,hinglish,poojitha
+"refund not credited yet pls check",billing,short_or_misspelled,ravi
+"Mobile banking stops responding when I open it",technical,english,poojitha
+"OTP dalne ke baad bhi login nahi ho raha",technical,hinglish,ravi
+"app not wrking after update",technical,short_or_misspelled,poojitha
+"My KYC documents are still awaiting verification",account,english,ravi
+"Account ka registered number update karna hai",account,hinglish,poojitha
+"new card delivery status pls",card_delivery,short_or_misspelled,ravi
+"What are the requirements for opening a savings account?",general,english,poojitha

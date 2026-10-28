@@ -3,12 +3,14 @@ What customer support channels are available on weekends?,general,english,poojit
 Banking website open hi nahi ho rahi,technical,hinglish,poojitha,account,0.3785
 Online banking gives me a server error on every attempt,technical,english,ravi,account,0.3926
 Branch visit ke liye appointment lena zaroori hai?,general,hinglish,poojitha,account,0.4452
+OTP dalne ke baad bhi login nahi ho raha,technical,hinglish,ravi,account,0.4492
 branch timings?,general,short_or_misspelled,ravi,account,0.4492
 Transaction processing pe atka hua hai kaafi time se,technical,hinglish,poojitha,billing,0.4653
 My date of birth is incorrect in the customer profile,account,english,poojitha,billing,0.4712
 qr scan not wrking,technical,short_or_misspelled,poojitha,billing,0.4901
 My account has been frozen and I would like to know why,account,english,ravi,technical,0.4996
 My card chip is not being read at the merchant terminal,technical,english,poojitha,billing,0.5031
+Mobile banking stops responding when I open it,technical,english,poojitha,billing,0.5033
 Bank mein joint account open kar sakte hain kya?,general,hinglish,ravi,account,0.5034
 Mobile banking app mein kaun kaunse services milte hain?,general,hinglish,poojitha,technical,0.5233
 My mobile banking app crashes whenever I open the transaction page,technical,english,ravi,general,0.5662
@@ -33,6 +35,7 @@ card not recvd,card_delivery,short_or_misspelled,ravi,technical,0.7047
 Bank ke working hours kya hain public holiday pe?,general,hinglish,ravi,technical,0.7277
 My debit card works at ATMs but fails at online checkout,technical,english,poojitha,billing,0.7333
 The banking application crashes when I try to update my profile,technical,english,ravi,account,0.7412
+app not wrking after update,technical,short_or_misspelled,poojitha,billing,0.7474
 Can I visit a branch without making an appointment?,general,english,poojitha,account,0.7559
 app wont refresh balance,technical,short_or_misspelled,poojitha,billing,0.7632
 I need to know which documents are accepted for KYC,account,english,ravi,general,0.7932
@@ -50,12 +53,13 @@ International money transfer ki facility available hai?,general,hinglish,poojith
 Nearest ATM ka location kaise pata karu?,general,hinglish,ravi,technical,0.8788
 What are the eligibility requirements for a student account?,general,english,ravi,account,0.899
 Which documents are required to open a basic savings account?,general,english,poojitha,account,0.9151
+What are the requirements for opening a savings account?,general,english,poojitha,account,0.9156
 I cannot reset the app PIN because the confirmation screen is blank,technical,english,poojitha,account,0.921
 Recurring deposit scheme ke baare mein details chahiye,general,hinglish,ravi,account,0.9229
 My account closure request has not been processed,account,english,poojitha,billing,0.9292
 Student account ke liye eligibility kya hai?,general,hinglish,poojitha,account,0.9331
-joint account availble?,general,short_or_misspelled,ravi,account,0.9331
 student account eligiblity,general,short_or_misspelled,ravi,account,0.9331
+joint account availble?,general,short_or_misspelled,ravi,account,0.9331
 Savings account open karne ke liye kaunse documents chahiye?,general,hinglish,poojitha,account,0.9377
 The banking website is unavailable whenever I try to log in,technical,english,ravi,account,0.9424
 atm near me?,general,short_or_misspelled,poojitha,technical,0.9452
