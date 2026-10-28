@@ -393,7 +393,7 @@ Behaviour worth noting:
 
 - **Validation.** `text` must be 1 to 5,000 characters (`MAX_TEXT_LENGTH`). Whitespace-only input passes the length check but is rejected with 422 after cleaning.
 - **Lazy model loading.** `get_model()` is wrapped in `lru_cache`. A missing artifact raises `ModelUnavailableError`, mapped to HTTP 503 with instructions. Because `lru_cache` does not cache exceptions, the service recovers without a restart once the file appears.
-- **Human review.** If the top probability is below `serve.review_threshold`, `label` becomes `needs_review` while `predicted_label` and `all_scores` still carry the model's suggestion. The default `0.0` disables this route.
+- **Human review.** If the top probability is below `serve.review_threshold`, `label` becomes `needs_review` while `predicted_label` and `all_scores` still carry the model's suggestion. The shipped threshold is `0.7` (E12); `0.0` disables this route.
 - **Metrics.** `prometheus-fastapi-instrumentator` adds request rate, error and latency metrics. A custom counter `ticket_routed_total{queue=...}` counts answers by routed queue, so the review rate can be computed in PromQL.
 - **Configuration.** `params.yaml` is read once per process through a cached `get_config()`, not on every request, so changing the review threshold or the log settings needs a restart.
 - **Prediction logging.** The model's top prediction (not the routing decision) is logged with the redacted text. Logging is best effort: a failure only logs a warning and never fails the request.
@@ -479,7 +479,7 @@ The calibrated LinearSVC replaced LogisticRegression on 2026-10-28, after a comp
 | 0.70 | 89.7% | 97.1% | 317 |
 | 0.90 | 71.7% | 99.1% | 873 |
 
-This is the operating curve for `serve.review_threshold`. The shipped default is `0.0` (route everything). The calibrated model is far less underconfident than LogReg was, so the same threshold now sends many fewer messages to review: at 0.70, 10.3% instead of about a third.
+This is the operating curve for `serve.review_threshold`. The shipped threshold is `0.70`: 10.3% of messages go to review, and wrong routes fall from 192 to 81 (E12). The calibrated model is far less underconfident than LogReg was, so the same threshold now sends many fewer messages to review: at 0.70, 10.3% instead of about a third.
 
 ### 9.4 Granularity study (`metrics/granularity.json`)
 
@@ -526,6 +526,7 @@ The in-process figure is higher than the HTTP one because TestClient adds its ow
 | E9 | 5-way vs 77-way | No significant gain from predicting intents; direct model kept |
 | E10 | Calibrated LinearSVC vs LogReg under a pre-written rule | All four conditions passed; calibrated LinearSVC ships (macro F1 0.9313, ECE 0.036) |
 | E11 | Transfer to Indian banking messages | Macro F1 0.593 on 190 hand-written messages, a 33.8-point drop; caused by missing domain coverage, not language |
+| E12 | Choosing the review threshold and alert level | 0.7 threshold (10.3% to review, 192 to 81 wrong routes) and a 20% review-rate alert |
 
 ### 9.9 Reproducibility check
 
@@ -662,11 +663,11 @@ The model is trained on banking support text. Retail-style messages about parcel
 
 ### 11.3 Enable human review
 
-Choose an operating point from `reports/coverage_accuracy.csv` and set it in `params.yaml`:
+The route is on by default at `0.7`. To pick a different operating point from `reports/coverage_accuracy.csv`, set it in `params.yaml` and restart the API:
 
 ```yaml
 serve:
-  review_threshold: 0.5
+  review_threshold: 0.7
 ```
 
 Predictions below the threshold return `"label": "needs_review"`. The review rate can be graphed in Prometheus:
@@ -733,7 +734,7 @@ All values from `params.yaml`.
 | `monitoring.redact` | `true` | Mask identifiers before writing |
 | `monitoring.max_bytes` | `5000000` | Rotation size; 0 disables rotation |
 | `monitoring.backup_count` | `3` | Rotated files kept |
-| `serve.review_threshold` | `0.0` | Confidence below which `needs_review` is returned; 0 disables |
+| `serve.review_threshold` | `0.7` | Confidence below which `needs_review` is returned; 0 disables |
 
 Environment variables: `DISABLE_MLFLOW=1` turns off MLflow in training; `PORT` sets the container port.
 
@@ -798,7 +799,7 @@ The build trains the model inside the image, so no external storage is needed at
 docker compose up
 ```
 
-Starts the API on port 8000 and Prometheus (`prom/prometheus:v3.15.1`) on port 9090, scraping `api:8000/metrics` every 15 seconds and evaluating the alert rules in `prometheus/rules.yml`: review rate above 25% over an hour, and 5xx rate above 5% over five minutes. The review-rate alert can only fire once `serve.review_threshold` is above 0.0.
+Starts the API on port 8000 and Prometheus (`prom/prometheus:v3.15.1`) on port 9090, scraping `api:8000/metrics` every 15 seconds and evaluating the alert rules in `prometheus/rules.yml`: review rate above 20% over an hour (about double the 10.3% expected at the 0.7 threshold), and 5xx rate above 5% over five minutes.
 
 The prediction log lives in the `prediction-data` volume, so it survives container restarts. Copy it out for the drift monitor with:
 
@@ -846,13 +847,13 @@ Each item below can be verified in the repository.
 - The model is a bag-of-n-grams linear classifier. It routes on surface vocabulary, and the README notes that retail-style tickets outside the banking domain will be routed on wording rather than meaning.
 - The 77-to-5 intent mapping is one person's judgement. The annotation tooling exists, but `docs/mapping/annotations/` contains no completed sheets and no `metrics/mapping_agreement.json` has been produced.
 - banking77 comes from a European digital bank, and the model does not transfer well to Indian banking messages: macro F1 is 0.593 on 190 hand-written messages, against 0.931 on banking77 (E11). The gap comes from topics the corpus never covers, so closing it needs Indian banking examples in training.
-- The review threshold has not been chosen for the calibrated model, and the 25% review-rate alert was set while LogReg shipped; both need revisiting against the new coverage curve.
+- The review threshold (0.7) and the 20% alert were chosen on the banking77 test split and a 190-message India set; real traffic may need different values.
 - Bootstrap intervals capture test-set sampling noise only, not training variance.
 
 **Serving and operations**
 
 - No public deployment exists, so there are no production traffic figures or internet latency measurements.
-- The human-review route is disabled by default (`review_threshold: 0.0`).
+- The review threshold does not protect against confident errors under domain shift: on the India set, accuracy on routed messages only rises from 61.6% to 67.4% at 0.7. The review-rate alert is what flags that kind of shift.
 - Latency figures come from a single sequential run on one laptop and were not measured under concurrent load.
 - There are no dashboards in the repository, and the Prometheus alert rules have no Alertmanager or notification target configured.
 - Drift monitoring is a manual command that depends on Evidently, which is not installed in the serving image.
@@ -885,7 +886,7 @@ The first group is work the repository has already scaffolded or explicitly call
 2. Grow the India set from 190 messages to the 200 to 300 target in `data/india_eval/README.md`. Ten more would give the drift monitor enough rows for a verdict.
 3. Gather independent annotations of the intent mapping, then run `agree` and `sensitivity` and write up `docs/mapping-validation.md`.
 4. Deploy with `render.yaml`, enable the scheduled smoke test, and record internet latency including cold starts.
-5. Choose a non-zero `review_threshold` from the coverage curve.
+5. Done on 2026-10-28: `review_threshold` is 0.7 with a 20% review-rate alert (E12). Revisit both against real traffic.
 6. Add named-entity recognition to redact names and addresses, which the README identifies as out of scope for the regex baseline.
 
 **Suggested extensions**

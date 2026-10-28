@@ -223,7 +223,10 @@ A real triage system routes the messages it is sure about and hands the rest
 to a person. When the top probability is below `serve.review_threshold` in
 `params.yaml`, `/predict` answers `label: "needs_review"`, and keeps the
 model's best guess in `predicted_label` and the full `all_scores`, so the
-reviewer starts from the suggestion. The default of `0.0` disables the route.
+reviewer starts from the suggestion. The threshold is `0.7`: on the test split
+it sends 10.3% of messages to review and routes the rest at 97.1% accuracy,
+cutting wrong routes from 192 to 81. A threshold of `0.0` disables the route.
+Clients must handle `needs_review` as a label alongside the five queues.
 The API reads `params.yaml` once per process, so restart it after changing
 the threshold or the `monitoring:` settings.
 
@@ -232,7 +235,10 @@ The evaluate stage writes the trade-off to `reports/coverage_accuracy.csv` and
 on them. The Prometheus counter `ticket_routed_total{queue=...}` counts
 answers by routed queue, so the review rate can be graphed and alerted on. A
 rising review rate means the model is less sure of its traffic, which is a
-drift signal of its own.
+drift signal of its own: the India robustness set sends 30.5% to review at the
+same threshold. `prometheus/rules.yml` alerts when the hourly review rate
+passes 20%, about double the normal rate. See E12 in
+[docs/experiments.md](docs/experiments.md).
 
 Endpoints: `/` service info, `/ui` test page, `/health` liveness,
 `/predict` classification, `/docs` interactive docs, `/metrics` Prometheus.
